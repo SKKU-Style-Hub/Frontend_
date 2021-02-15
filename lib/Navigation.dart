@@ -4,6 +4,7 @@ import 'package:stylehub_flutter/MyClosetPage.dart';
 import 'package:stylehub_flutter/Fittingroom.dart';
 import 'package:stylehub_flutter/common/custom_icons_icons.dart';
 import 'RequestPage.dart';
+import 'MainFeed.dart';
 
 class Navigation extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _NavigationState extends State<Navigation> {
   );
   int _selectedItemPosition = 0;
   static List<Widget> _widgetOptions = <Widget>[
-    Container(),
+    MainFeed(),
     MyClosetPage(),
     RequestPage(),
     Fittingroom_main()

@@ -12,8 +12,14 @@ String selected_outer;
 //아우터 배치는 어떤 식으로 해야될지 모르겠어서 안해놓음.
 
 //첫 화면 배치offset
+double top_offset_x = 130;
+double top_offset_y = 70;
 Offset top_offset = Offset(130.0, 70.0);
+double bottom_offset_x = 130;
+double bottom_offset_y = 155;
 Offset bottom_offset = Offset(130.0, 155.0);
+double shoes_offset_x = 240;
+double shoes_offset_y = 300;
 Offset shoes_offset = Offset(240, 300);
 Offset onepiece_offset = Offset(130.0, 70.0);
 
@@ -117,15 +123,18 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         ),
         new Positioned(
           key: GlobalKey(),
-          left: top_offset.dx,
-          top: top_offset.dy,
+          left: top_offset_x,
+          top: top_offset_y,
           child: Draggable(
-            child: Image.asset(
-              selected_top,
+            child: SizedBox(
               width: 180,
-              height: 180,
-              fit: BoxFit.contain,
-              //colorBlendMode: BlendMode.srcOut,
+              child: Image.asset(
+                selected_top,
+                width: 180,
+                height: 180,
+                fit: BoxFit.contain,
+                //colorBlendMode: BlendMode.srcOut,
+              ),
             ),
             feedback: Image.asset(
               selected_top,
@@ -138,8 +147,8 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             onDragEnd: (DraggableDetails details) {
               setState(() {
                 print(details.offset);
-                //print(details.offset);
-                top_offset = details.offset;
+                top_offset_x = details.offset.dx;
+                top_offset_y = details.offset.dy - 80;
                 print(top_offset);
                 print(top_offset.distance);
                 //print(top_offset.distance);
@@ -150,27 +159,31 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         //화면에 하의
         new Positioned(
           key: GlobalKey(),
-          left: bottom_offset.dx,
-          top: bottom_offset.dy,
+          left: bottom_offset_x,
+          top: bottom_offset_y,
           child: Draggable(
-            child: Image.asset(
-              selected_bottom,
-              width: 200,
-              height: 270,
-              colorBlendMode: BlendMode.srcOut,
-              fit: BoxFit.contain,
+            child: SizedBox(
+              width: 250,
+              child: Image.asset(
+                selected_bottom,
+                width: 250,
+                height: 300,
+                colorBlendMode: BlendMode.srcOut,
+                fit: BoxFit.contain,
+              ),
             ),
             feedback: Image.asset(
               selected_bottom,
-              width: 200,
-              height: 270,
+              width: 250,
+              height: 300,
               colorBlendMode: BlendMode.srcOut,
               fit: BoxFit.contain,
             ),
             childWhenDragging: Text(" "),
             onDragEnd: (DraggableDetails details) {
               setState(() {
-                bottom_offset = details.offset;
+                bottom_offset_x = details.offset.dx;
+                bottom_offset_y = details.offset.dy - 80;
                 print(bottom_offset.dx);
                 print(bottom_offset.dy);
               });
@@ -180,14 +193,17 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         //화면에 신발
         new Positioned(
           key: GlobalKey(),
-          left: shoes_offset.dx,
-          top: shoes_offset.dy,
+          left: shoes_offset_x,
+          top: shoes_offset_y,
           child: Draggable(
-            child: Image.asset(
-              selected_shoes,
+            child: SizedBox(
               width: 150,
-              height: 203,
-              colorBlendMode: BlendMode.srcOut,
+              child: Image.asset(
+                selected_shoes,
+                width: 150,
+                height: 203,
+                colorBlendMode: BlendMode.srcOut,
+              ),
             ),
             feedback: Image.asset(
               selected_shoes,
@@ -196,10 +212,11 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
               colorBlendMode: BlendMode.srcOut,
               //fit: BoxFit.fitHeight,
             ),
-            //childWhenDragging: Text(" "),
+            childWhenDragging: Text(" "),
             onDragEnd: (DraggableDetails details) {
               setState(() {
-                shoes_offset = details.offset;
+                shoes_offset_x = details.offset.dx;
+                shoes_offset_y = details.offset.dy - 81;
                 print(shoes_offset.dx);
                 print(shoes_offset.dy);
               });

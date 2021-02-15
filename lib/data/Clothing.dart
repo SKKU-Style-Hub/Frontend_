@@ -1,4 +1,5 @@
 import 'package:dataclass/dataclass.dart';
+import 'package:flutter/cupertino.dart';
 
 @dataClass
 class Clothing {

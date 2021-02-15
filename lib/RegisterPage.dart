@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'data/MyClothing.dart';
+import 'data/MyClothingDatabase.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage();
@@ -15,7 +19,17 @@ class _RegisterPageState extends State<RegisterPage> {
   File mPhoto;
   void onPhoto(ImageSource source) async {
     File f = await ImagePicker.pickImage(source: source);
-    setState(() => mPhoto = f);
+    setState(() {
+      mPhoto = f;
+    });
+  }
+
+  void registerDB() async {
+    final bytes = mPhoto.readAsBytesSync();
+    String base64Img = base64Encode(bytes);
+    await MyClothingDatabase.insertClothing(
+        MyClothing(index: 2, clothingImgBase64: base64Img));
+    print(MyClothingDatabase.getMyCloset());
   }
 
   @override
@@ -81,7 +95,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 borderRadius: BorderRadius.circular(18.0),
               ),
               disabledColor: Colors.black,
-              onPressed: null,
+              onPressed: () {
+                registerDB();
+              },
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 55),
