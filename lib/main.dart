@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylehub_flutter/Startscreen.dart';
 import 'Navigation.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +15,7 @@ class StyleHub extends StatelessWidget {
         //primaryColor: Colors.black,
         buttonColor: Colors.black,
       ),
-      home: Navigation(),
+      home: StartScreen(),
     );
   }
 }

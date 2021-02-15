@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:drag_to_expand/drag_to_expand.dart';
+import 'ProductDetail.dart';
 import 'dart:async';
 import 'dart:math' as math;
+
+import 'package:flutter/rendering.dart';
 
 //화면에 이미 선택된 옷
 String selected_top = "assets/images/sample_knit.png";
@@ -12,16 +15,18 @@ String selected_outer;
 //아우터 배치는 어떤 식으로 해야될지 모르겠어서 안해놓음.
 
 //첫 화면 배치offset
-double top_offset_x = 130;
-double top_offset_y = 70;
+double top_offset_x = 115;
+double top_offset_y = 60;
 Offset top_offset = Offset(130.0, 70.0);
-double bottom_offset_x = 130;
+double bottom_offset_x = 80;
 double bottom_offset_y = 155;
 Offset bottom_offset = Offset(130.0, 155.0);
 double shoes_offset_x = 240;
-double shoes_offset_y = 300;
+double shoes_offset_y = 280;
 Offset shoes_offset = Offset(240, 300);
 Offset onepiece_offset = Offset(130.0, 70.0);
+double top_width;
+double bottom_width;
 
 //어떤 옷인가요?//1이면 선택 0이면 선택x
 int top_yesno = 1;
@@ -32,6 +37,18 @@ int onepiece_yesno = 0;
 int select_index = 0; //0은 내옷장, 1은 제안상품을 의미
 
 //배열들
+//가격 배열 아무거나ㅠㅠ
+List<int> price_uu = [30000, 35000, 45000, 70000];
+List<String> brandname_uu = ["프롬비기닝", "H&M", "미쏘"];
+
+List<String> name_top_uu = [
+  "21AS Victoria Sweatshirt",
+  "21SS Unisex Tricolor Fox Patch Classic Marin",
+  "c"
+];
+List<String> name_bottom_uu = ["a", "b", "21SS Women Washed Easy Pants"];
+List<String> name_shoes_uu = ["a", "b", "c"];
+
 List<String> mycloset_top = [
   'assets/images/top1.png',
   'assets/images/top2.png',
@@ -92,8 +109,57 @@ List<String> recommend_shoes = [
   'assets/images/sample_shoes.png',
 ];
 
+class FittingRoomForm extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "피팅룸",
+      home: Fittingroom(),
+    );
+  }
+} //end of Myapp
+
+class Fittingroom extends StatelessWidget {
+//화면에 이미 선택된 옷
+/*String selected_top;
+  String selected_bottom;
+  String selected_shoes;
+  String selected_onepiece;
+  String selected_outer;*/
+  Fittingroom(
+      {Key key,
+      String selected_top1,
+      String selected_bottom1,
+      String selected_shoes1,
+      String selected_onepiece1,
+      String selected_outer1})
+      : super(key: key) {
+    selected_top = selected_top1;
+    selected_bottom = selected_bottom1;
+    selected_shoes = selected_shoes1;
+    selected_onepiece = selected_onepiece1;
+    selected_outer = selected_outer1;
+  }
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Container(
+          alignment: Alignment.center,
+          child: Image.asset(
+            "assets/images/logo.png",
+            width: 115,
+            alignment: Alignment.center,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Fittingroom_main(),
+    );
+  }
+}
+
 class Fittingroom_main extends StatefulWidget {
-  Fittingroom_main({Key key}) : super(key: key) {}
   _Fittingroom_mainState createState() {
     return _Fittingroom_mainState();
   }
@@ -115,47 +181,16 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
 
   Widget build(BuildContext context) {
     select_index = 0;
+    //selected_top = "assets/images/sample_knit.png";
+    //selected_bottom = 'assets/images/sample_pants.png';
+    //selected_shoes = 'assets/images/sample_shoes.png';
     return Stack(
       children: <Widget>[
         //화면에 상의
         Positioned(
           child: Image.asset('assets/images/background_ui.png'),
         ),
-        new Positioned(
-          key: GlobalKey(),
-          left: top_offset_x,
-          top: top_offset_y,
-          child: Draggable(
-            child: SizedBox(
-              width: 180,
-              child: Image.asset(
-                selected_top,
-                width: 180,
-                height: 180,
-                fit: BoxFit.contain,
-                //colorBlendMode: BlendMode.srcOut,
-              ),
-            ),
-            feedback: Image.asset(
-              selected_top,
-              width: 180,
-              height: 180,
-              fit: BoxFit.contain,
-              //colorBlendMode: BlendMode.srcOut,
-            ),
-            childWhenDragging: Text(" "),
-            onDragEnd: (DraggableDetails details) {
-              setState(() {
-                print(details.offset);
-                top_offset_x = details.offset.dx;
-                top_offset_y = details.offset.dy - 80;
-                print(top_offset);
-                print(top_offset.distance);
-                //print(top_offset.distance);
-              });
-            },
-          ),
-        ),
+
         //화면에 하의
         new Positioned(
           key: GlobalKey(),
@@ -190,6 +225,42 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             },
           ),
         ),
+        new Positioned(
+          key: GlobalKey(),
+          left: top_offset_x,
+          top: top_offset_y,
+          child: Draggable(
+            child: SizedBox(
+              width: 180,
+              child: Image.asset(
+                selected_top,
+                width: 180,
+                height: 180,
+                fit: BoxFit.contain,
+                //colorBlendMode: BlendMode.srcOut,
+              ),
+            ),
+            feedback: Image.asset(
+              selected_top,
+              width: 180,
+              height: 180,
+              fit: BoxFit.contain,
+              //colorBlendMode: BlendMode.srcOut,
+            ),
+            childWhenDragging: Text(" "),
+            onDragEnd: (DraggableDetails details) {
+              setState(() {
+                print(details.offset);
+                //print(details.offset);
+                top_offset_x = details.offset.dx;
+                top_offset_y = details.offset.dy - 80;
+                print(top_offset);
+                print(top_offset.distance);
+                //print(top_offset.distance);
+              });
+            },
+          ),
+        ),
         //화면에 신발
         new Positioned(
           key: GlobalKey(),
@@ -215,6 +286,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             childWhenDragging: Text(" "),
             onDragEnd: (DraggableDetails details) {
               setState(() {
+                //shoes_offset = details.offset;
                 shoes_offset_x = details.offset.dx;
                 shoes_offset_y = details.offset.dy - 81;
                 print(shoes_offset.dx);
@@ -439,7 +511,44 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                               setState(() {
                                                 selected_top =
                                                     mycloset_top[idx];
+                                                top_yesno = 1;
+                                                bottom_yesno = 1;
+                                                onepiece_yesno = 0;
                                               });
+                                            },
+                                            //길게 누르면 상품정보로
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              print("ssadasdasd");
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      content: ProductDetail(
+                                                          imagepath:
+                                                              mycloset_top[idx],
+                                                          brandname:
+                                                              brandname_uu[idx],
+                                                          name:
+                                                              name_top_uu[idx],
+                                                          price: price_uu[idx]),
+                                                    );
+                                                  });
+
+                                              // Navigator.push(
+                                              //   context,
+                                              //   MaterialPageRoute(
+                                              //       builder: (context) {
+                                              //     return ProductDetail(
+                                              //         imagepath:
+                                              //             mycloset_top[idx],
+                                              //         brandname:
+                                              //             brandname_uu[idx],
+                                              //         name: name_top_uu[idx],
+                                              //         price: price_uu[idx]);
+                                              //   }),
+                                              // );
                                             },
                                           );
                                         }),
@@ -482,7 +591,29 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                               setState(() {
                                                 selected_bottom =
                                                     mycloset_pants[idx];
+                                                top_yesno = 1;
+                                                bottom_yesno = 1;
+                                                onepiece_yesno = 0;
                                               });
+                                            },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      content: ProductDetail(
+                                                          imagepath:
+                                                              mycloset_pants[
+                                                                  idx],
+                                                          brandname:
+                                                              brandname_uu[idx],
+                                                          name: name_bottom_uu[
+                                                              idx],
+                                                          price: price_uu[idx]),
+                                                    );
+                                                  });
                                             },
                                           );
                                         }),
@@ -525,7 +656,28 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                               setState(() {
                                                 selected_top =
                                                     mycloset_onepiece[idx];
+                                                top_yesno = 0;
+                                                bottom_yesno = 0;
+                                                onepiece_yesno = 1;
                                               });
+                                            },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      content: ProductDetail(
+                                                          imagepath:
+                                                              mycloset_top[idx],
+                                                          brandname:
+                                                              brandname_uu[idx],
+                                                          name:
+                                                              name_top_uu[idx],
+                                                          price: price_uu[idx]),
+                                                    );
+                                                  });
                                             },
                                           );
                                         }),
@@ -568,7 +720,24 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                               setState(() {
                                                 selected_outer =
                                                     mycloset_outer[idx];
+                                                //here------
                                               });
+                                            },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                                  return ProductDetail(
+                                                      imagepath:
+                                                          mycloset_outer[idx],
+                                                      brandname:
+                                                          brandname_uu[idx],
+                                                      name: name_top_uu[idx],
+                                                      price: price_uu[idx]);
+                                                }),
+                                              );
                                             },
                                           );
                                         }),
@@ -613,6 +782,22 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                                     mycloset_shoes[idx];
                                               });
                                             },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                                  return ProductDetail(
+                                                      imagepath:
+                                                          mycloset_shoes[idx],
+                                                      brandname:
+                                                          brandname_uu[idx],
+                                                      name: name_shoes_uu[idx],
+                                                      price: price_uu[idx]);
+                                                }),
+                                              );
+                                            },
                                           );
                                         }),
                                       ),
@@ -620,7 +805,10 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                   ),
                                 ),
                               ));
-                        } else if (select_index == 1) {
+                        }
+
+                        ///
+                        else if (select_index == 1) {
                           //제안상품에서 받아오기
                           return Container(
                               //width: 300,

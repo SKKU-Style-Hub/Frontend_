@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:tabbar/tabbar.dart';
-
 import 'RegisterPage.dart';
 
 class MyClosetPage extends StatefulWidget {
@@ -20,6 +19,28 @@ class _MyClosetPageState extends State<MyClosetPage> {
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount: 3,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            height: 250,
+            width: 150,
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            child: Image.asset(
+              'images/hanger_cloth${index + imgOffset}.png',
+              fit: BoxFit.fitHeight,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Container buildRowAdded(double _height, int imgOffset) {
+    return Container(
+      height: _height,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             height: 250,
@@ -83,7 +104,9 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         Image.asset('assets/hanger.png'),
                         Container(
                           padding: EdgeInsets.only(top: 15),
-                          child: buildRow(200, 1),
+                          child: RegisterPage.registered == 0
+                              ? buildRow(200, 1)
+                              : buildRowAdded(200, 0),
                         ),
                       ],
                     ),

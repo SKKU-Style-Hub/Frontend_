@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylehub_flutter/ChooseClothingPage.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'components/Colorbutton.dart';
 import 'components/Stylebutton.dart';
@@ -7,10 +8,28 @@ import 'components/Budgetline.dart';
 import 'AfterRequest.dart';
 import 'package:http/http.dart';
 
+int _select_cloth = 0;
+int _imgOffset = 0;
+int _index = 0;
+
+class RequestPageForm extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: RequestPage(),
+    );
+  }
+}
+
 class RequestPage extends StatefulWidget {
   String title;
-  RequestPage({Key key, String title}) : super(key: key) {
+  RequestPage(
+      {Key key, String title, int index, int select_cloth, int imgOffset})
+      : super(key: key) {
     this.title = title;
+    _imgOffset = imgOffset;
+    _index = index;
+    if (select_cloth != null) _select_cloth = select_cloth;
+    print("select_cloth" + select_cloth.toString());
   }
   @override
   _RequestPageState createState() {
@@ -24,7 +43,6 @@ class _RequestPageState extends State<RequestPage> {
   double cost_userwant = 10.0;
   double top_size = 90.0;
   double pants_size = 28.0;
-  int select_cloth = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +55,34 @@ class _RequestPageState extends State<RequestPage> {
     for (int i = 0; i < 16; i++) {
       item_click.add(0);
     }
+    if (_select_cloth == 0) {
+      return requestPageBody();
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Image.asset(
+            'assets/applogo.png',
+            fit: BoxFit.cover,
+          ),
+          backgroundColor: Colors.white,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.close),
+              color: Colors.black,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        body: requestPageBody(),
+      );
+    }
+  }
+
+  Widget requestPageBody() {
+    print(_select_cloth);
     return Column(
       children: <Widget>[
         Expanded(
@@ -125,37 +171,45 @@ class _RequestPageState extends State<RequestPage> {
                     //------------here
                     InkWell(
                       child: Container(
-                        alignment: Alignment.center,
-                        margin: EdgeInsets.only(left: 10.0, right: 10.0),
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[500],
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          //border: Border.all(width: 1, color: Colors.black),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("+",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.only(left: 10.0, right: 10.0),
+                          height: 150,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            //border: Border.all(width: 1, color: Colors.black),
+                          ),
+                          child: _select_cloth == 0
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("+",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        )),
+                                    //Spacer(flex: 1),
+                                    Text("옷 선택/추가하기",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ))
+                                  ],
+                                )
+                              : Image.asset(
+                                  'images/hanger_cloth${_index + _imgOffset}.png',
+                                  fit: BoxFit.fitHeight,
                                 )),
-                            //Spacer(flex: 1),
-                            Text("옷 선택/추가하기",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ))
-                          ],
-                        ),
-                      ),
                       onTap: () {
-                        //내 옷장과 연결하여 옷 가져오기
-                        print("click");
-                        select_cloth = 1;
+                        print("what?");
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChooseClothingPage(),
+                            ));
+                        //select_cloth = 1;
                       },
                     ),
                     Spacer(
@@ -249,9 +303,120 @@ class _RequestPageState extends State<RequestPage> {
                   ],
                 ),
               ),
+              //아이템---------------------------------
               Container(
                 //margin: EdgeInsets.only(left: 20.0),
-                //alignment: Alignment.centerLeft,
+                alignment: Alignment.centerLeft,
+                height: 230,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "#아이템",
+                        style: TextStyle(
+                          color: Colors.black,
+                          //color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        //textAlign: TextAlign.left,
+                      ),
+                      margin: EdgeInsets.only(left: 20.0),
+                    ),
+                    /*Spacer(
+                  flex: 20,
+                ),*/
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Itembutton(
+                        item_index: idx,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Itembutton(
+                        item_index: idx + 4,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Itembutton(
+                        item_index: idx + 8,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Itembutton(
+                        item_index: idx + 12,
+                      );
+                    })),
+                  ],
+                ),
+              ),
+              //스타일------------------------------------------------
+              Container(
+                //margin: EdgeInsets.only(left: 20.0),
+                alignment: Alignment.centerLeft,
+                height: 230,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        "#스타일",
+                        style: TextStyle(
+                          color: Colors.black,
+                          //color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        //textAlign: TextAlign.left,
+                      ),
+                      margin: EdgeInsets.only(left: 20.0),
+                    ),
+                    /*Spacer(
+                  flex: 20,
+                ),*/
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Stylebutton(
+                        style_index: idx,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Stylebutton(
+                        style_index: idx + 4,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Stylebutton(
+                        style_index: idx + 8,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(4, (idx) {
+                      return Stylebutton(
+                        style_index: idx + 12,
+                      );
+                    })),
+                    Row(
+                        children: List.generate(3, (idx) {
+                      return Stylebutton(
+                        style_index: idx + 16,
+                      );
+                    })),
+                  ],
+                ),
+              ),
+              //색상----------------------------------
+              Container(
                 height: 200,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -301,125 +466,7 @@ class _RequestPageState extends State<RequestPage> {
                   ],
                 ),
               ),
-              Container(
-                //margin: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                height: 230,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "#스타일",
-                        style: TextStyle(
-                          color: Colors.black,
-                          //color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        //textAlign: TextAlign.left,
-                      ),
-                      margin: EdgeInsets.only(left: 20.0),
-                    ),
-                    /*Spacer(
-                  flex: 20,
-                ),*/
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Stylebutton(
-                        style_index: idx,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Stylebutton(
-                        style_index: idx + 4,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Stylebutton(
-                        style_index: idx + 8,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Stylebutton(
-                        style_index: idx + 12,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(3, (idx) {
-                      return Stylebutton(
-                        style_index: idx + 16,
-                      );
-                    })),
-                  ],
-                ),
-              ),
-              Container(
-                //margin: EdgeInsets.only(left: 20.0),
-                alignment: Alignment.centerLeft,
-                height: 230,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "#아이템",
-                        style: TextStyle(
-                          color: Colors.black,
-                          //color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        //textAlign: TextAlign.left,
-                      ),
-                      margin: EdgeInsets.only(left: 20.0),
-                    ),
-                    /*Spacer(
-                  flex: 20,
-                ),*/
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Itembutton(
-                        item_index: idx,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Itembutton(
-                        item_index: idx + 4,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Itembutton(
-                        item_index: idx + 8,
-                      );
-                    })),
-                    Row(
-                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (idx) {
-                      return Itembutton(
-                        item_index: idx + 12,
-                      );
-                    })),
-                  ],
-                ),
-              ),
+
               Container(
                 height: 90,
                 child: Column(
@@ -498,15 +545,6 @@ class _RequestPageState extends State<RequestPage> {
                     ),
                     Spacer(flex: 1),
                     SfSlider(
-                      /*labelFormatterCallback:
-                            (dynamic actualValue, String formattedText) {
-                          if (actualValue == 0 || actualValue == 35) {
-                            return '';
-                          } else if (actualValue == 30) {
-                            return '무제한';
-                          }
-                          return '$formattedText만원';
-                        },*/
                       enableTooltip: true,
                       min: 22.0,
                       max: 38.0,

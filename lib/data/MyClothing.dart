@@ -5,14 +5,14 @@ import 'package:flutter/cupertino.dart';
 
 @dataClass
 class MyClothing {
-  int index;
+  int id;
   String clothingImgBase64;
 
-  MyClothing({this.index, this.clothingImgBase64});
+  MyClothing({this.id, this.clothingImgBase64});
 
   Map<String, dynamic> toMap() {
     return {
-      'index': index,
+      'id': id,
       'clothingImgBase64': clothingImgBase64,
     };
   }

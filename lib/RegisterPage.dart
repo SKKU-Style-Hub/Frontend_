@@ -8,8 +8,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'data/MyClothing.dart';
 import 'data/MyClothingDatabase.dart';
+import 'Navigation.dart';
 
 class RegisterPage extends StatefulWidget {
+  static int registered = 0;
   RegisterPage();
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -28,8 +30,16 @@ class _RegisterPageState extends State<RegisterPage> {
     final bytes = mPhoto.readAsBytesSync();
     String base64Img = base64Encode(bytes);
     await MyClothingDatabase.insertClothing(
-        MyClothing(index: 2, clothingImgBase64: base64Img));
-    print(MyClothingDatabase.getMyCloset());
+        MyClothing(id: 2, clothingImgBase64: base64Img));
+    final closet = await MyClothingDatabase.getMyCloset();
+    print("closet length " + closet.length.toString());
+    setState(() {
+      RegisterPage.registered = 1;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Navigation()),
+    );
   }
 
   @override
@@ -111,9 +121,11 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(
             height: 26,
           ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            child: Image.asset('assets/wall_texture.png'),
+          Expanded(
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              child: Image.asset('assets/wall_texture.png'),
+            ),
           ),
         ],
       ),

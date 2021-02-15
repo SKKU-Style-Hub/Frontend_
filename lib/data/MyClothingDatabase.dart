@@ -7,42 +7,44 @@ class MyClothingDatabase {
   void makeDatabase() async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = openDatabase(
-      join(await getDatabasesPath(), 'myclothing_database.db'),
+      join(await getDatabasesPath(), 'myclothing_database1.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE MyCloset(clothingImgBase64 TEXT)",
+          "CREATE TABLE MyCloset(id INTEGER PRIMARY KEY, clothingImgBase64 TEXT)",
         );
       },
-      version: 2,
+      version: 4,
     );
   }
 
   static Future<void> insertClothing(MyClothing clothing) async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = openDatabase(
-      join(await getDatabasesPath(), 'myclothing_database.db'),
+      join(await getDatabasesPath(), 'myclothing_database1.db'),
       onCreate: (db, version) {
+        print("onCreate!!");
         return db.execute(
-          "CREATE TABLE MyCloset(clothingImgBase64 TEXT)",
+          "CREATE TABLE MyCloset(id INTEGER PRIMARY KEY, clothingImgBase64 TEXT)",
         );
       },
-      version: 2,
+      version: 4,
     );
+
     final Database db = await database;
-    await db.update('MyCloset', clothing.toMap(),
+    await db.insert('MyCloset', clothing.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<List<MyClothing>> getMyCloset() async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = openDatabase(
-      join(await getDatabasesPath(), 'myclothing_database.db'),
+      join(await getDatabasesPath(), 'myclothing_database1.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE MyCloset(index INTEGER, clothingImgBase64 TEXT)",
+          "CREATE TABLE IF NOT EXISTS MyCloset(id INTEGER PRIMARY KEY, clothingImgBase64 TEXT)",
         );
       },
-      version: 2,
+      version: 4,
     );
     final Database db = await database;
 
@@ -50,7 +52,7 @@ class MyClothingDatabase {
 
     return List.generate(maps.length, (i) {
       return MyClothing(
-        index: maps[i]['index'],
+        id: maps[i]['id'],
         clothingImgBase64: maps[i]['clothingImgBase64'],
       );
     });
