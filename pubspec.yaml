@@ -37,6 +37,7 @@ dependencies:
   http: ^0.12.2
   drag_to_expand: ^0.0.1
   sqflite:
+  animated_splash_screen: ^1.0.1+2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -67,6 +68,7 @@ flutter:
     - assets/storage.png
     - assets/wall_texture.png
     - assets/images/
+    - assets/request_codi/
   fonts:
     - family: NotoSans
       fonts:

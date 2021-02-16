@@ -33,6 +33,7 @@ class CheckCodiForm extends StatelessWidget {
 }
 
 class CheckCodi extends StatefulWidget {
+  static int checkCodi = 1;
   _CheckCodiState createState() {
     return _CheckCodiState();
   }
@@ -45,16 +46,34 @@ class _CheckCodiState extends State<CheckCodi> {
         top_path: "assets/images/sample_knit.png",
         bottom_path: "assets/images/sample_pants.png",
         shoes_path: "assets/images/sample_shoes.png",
-        onepiece_path: "",
-        outer_path: "");
+        onepiece_path: null,
+        outer_path: null);
     Received_codi_list.add(rc1);
     Received_codi rc2 = Received_codi(
+        top_path: "assets/request_codi/received_codi2_top.png",
+        bottom_path: "assets/request_codi/received_codi2_bottom.png",
+        shoes_path: "assets/request_codi/received_codi2_shoes.png",
+        //일단 원피스에 전체크기 넣어놓자..
+        onepiece_path: "assets/request_codi/received_codi2_total.png",
+        //아우터에 가방을 넣어놓자..
+        outer_path: "assets/request_codi/received_codi2_bag.png");
+    Received_codi_list.add(rc2);
+    Received_codi rc3 = Received_codi(
+        top_path: "assets/request_codi/received_codi1_top.png",
+        bottom_path: "assets/request_codi/received_codi1_bottom.png",
+        shoes_path: "assets/request_codi/received_codi1_shoes.png",
+        //일단 원피스에 전체크기 넣어놓자..
+        onepiece_path: "assets/request_codi/received_codi1_total.png",
+        //아우터에 가방을 넣어놓자..
+        outer_path: "assets/request_codi/received_codi1_bag.png");
+    Received_codi_list.add(rc3);
+    Received_codi rc4 = Received_codi(
         top_path: "assets/images/top2.png",
         bottom_path: "assets/images/pants3.png",
         shoes_path: "assets/images/sample_shoes.png",
-        onepiece_path: "",
-        outer_path: "");
-    Received_codi_list.add(rc2);
+        onepiece_path: null,
+        outer_path: null);
+    Received_codi_list.add(rc4);
     return Container(
       child: ListView(
           scrollDirection: Axis.vertical,

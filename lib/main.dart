@@ -1,3 +1,4 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Startscreen.dart';
 import 'Navigation.dart';
@@ -15,7 +16,17 @@ class StyleHub extends StatelessWidget {
         //primaryColor: Colors.black,
         buttonColor: Colors.black,
       ),
-      home: StartScreen(),
+      home: AnimatedSplashScreen(
+        duration: 2000,
+        splashIconSize: 500,
+        splash: Image.asset(
+          "assets/images/SPLASH_image.png",
+          height: 500,
+        ),
+        nextScreen: Navigation(),
+        splashTransition: SplashTransition.fadeTransition,
+        backgroundColor: Colors.black,
+      ),
     );
   }
 }

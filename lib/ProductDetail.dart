@@ -38,7 +38,7 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
           ),
           SizedBox(
-            height: 50,
+            height: 30,
           ),
           Text(
             widget.brandname,
@@ -47,6 +47,10 @@ class _ProductDetailState extends State<ProductDetail> {
           Text(
             widget.name,
             style: TextStyle(fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 10,
           ),
           Text(
             widget.price.toString() + "원",
@@ -55,7 +59,7 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
           ),
           SizedBox(
-            height: 15,
+            height: 5,
           ),
           Center(
             child: RaisedButton(

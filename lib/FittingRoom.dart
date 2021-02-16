@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:drag_to_expand/drag_to_expand.dart';
+import 'package:stylehub_flutter/Checkcodi.dart';
 import 'ProductDetail.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -15,15 +16,12 @@ String selected_outer;
 //아우터 배치는 어떤 식으로 해야될지 모르겠어서 안해놓음.
 
 //첫 화면 배치offset
-double top_offset_x = 115;
-double top_offset_y = 60;
-Offset top_offset = Offset(130.0, 70.0);
-double bottom_offset_x = 80;
+double top_offset_x = 113;
+double top_offset_y = 30;
+double bottom_offset_x = 113;
 double bottom_offset_y = 155;
-Offset bottom_offset = Offset(130.0, 155.0);
-double shoes_offset_x = 240;
+double shoes_offset_x = 280;
 double shoes_offset_y = 280;
-Offset shoes_offset = Offset(240, 300);
 Offset onepiece_offset = Offset(130.0, 70.0);
 double top_width;
 double bottom_width;
@@ -34,7 +32,7 @@ int bottom_yesno = 1;
 int shoes_yesno = 1;
 int onepiece_yesno = 0;
 
-int select_index = 0; //0은 내옷장, 1은 제안상품을 의미
+int select_index = 0; //0은 제안상품, 1은 내옷장을 의미
 
 //배열들
 //가격 배열 아무거나ㅠㅠ
@@ -46,7 +44,11 @@ List<String> name_top_uu = [
   "21SS Unisex Tricolor Fox Patch Classic Marin",
   "c"
 ];
-List<String> name_bottom_uu = ["a", "b", "21SS Women Washed Easy Pants"];
+List<String> name_bottom_uu = [
+  "21SS Signature Slim Baggy Fit Denim Pants",
+  "21SS 블루 베이직 워싱 슬림 데님 팬츠",
+  "21SS Women Washed Easy Pants"
+];
 List<String> name_shoes_uu = ["a", "b", "c"];
 
 List<String> mycloset_top = [
@@ -56,9 +58,9 @@ List<String> mycloset_top = [
 ];
 
 List<String> mycloset_pants = [
+  'assets/images/sample_pants.png',
   'assets/images/pants1.png',
   'assets/images/pants2.png',
-  'assets/images/sample_pants.png'
 ];
 
 List<String> mycloset_onepiece = [
@@ -86,8 +88,8 @@ List<String> recommend_top = [
 ];
 
 List<String> recommend_pants = [
+  'assets/images/sample_pants.png',
   'assets/images/pants1.png',
-  'assets/images/pants2.png',
   'assets/images/pants2.png',
 ];
 
@@ -138,6 +140,7 @@ class Fittingroom extends StatelessWidget {
     selected_shoes = selected_shoes1;
     selected_onepiece = selected_onepiece1;
     selected_outer = selected_outer1;
+    select_index = 0;
   }
 
   Widget build(BuildContext context) {
@@ -146,8 +149,8 @@ class Fittingroom extends StatelessWidget {
         title: Container(
           alignment: Alignment.center,
           child: Image.asset(
-            "assets/images/logo.png",
-            width: 115,
+            "assets/applogo.png",
+            //width: 115,
             alignment: Alignment.center,
           ),
         ),
@@ -161,6 +164,13 @@ class Fittingroom extends StatelessWidget {
 
 class Fittingroom_main extends StatefulWidget {
   _Fittingroom_mainState createState() {
+    top_offset_x = 113;
+    top_offset_y = 30;
+    bottom_offset_x = 113;
+    bottom_offset_y = 155;
+    shoes_offset_x = 280;
+    shoes_offset_y = 280;
+    if (CheckCodi.checkCodi == 1) select_index = 0;
     return _Fittingroom_mainState();
   }
 }
@@ -180,13 +190,11 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
   }
 
   Widget build(BuildContext context) {
-    select_index = 0;
-    //selected_top = "assets/images/sample_knit.png";
-    //selected_bottom = 'assets/images/sample_pants.png';
-    //selected_shoes = 'assets/images/sample_shoes.png';
+    print(select_index);
+    //select_index = 0;
     return Stack(
       children: <Widget>[
-        //화면에 상의
+        //배경
         Positioned(
           child: Image.asset('assets/images/background_ui.png'),
         ),
@@ -198,33 +206,33 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
           top: bottom_offset_y,
           child: Draggable(
             child: SizedBox(
-              width: 250,
+              width: 180,
+              height: 280,
               child: Image.asset(
                 selected_bottom,
-                width: 250,
-                height: 300,
+                width: 180,
+                height: 280,
                 colorBlendMode: BlendMode.srcOut,
-                fit: BoxFit.contain,
+                fit: BoxFit.fitWidth,
               ),
             ),
             feedback: Image.asset(
               selected_bottom,
-              width: 250,
-              height: 300,
+              width: 180,
+              height: 280,
               colorBlendMode: BlendMode.srcOut,
-              fit: BoxFit.contain,
+              fit: BoxFit.fitWidth,
             ),
             childWhenDragging: Text(" "),
             onDragEnd: (DraggableDetails details) {
               setState(() {
                 bottom_offset_x = details.offset.dx;
                 bottom_offset_y = details.offset.dy - 80;
-                print(bottom_offset.dx);
-                print(bottom_offset.dy);
               });
             },
           ),
         ),
+        //화면에 상의
         new Positioned(
           key: GlobalKey(),
           left: top_offset_x,
@@ -235,16 +243,16 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
               child: Image.asset(
                 selected_top,
                 width: 180,
-                height: 180,
-                fit: BoxFit.contain,
+                height: 220,
+                fit: BoxFit.fitWidth,
                 //colorBlendMode: BlendMode.srcOut,
               ),
             ),
             feedback: Image.asset(
               selected_top,
               width: 180,
-              height: 180,
-              fit: BoxFit.contain,
+              height: 220,
+              fit: BoxFit.fitWidth,
               //colorBlendMode: BlendMode.srcOut,
             ),
             childWhenDragging: Text(" "),
@@ -254,9 +262,6 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                 //print(details.offset);
                 top_offset_x = details.offset.dx;
                 top_offset_y = details.offset.dy - 80;
-                print(top_offset);
-                print(top_offset.distance);
-                //print(top_offset.distance);
               });
             },
           ),
@@ -268,29 +273,28 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
           top: shoes_offset_y,
           child: Draggable(
             child: SizedBox(
-              width: 150,
+              width: 80,
               child: Image.asset(
                 selected_shoes,
-                width: 150,
-                height: 203,
+                width: 80,
+                height: 150,
                 colorBlendMode: BlendMode.srcOut,
+                fit: BoxFit.fitWidth,
               ),
             ),
-            feedback: Image.asset(
-              selected_shoes,
-              width: 150,
-              height: 203,
-              colorBlendMode: BlendMode.srcOut,
-              //fit: BoxFit.fitHeight,
-            ),
+            feedback: Image.asset(selected_shoes,
+                width: 80,
+                height: 150,
+                colorBlendMode: BlendMode.srcOut,
+                fit: BoxFit.fitWidth
+                //fit: BoxFit.fitHeight,
+                ),
             childWhenDragging: Text(" "),
             onDragEnd: (DraggableDetails details) {
               setState(() {
                 //shoes_offset = details.offset;
                 shoes_offset_x = details.offset.dx;
                 shoes_offset_y = details.offset.dy - 81;
-                print(shoes_offset.dx);
-                print(shoes_offset.dy);
               });
             },
           ),
@@ -350,35 +354,50 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                       bottom: 5.0),
                                   height: 30,
                                   width: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                    border: Border.all(
-                                        width: 1, color: select_color[0]),
-                                  ),
+                                  decoration: select_index == 1
+                                      ? BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Colors.grey[600]),
+                                        )
+                                      : BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
+                                          border: Border.all(
+                                              width: 1, color: Colors.black),
+                                        ),
                                   child: Column(
                                     //key: Key("mycloset"),
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text("내 옷장",
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: select_color[0],
-                                            fontWeight: FontWeight.bold,
-                                          )),
+                                      Text("제안상품",
+                                          style: select_index == 1
+                                              ? TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.grey[600],
+                                                  fontWeight: FontWeight.bold,
+                                                )
+                                              : TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                )),
                                     ],
                                   ),
                                 ),
                                 onTap: () {
                                   setState(() {
                                     select_index = 0;
-                                    if (select_index == 0) {
-                                      select_color[0] = Colors.black;
-                                      select_color[1] = Colors.grey[600];
-                                    } else {
-                                      select_color[0] = Colors.grey[600];
-                                    }
+                                    // if (select_index == 0) {
+                                    //   select_color[0] = Colors.black;
+                                    //   select_color[1] = Colors.grey[600];
+                                    // } else {
+                                    //   select_color[0] = Colors.grey[600];
+                                    // }
                                   });
                                 }),
                             InkWell(
@@ -391,34 +410,49 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                       bottom: 5.0),
                                   height: 30,
                                   width: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                    border: Border.all(
-                                        width: 1, color: select_color[1]),
-                                  ),
+                                  decoration: select_index == 1
+                                      ? BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
+                                          border: Border.all(
+                                              width: 1, color: Colors.black),
+                                        )
+                                      : BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Colors.grey[600]),
+                                        ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text("제안상품",
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: select_color[1],
-                                            fontWeight: FontWeight.bold,
-                                          )),
+                                      Text("내 옷장",
+                                          style: select_index == 1
+                                              ? TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                )
+                                              : TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.grey[600],
+                                                  fontWeight: FontWeight.bold,
+                                                )),
                                     ],
                                   ),
                                 ),
                                 onTap: () {
                                   setState(() {
                                     select_index = 1;
-                                    if (select_index == 1) {
-                                      select_color[1] = Colors.black;
-                                      select_color[0] = Colors.grey[600];
-                                    } else {
-                                      select_color[1] = Colors.grey[600];
-                                    }
+                                    // if (select_index == 1) {
+                                    //   select_color[1] = Colors.black;
+                                    //   select_color[0] = Colors.grey[600];
+                                    // } else {
+                                    //   select_color[1] = Colors.grey[600];
+                                    // }
                                   });
                                 }),
                           ],
@@ -433,6 +467,330 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                       itemBuilder: (BuildContext context, int index) {
                         //kind_of_cloth = 0;
                         if (select_index == 0) {
+                          //제안상품에서 받아오기
+                          return Container(
+                              //width: 300,
+                              height: 200,
+                              color: Colors.transparent,
+                              child: DefaultTabController(
+                                length: 5,
+                                child: Scaffold(
+                                  appBar: TabBar(
+                                    unselectedLabelColor: Colors.grey,
+                                    indicatorColor: Colors.black,
+                                    labelColor: Colors.black,
+                                    //indicatorSize: TabBarIndicatorSize.label,
+                                    tabs: const <Widget>[
+                                      Tab(
+                                        //icon: Text("제안 상품"),
+                                        child: Text('상의',
+                                            style: TextStyle(fontSize: 15.0)),
+                                      ),
+                                      Tab(
+                                        child: Text('하의',
+                                            style: TextStyle(fontSize: 15.0)),
+                                      ),
+                                      Tab(
+                                        //icon: Icon(Icons.looks_3),
+                                        child: Text('원피스',
+                                            style: TextStyle(fontSize: 15.0)),
+                                      ),
+                                      Tab(
+                                        child: Text('아우터',
+                                            style: TextStyle(fontSize: 15.0)),
+                                      ),
+                                      Tab(
+                                        child: Text('신발',
+                                            style: TextStyle(fontSize: 15.0)),
+                                      ),
+                                    ],
+                                  ),
+                                  body: TabBarView(
+                                    children: <Widget>[
+                                      //------------------top
+                                      ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: List.generate(
+                                            recommend_top.length, (idx) {
+                                          return RaisedButton(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18)),
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: Colors.black12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.2),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 3,
+                                                    )
+                                                  ]),
+                                              child: Image.asset(
+                                                recommend_top[idx],
+                                                width: 150,
+                                                height: 203,
+                                                colorBlendMode:
+                                                    BlendMode.srcOut,
+                                              ),
+                                            ),
+                                            color: Colors.transparent,
+                                            elevation: 0.0,
+                                            splashColor: Colors.blueGrey,
+                                            onPressed: () {
+                                              setState(() {
+                                                selected_top =
+                                                    recommend_top[idx];
+                                              });
+                                            },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              print("ssadasdasd");
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      content: ProductDetail(
+                                                          imagepath:
+                                                              mycloset_top[idx],
+                                                          brandname:
+                                                              brandname_uu[idx],
+                                                          name:
+                                                              name_top_uu[idx],
+                                                          price: price_uu[idx]),
+                                                    );
+                                                  });
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                      //-------------pants
+                                      ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: List.generate(
+                                            recommend_pants.length, (idx) {
+                                          return RaisedButton(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18)),
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: Colors.black12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.2),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 3,
+                                                    )
+                                                  ]),
+                                              child: Image.asset(
+                                                recommend_pants[idx],
+                                                width: 150,
+                                                height: 203,
+                                                colorBlendMode:
+                                                    BlendMode.srcOut,
+                                              ),
+                                            ),
+                                            color: Colors.transparent,
+                                            elevation: 0.0,
+                                            splashColor: Colors.blueGrey,
+                                            onPressed: () {
+                                              setState(() {
+                                                selected_bottom =
+                                                    recommend_pants[idx];
+                                              });
+                                            },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              print("ssadasdasd");
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      content: ProductDetail(
+                                                          imagepath:
+                                                              mycloset_pants[
+                                                                  idx],
+                                                          brandname:
+                                                              brandname_uu[idx],
+                                                          name:
+                                                              //here
+                                                              name_bottom_uu[
+                                                                  idx],
+                                                          price: price_uu[idx]),
+                                                    );
+                                                  });
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                      //-------------onepiece
+                                      ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: List.generate(
+                                            recommend_onepiece.length, (idx) {
+                                          return RaisedButton(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18)),
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: Colors.black12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.2),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 3,
+                                                    )
+                                                  ]),
+                                              child: Image.asset(
+                                                recommend_onepiece[idx],
+                                                width: 150,
+                                                height: 203,
+                                                colorBlendMode:
+                                                    BlendMode.srcOut,
+                                              ),
+                                            ),
+                                            color: Colors.transparent,
+                                            elevation: 0.0,
+                                            splashColor: Colors.blueGrey,
+                                            onPressed: () {
+                                              setState(() {
+                                                selected_top =
+                                                    recommend_onepiece[idx];
+                                              });
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                      //-----------outer
+                                      ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: List.generate(
+                                            recommend_outer.length, (idx) {
+                                          return RaisedButton(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18)),
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: Colors.black12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.2),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 3,
+                                                    )
+                                                  ]),
+                                              child: Image.asset(
+                                                recommend_outer[idx],
+                                                width: 150,
+                                                height: 203,
+                                                colorBlendMode:
+                                                    BlendMode.srcOut,
+                                              ),
+                                            ),
+                                            color: Colors.transparent,
+                                            elevation: 0.0,
+                                            splashColor: Colors.blueGrey,
+                                            onPressed: () {
+                                              setState(() {
+                                                selected_outer =
+                                                    recommend_outer[idx];
+                                              });
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                      //--------------shoes
+                                      ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: List.generate(
+                                            recommend_shoes.length, (idx) {
+                                          return RaisedButton(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(18)),
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: Colors.black12),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.2),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 3,
+                                                    )
+                                                  ]),
+                                              child: Image.asset(
+                                                recommend_shoes[idx],
+                                                width: 150,
+                                                height: 203,
+                                                colorBlendMode:
+                                                    BlendMode.srcOut,
+                                              ),
+                                            ),
+                                            color: Colors.transparent,
+                                            elevation: 0.0,
+                                            splashColor: Colors.blueGrey,
+                                            onPressed: () {
+                                              setState(() {
+                                                selected_shoes =
+                                                    recommend_shoes[idx];
+                                              });
+                                            },
+                                            onLongPress: () {
+                                              //옷 이미지, 가격, 이름 받아오기
+                                              print("ssadasdasd");
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      content: ProductDetail(
+                                                          imagepath:
+                                                              mycloset_shoes[
+                                                                  idx],
+                                                          brandname:
+                                                              brandname_uu[idx],
+                                                          name: name_shoes_uu[
+                                                              idx],
+                                                          price: price_uu[idx]),
+                                                    );
+                                                  });
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ));
+                        }
+
+                        ///
+                        else if (select_index == 1) {
                           //내옷장에서 받아오기
                           return Container(
                               //width: 300,
@@ -535,21 +893,21 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                                           price: price_uu[idx]),
                                                     );
                                                   });
-
-                                              // Navigator.push(
-                                              //   context,
-                                              //   MaterialPageRoute(
-                                              //       builder: (context) {
-                                              //     return ProductDetail(
-                                              //         imagepath:
-                                              //             mycloset_top[idx],
-                                              //         brandname:
-                                              //             brandname_uu[idx],
-                                              //         name: name_top_uu[idx],
-                                              //         price: price_uu[idx]);
-                                              //   }),
-                                              // );
                                             },
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //       builder: (context) {
+                                            //     return ProductDetail(
+                                            //         imagepath:
+                                            //             mycloset_top[idx],
+                                            //         brandname:
+                                            //             brandname_uu[idx],
+                                            //         name: name_top_uu[idx],
+                                            //         price: price_uu[idx]);
+                                            //   }),
+                                            // );
+                                            //},
                                           );
                                         }),
                                       ),
@@ -797,269 +1155,6 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                                       price: price_uu[idx]);
                                                 }),
                                               );
-                                            },
-                                          );
-                                        }),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ));
-                        }
-
-                        ///
-                        else if (select_index == 1) {
-                          //제안상품에서 받아오기
-                          return Container(
-                              //width: 300,
-                              height: 200,
-                              color: Colors.transparent,
-                              child: DefaultTabController(
-                                length: 5,
-                                child: Scaffold(
-                                  appBar: TabBar(
-                                    unselectedLabelColor: Colors.grey,
-                                    indicatorColor: Colors.black,
-                                    labelColor: Colors.black,
-                                    //indicatorSize: TabBarIndicatorSize.label,
-                                    tabs: const <Widget>[
-                                      Tab(
-                                        //icon: Text("제안 상품"),
-                                        child: Text('상의',
-                                            style: TextStyle(fontSize: 15.0)),
-                                      ),
-                                      Tab(
-                                        child: Text('하의',
-                                            style: TextStyle(fontSize: 15.0)),
-                                      ),
-                                      Tab(
-                                        //icon: Icon(Icons.looks_3),
-                                        child: Text('원피스',
-                                            style: TextStyle(fontSize: 15.0)),
-                                      ),
-                                      Tab(
-                                        child: Text('아우터',
-                                            style: TextStyle(fontSize: 15.0)),
-                                      ),
-                                      Tab(
-                                        child: Text('신발',
-                                            style: TextStyle(fontSize: 15.0)),
-                                      ),
-                                    ],
-                                  ),
-                                  body: TabBarView(
-                                    children: <Widget>[
-                                      //------------------top
-                                      ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: List.generate(
-                                            recommend_top.length, (idx) {
-                                          return RaisedButton(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(18)),
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: Colors.black12),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.2),
-                                                      spreadRadius: 5,
-                                                      blurRadius: 3,
-                                                    )
-                                                  ]),
-                                              child: Image.asset(
-                                                recommend_top[idx],
-                                                width: 150,
-                                                height: 203,
-                                                colorBlendMode:
-                                                    BlendMode.srcOut,
-                                              ),
-                                            ),
-                                            color: Colors.transparent,
-                                            elevation: 0.0,
-                                            splashColor: Colors.blueGrey,
-                                            onPressed: () {
-                                              setState(() {
-                                                selected_top =
-                                                    recommend_top[idx];
-                                              });
-                                            },
-                                          );
-                                        }),
-                                      ),
-                                      //-------------pants
-                                      ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: List.generate(
-                                            recommend_pants.length, (idx) {
-                                          return RaisedButton(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(18)),
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: Colors.black12),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.2),
-                                                      spreadRadius: 5,
-                                                      blurRadius: 3,
-                                                    )
-                                                  ]),
-                                              child: Image.asset(
-                                                recommend_pants[idx],
-                                                width: 150,
-                                                height: 203,
-                                                colorBlendMode:
-                                                    BlendMode.srcOut,
-                                              ),
-                                            ),
-                                            color: Colors.transparent,
-                                            elevation: 0.0,
-                                            splashColor: Colors.blueGrey,
-                                            onPressed: () {
-                                              setState(() {
-                                                selected_bottom =
-                                                    recommend_pants[idx];
-                                              });
-                                            },
-                                          );
-                                        }),
-                                      ),
-                                      //-------------onepiece
-                                      ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: List.generate(
-                                            recommend_onepiece.length, (idx) {
-                                          return RaisedButton(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(18)),
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: Colors.black12),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.2),
-                                                      spreadRadius: 5,
-                                                      blurRadius: 3,
-                                                    )
-                                                  ]),
-                                              child: Image.asset(
-                                                recommend_onepiece[idx],
-                                                width: 150,
-                                                height: 203,
-                                                colorBlendMode:
-                                                    BlendMode.srcOut,
-                                              ),
-                                            ),
-                                            color: Colors.transparent,
-                                            elevation: 0.0,
-                                            splashColor: Colors.blueGrey,
-                                            onPressed: () {
-                                              setState(() {
-                                                selected_top =
-                                                    recommend_onepiece[idx];
-                                              });
-                                            },
-                                          );
-                                        }),
-                                      ),
-                                      //-----------outer
-                                      ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: List.generate(
-                                            recommend_outer.length, (idx) {
-                                          return RaisedButton(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(18)),
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: Colors.black12),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.2),
-                                                      spreadRadius: 5,
-                                                      blurRadius: 3,
-                                                    )
-                                                  ]),
-                                              child: Image.asset(
-                                                recommend_outer[idx],
-                                                width: 150,
-                                                height: 203,
-                                                colorBlendMode:
-                                                    BlendMode.srcOut,
-                                              ),
-                                            ),
-                                            color: Colors.transparent,
-                                            elevation: 0.0,
-                                            splashColor: Colors.blueGrey,
-                                            onPressed: () {
-                                              setState(() {
-                                                selected_outer =
-                                                    recommend_outer[idx];
-                                              });
-                                            },
-                                          );
-                                        }),
-                                      ),
-                                      //--------------shoes
-                                      ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: List.generate(
-                                            recommend_shoes.length, (idx) {
-                                          return RaisedButton(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(18)),
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: Colors.black12),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.grey
-                                                          .withOpacity(0.2),
-                                                      spreadRadius: 5,
-                                                      blurRadius: 3,
-                                                    )
-                                                  ]),
-                                              child: Image.asset(
-                                                recommend_shoes[idx],
-                                                width: 150,
-                                                height: 203,
-                                                colorBlendMode:
-                                                    BlendMode.srcOut,
-                                              ),
-                                            ),
-                                            color: Colors.transparent,
-                                            elevation: 0.0,
-                                            splashColor: Colors.blueGrey,
-                                            onPressed: () {
-                                              setState(() {
-                                                selected_shoes =
-                                                    recommend_shoes[idx];
-                                              });
                                             },
                                           );
                                         }),
