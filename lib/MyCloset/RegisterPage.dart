@@ -1,17 +1,18 @@
 import 'dart:convert';
-
-import 'package:camera/camera.dart';
-import 'package:flutter/gestures.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as Path;
+import 'package:path_provider/path_provider.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'dart:io';
-import 'data/MyClothing.dart';
-import 'data/MyClothingDatabase.dart';
-import 'Navigation.dart';
+import '../data/MyClothingDatabase.dart';
+import '../Navigation.dart';
 
 class RegisterPage extends StatefulWidget {
-  static int registered = 0;
+  static bool registered = false;
+  String base64Img;
   RegisterPage();
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -26,19 +27,73 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  void registerDB() async {
+  void saveFile(bytes) async {
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    File file = File(Path.join(documentDirectory.path, 'image.png'));
+    file.writeAsBytesSync(bytes);
+  }
+
+  void getOmnious() async {
     final bytes = mPhoto.readAsBytesSync();
-    String base64Img = base64Encode(bytes);
-    await MyClothingDatabase.insertClothing(
-        MyClothing(id: 2, clothingImgBase64: base64Img));
+    widget.base64Img = base64Encode(bytes);
+    saveFile(bytes);
+
+    String url = "https://api.omnious.com/tagger/v2.12/tags";
+    final response = await http.post(url,
+        headers: <String, String>{
+          "Content-Type": "application/json",
+          "x-api-key": "djCaMq4KpsOh15lxL8gu29Pro7BIybYeFzADtE6Z",
+          "accept-language": "ko"
+        },
+        body: jsonEncode({
+          "image": {"type": "base64", "content": widget.base64Img}
+        }));
+
+    var tagResult = jsonDecode(utf8.decode(response.bodyBytes));
+    print(tagResult.toString());
+    final int closet_index = await MyClothingDatabase.totalClothingNum();
+    await MyClothingDatabase.insertClothing(MyClothing(
+      id: closet_index,
+      clothingImgBase64: widget.base64Img,
+      category: tagResult['data']['objects'][0]['tags'][0]['category']['name'],
+      color: tagResult['data']['objects'][0]['tags'][0]['colors'][0]['name'],
+      colorDetail: tagResult['data']['objects'][0]['tags'][0]['colorDetail'][0]
+          ['code'],
+      print: tagResult['data']['objects'][0]['tags'][0]['prints'][0]['name'],
+      look: tagResult['data']['objects'][0]['tags'][0]['looks'][0]['name'],
+      texture: tagResult['data']['objects'][0]['tags'][0]['textures'][0]
+          ['name'],
+      detail: tagResult['data']['objects'][0]['tags'][0]['details'] != null
+          ? tagResult['data']['objects'][0]['tags'][0]['details'][0]['name']
+          : null,
+      length: tagResult['data']['objects'][0]['tags'][0]['length']['name'],
+      sleeveLength:
+          tagResult['data']['objects'][0]['tags'][0]['sleeveLength'] != null
+              ? tagResult['data']['objects'][0]['tags'][0]['sleeveLength']
+                  ['name']
+              : null,
+      neckLine: tagResult['data']['objects'][0]['tags'][0]['neckLine'] != null
+          ? tagResult['data']['objects'][0]['tags'][0]['neckLine']['name']
+          : null,
+      fit: tagResult['data']['objects'][0]['tags'][0]['fit'] != null
+          ? tagResult['data']['objects'][0]['tags'][0]['fit']['name']
+          : null,
+      shape: tagResult['data']['objects'][0]['tags'][0]['shape'] != null
+          ? tagResult['data']['objects'][0]['tags'][0]['shape']['name']
+          : null,
+    ));
     final closet = await MyClothingDatabase.getMyCloset();
-    print("closet length " + closet.length.toString());
+    print(closet.length);
+
     setState(() {
-      RegisterPage.registered = 1;
+      RegisterPage.registered = true;
     });
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Navigation()),
+      MaterialPageRoute(
+          builder: (context) => Navigation(
+                selectedPosition: 1,
+              )),
     );
   }
 
@@ -106,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               disabledColor: Colors.black,
               onPressed: () {
-                registerDB();
+                getOmnious();
               },
               child: Padding(
                 padding:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
-import 'FittingRoom.dart';
+import '../FittingRoom/FittingRoom.dart';
 
 class Received_codi {
   String top_path;

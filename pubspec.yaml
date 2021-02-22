@@ -67,6 +67,9 @@ flutter:
     - assets/hanger.png
     - assets/storage.png
     - assets/wall_texture.png
+    - assets/hanger_hook.png
+    - assets/email.png
+    - assets/mailbox.png
     - assets/images/
     - assets/request_codi/
   fonts:

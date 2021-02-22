@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:tabbar/tabbar.dart';
-import 'MyClosetPage.dart';
-import 'Navigation.dart';
-import 'RegisterPage.dart';
+import '../MyCloset/MyClosetPage.dart';
+import '../Navigation.dart';
+import '../MyCloset/RegisterPage.dart';
 import 'RequestPage.dart';
 
 class ChooseClothingPage extends StatefulWidget {

@@ -219,7 +219,6 @@ class _FriendFeedState extends State<FriendFeed> {
         i++) {
       tagss = tagss + "#" + Home_friends[widget.friend_index].tag_list[i] + " ";
     }
-    print(Home_friends[widget.friend_index].circle);
     return Container(
       margin: EdgeInsets.only(left: 5.0, top: 6.0, right: 5.0, bottom: 6.0),
       height: 540,

@@ -1,6 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/Startscreen.dart';
 import 'Navigation.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,7 +13,6 @@ class StyleHub extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        //primaryColor: Colors.black,
         buttonColor: Colors.black,
       ),
       home: AnimatedSplashScreen(
@@ -23,9 +22,12 @@ class StyleHub extends StatelessWidget {
           "assets/images/SPLASH_image.png",
           height: 500,
         ),
-        nextScreen: Navigation(),
+        nextScreen: Navigation(
+          selectedPosition: 0,
+        ),
         splashTransition: SplashTransition.fadeTransition,
         backgroundColor: Colors.black,
+        pageTransitionType: PageTransitionType.scale,
       ),
     );
   }

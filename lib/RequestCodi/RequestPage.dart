@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/ChooseClothingPage.dart';
+import 'file:///D:/Development/AndroidStudio/stylehub_flutter/lib/RequestCodi/ChooseClothingPage.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
-import 'components/Colorbutton.dart';
-import 'components/Stylebutton.dart';
-import 'components/Itembutton.dart';
-import 'components/Budgetline.dart';
+import '../components/Colorbutton.dart';
+import '../components/Stylebutton.dart';
+import '../components/Itembutton.dart';
+import '../components/Budgetline.dart';
 import 'AfterRequest.dart';
 import 'package:http/http.dart';
 
@@ -15,6 +15,23 @@ int _index = 0;
 class RequestPageForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Image.asset(
+          'assets/applogo.png',
+          fit: BoxFit.cover,
+        ),
+        backgroundColor: Colors.white,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.close),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
       body: RequestPage(),
     );
   }

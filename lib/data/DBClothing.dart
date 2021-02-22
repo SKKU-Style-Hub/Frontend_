@@ -2,7 +2,7 @@ import 'package:dataclass/dataclass.dart';
 import 'package:flutter/cupertino.dart';
 
 @dataClass
-class Clothing {
+class DBClothing {
   final int index_num;
   final String product_id;
   final String product_name;
@@ -28,7 +28,7 @@ class Clothing {
   final int is_wear;
   final int is_recommend;
 
-  Clothing({
+  DBClothing({
     this.index_num,
     this.product_id,
     this.product_name,
