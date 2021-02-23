@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
+import 'package:stylehub_flutter/MyCloset/MyRoom/MyRoom.dart';
+import 'package:stylehub_flutter/MyCloset/TagResult/infoTypes.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:tabbar/tabbar.dart';
 import 'RegisterPage.dart';
+import 'package:http/http.dart' as http;
 
 class MyClosetPage extends StatefulWidget {
   @override
@@ -26,12 +29,12 @@ class _MyClosetPageState extends State<MyClosetPage> {
         category == "베스트") {
       switch (length) {
         case '롱':
-          return 220;
+          return 230;
           break;
         case '노멀':
-          return 170;
+          return 200;
         case '크롭':
-          return 130;
+          return 170;
         // 마저 끝내기
       }
     }
@@ -73,6 +76,18 @@ class _MyClosetPageState extends State<MyClosetPage> {
     return 200;
   }
 
+  void getStyling(String clothBase64) async {
+    String url = "http://115.145.212.100:51122/post";
+    http.Response response = await http.post(url,
+        body: jsonEncode({
+          'top_k': 5,
+          'sex': 'WOMEN',
+          'category': '상의',
+          'image': clothBase64
+        }));
+    print(response.body);
+  }
+
   Widget buildRow(Future<List<MyClothing>> list) {
     return FutureBuilder<List>(
       future: list,
@@ -92,7 +107,9 @@ class _MyClosetPageState extends State<MyClosetPage> {
                           child: Image.asset('assets/hanger_hook.png'),
                         ),
                         GestureDetector(
-                          //onLongPress: ,
+                          onLongPress: () {
+                            getStyling(snapshot.data[index].clothingImgBase64);
+                          },
                           child: Container(
                               height: containerHeight(
                                   snapshot.data[index].category,
@@ -118,15 +135,20 @@ class _MyClosetPageState extends State<MyClosetPage> {
 
   @override
   Widget build(BuildContext context) {
-    //MyClothingDatabase.deleteClothing(3);
+    //MyClothingDatabase.deleteClothing(4);
     //MyClothingDatabase.clearCloset();
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(12),
-            child: Text('MY 옷장', style: kPageTitleTextStyle),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                child: Text('MY 옷장', style: kPageTitleTextStyle),
+              ),
+            ],
           ),
           PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
@@ -167,6 +189,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                           Image.asset('assets/hanger.png'),
                           Container(
                               height: 250,
+                              //width: 400,
                               padding: EdgeInsets.only(top: 15),
                               child:
                                   buildRow(MyClothingDatabase.getMyCloset())),
@@ -198,15 +221,12 @@ class _MyClosetPageState extends State<MyClosetPage> {
                       ),
                       Expanded(
                         child: Stack(
-                          //fit: StackFit.loose,
                           children: [
                             Container(
                               alignment: Alignment.bottomCenter,
                               child: Image.asset('assets/wall_texture.png'),
                             ),
                             Container(
-                              // height: 120,
-                              // width: 100,
                               padding: EdgeInsets.only(bottom: 35, right: 25),
                               alignment: Alignment.bottomRight,
                               child: Image.asset('assets/storage.png'),

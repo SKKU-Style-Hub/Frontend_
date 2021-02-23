@@ -51,6 +51,33 @@ class MyClothingDatabase {
     );
   }
 
+  static Future<MyClothing> getFromId(int index) async {
+    final Future<Database> database = makeDatabase();
+    final Database db = await database;
+
+    final List<Map<String, dynamic>> maps =
+        (await db.query('MyCloset', where: 'id = ?', whereArgs: [index]));
+    final resultList = List.generate(maps.length, (i) {
+      return MyClothing(
+          id: maps[i]['id'],
+          clothingImgBase64: maps[i]['clothingImgBase64'],
+          category: maps[i]['category'],
+          color: maps[i]['color'],
+          colorDetail: maps[i]['colorDetail'],
+          print: maps[i]['print'],
+          look: maps[i]['look'],
+          texture: maps[i]['texture'],
+          detail: maps[i]['detail'],
+          length: maps[i]['length'],
+          sleeveLength: maps[i]['sleeveLength'],
+          neckLine: maps[i]['neckLine'],
+          fit: maps[i]['fit'],
+          shape: maps[i]['shape']);
+    });
+    print("resultList size" + resultList.length.toString());
+    return resultList[0];
+  }
+
   static Future<List<MyClothing>> getMyCloset() async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = makeDatabase();

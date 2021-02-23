@@ -9,6 +9,7 @@ import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'dart:io';
 import '../data/MyClothingDatabase.dart';
 import '../Navigation.dart';
+import 'package:image/image.dart' as Img;
 
 class RegisterPage extends StatefulWidget {
   static bool registered = false;
@@ -22,7 +23,12 @@ class _RegisterPageState extends State<RegisterPage> {
   File mPhoto;
   void onPhoto(ImageSource source) async {
     File f = await ImagePicker.pickImage(source: source);
+    Img.Image initialImg = Img.decodeImage(f.readAsBytesSync());
+    Img.Image afterImg = Img.copyResize(initialImg, width: 120);
+    //print(Img.encodePng(afterImg));
     setState(() {
+      //mPhoto..writeAsBytesSync(Img.encodePng(afterImg));
+      //print(mPhoto.readAsBytesSync().toString());
       mPhoto = f;
     });
   }

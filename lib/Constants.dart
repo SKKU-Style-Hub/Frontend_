@@ -16,6 +16,6 @@ const TextStyle kButtonTextStyle = TextStyle(
 );
 const TextStyle kPageTitleTextStyle = TextStyle(
   fontFamily: 'NotoSans',
-  fontWeight: FontWeight.bold,
+  fontWeight: FontWeight.w800,
   fontSize: 20,
 );
