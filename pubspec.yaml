@@ -39,6 +39,7 @@ dependencies:
   sqflite:
   animated_splash_screen: ^1.0.1+2
   image: ^2.1.19
+  smooth_page_indicator: ^0.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

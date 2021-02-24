@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
 import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
+import 'MainFeed/MainFeed1.dart';
 import 'MyCloset/MyClosetPage.dart';
 import 'package:stylehub_flutter/common/custom_icons_icons.dart';
 import 'MainFeed/MainFeed.dart';
@@ -75,7 +76,7 @@ class _NavigationState extends State<Navigation> {
             child: TickerMode(
               enabled: widget._selectedItemPosition == 0,
               child: Scaffold(
-                body: MainFeed(),
+                body: MainFeed1(),
                 //debugShowCheckedModeBanner: false,
               ),
             ),

@@ -32,7 +32,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
           return 230;
           break;
         case '노멀':
-          return 200;
+          return 190;
         case '크롭':
           return 170;
         // 마저 끝내기
@@ -63,7 +63,8 @@ class _MyClosetPageState extends State<MyClosetPage> {
     if (category == "청바지" || category == " 팬츠" || category == "스커트") {
       switch (length) {
         case '긴':
-          return 240;
+        case '롱':
+          return 270;
         case '크롭':
           return 220;
         case '니렝스':
@@ -77,6 +78,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
   }
 
   void getStyling(String clothBase64) async {
+    //print(clothBase64);
     String url = "http://115.145.212.100:51122/post";
     http.Response response = await http.post(url,
         body: jsonEncode({
@@ -85,7 +87,9 @@ class _MyClosetPageState extends State<MyClosetPage> {
           'category': '상의',
           'image': clothBase64
         }));
-    print(response.body);
+    //print(response.body);
+    var result = jsonDecode(json.decode(response.body));
+    print(result.toString());
   }
 
   Widget buildRow(Future<List<MyClothing>> list) {
@@ -417,6 +421,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
+                            height: 200,
                             padding: EdgeInsets.only(top: 15),
                             child: buildRow(MyClothingDatabase.getOuter()),
                           ),

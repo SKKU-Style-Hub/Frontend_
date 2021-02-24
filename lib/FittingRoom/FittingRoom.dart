@@ -14,7 +14,7 @@ import 'package:flutter/rendering.dart';
 //화면에 이미 선택된 옷
 String selected_top = "assets/images/sample_knit.png";
 String selected_bottom = 'assets/images/sample_pants.png';
-String selected_shoes = 'assets/images/sample_shoes.png';
+String selected_shoes = ""; //'assets/images/sample_shoes.png'
 String selected_onepiece = 'assets/images/sample_shoes.png';
 String selected_outer;
 String selected_bag;
@@ -221,6 +221,8 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       }
     }
     _dragToExpandController2 = DragToExpandController();
+
+    getCloset();
     super.initState();
   }
 
@@ -235,12 +237,13 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
     mycloset_outer = await MyClothingDatabase.getOuter();
 
     selected_top = mycloset_top[0].clothingImgBase64;
-    selected_bottom = mycloset_pants[0].clothingImgBase64;
-    selected_shoes = mycloset_onepiece[0].clothingImgBase64;
+    selected_bottom = mycloset_pants[2].clothingImgBase64;
+    //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
   }
 
   Widget build(BuildContext context) {
-    getCloset();
+    //getCloset();
+    print(build);
 
     ///여기다가 배열에 추가하는 코드 넣기
     ///recommended_top = [];
