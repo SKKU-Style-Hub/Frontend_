@@ -7,6 +7,8 @@ import 'package:stylehub_flutter/MyCloset/MyRoom/MyRoom.dart';
 import 'package:stylehub_flutter/MyCloset/TagResult/infoTypes.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
+import 'package:stylehub_flutter/data/ProductClothing.dart';
+import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
 import 'package:tabbar/tabbar.dart';
 import 'RegisterPage.dart';
 import 'package:http/http.dart' as http;
@@ -80,16 +82,36 @@ class _MyClosetPageState extends State<MyClosetPage> {
   void getStyling(String clothBase64) async {
     //print(clothBase64);
     String url = "http://115.145.212.100:51122/post";
-    http.Response response = await http.post(url,
-        body: jsonEncode({
-          'top_k': 5,
-          'sex': 'WOMEN',
-          'category': '상의',
-          'image': clothBase64
-        }));
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+    };
+    Map<String, dynamic> data = {
+      'top_k': 15,
+      'sex': 'WOMEN',
+      'category': '상의',
+      'image': clothBase64
+    };
+    http.Response response = await http
+        .post(url, headers: headers, body: jsonEncode(data))
+        .timeout(Duration(seconds: 20));
     //print(response.body);
-    var result = jsonDecode(json.decode(response.body));
-    print(result.toString());
+    var result = json.decode(response.body);
+    print(result['Deep']['predictions_info'].length);
+    for (int i = 0; i < 15; i++) {
+      ProductClothingDatabase.insertProduct(ProductClothing(
+          request_num: 1,
+          encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
+          brand: result['Deep']['predictions_info'][i]['brand'],
+          detail_url: result['Deep']['predictions_info'][i]['detail_url'],
+          fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
+          item_url: result['Deep']['predictions_info'][i]['item_url'],
+          name: result['Deep']['predictions_info'][i]['name'],
+          price: result['Deep']['predictions_info'][i]['price'],
+          score: result['Deep']['predictions_info'][i]['score']));
+      //int total = await ProductClothingDatabase.totalProductNum();
+      //print(total);
+    }
   }
 
   Widget buildRow(Future<List<MyClothing>> list) {
@@ -99,6 +121,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
+                reverse: true,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
@@ -139,6 +162,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
 
   @override
   Widget build(BuildContext context) {
+    //ProductClothingDatabase.clearProduct();
     //MyClothingDatabase.deleteClothing(4);
     //MyClothingDatabase.clearCloset();
     return Scaffold(
@@ -193,7 +217,6 @@ class _MyClosetPageState extends State<MyClosetPage> {
                           Image.asset('assets/hanger.png'),
                           Container(
                               height: 250,
-                              //width: 400,
                               padding: EdgeInsets.only(top: 15),
                               child:
                                   buildRow(MyClothingDatabase.getMyCloset())),

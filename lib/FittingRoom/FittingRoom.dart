@@ -18,7 +18,6 @@ String selected_shoes = ""; //'assets/images/sample_shoes.png'
 String selected_onepiece = 'assets/images/sample_shoes.png';
 String selected_outer;
 String selected_bag;
-//아우터 배치는 어떤 식으로 해야될지 모르겠어서 안해놓음.
 
 //첫 화면 배치offset
 double top_offset_x = 113;
@@ -185,6 +184,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       if (codis[select_index - 1][0].top != null) {
         selected_top = codis[select_index - 1][0].top.imagepath;
         top_yesno = 1;
+        onepiece_yesno = 0;
         print("top");
       } else {
         top_yesno = 0;
@@ -192,6 +192,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       if (codis[select_index - 1][0].bottom != null) {
         selected_bottom = codis[select_index - 1][0].bottom.imagepath;
         bottom_yesno = 1;
+        onepiece_yesno = 0;
       } else {
         bottom_yesno = 0;
       }
@@ -210,8 +211,12 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       if (codis[select_index - 1][0].onepiece != null) {
         selected_onepiece = codis[select_index - 1][0].onepiece.imagepath;
         onepiece_yesno = 1;
+        top_yesno = 0;
+        bottom_yesno = 0;
       } else {
         onepiece_yesno = 0;
+        top_yesno = 1;
+        bottom_yesno = 1;
       }
       if (codis[select_index - 1][0].bag != null) {
         selected_bag = codis[select_index - 1][0].bag.imagepath;
@@ -451,6 +456,15 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             type: 1,
             selected_imagepath: selected_top,
             width_: 180,
+            //height_: 190,
+          ),
+          //화면에 원피스
+          draggablewidget(
+            offset_x: onepiece_offset_x,
+            offset_y: onepiece_offset_y,
+            type: 3,
+            selected_imagepath: selected_onepiece,
+            width_: 200,
             //height_: 190,
           ),
           //화면에 신발
@@ -702,13 +716,17 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   {
                     selected_top = codi_list[idx].top.imagepath;
                     top_yesno = 1;
+                    bottom_yesno = 1;
+                    onepiece_yesno = 0;
                   } else {
                     top_yesno = 0;
                   }
                   if (codi_list[idx].bottom != null) //하의
                   {
                     selected_bottom = codi_list[idx].bottom.imagepath;
+                    top_yesno = 1;
                     bottom_yesno = 1;
+                    onepiece_yesno = 0;
                   } else {
                     bottom_yesno = 0;
                   }
@@ -716,8 +734,12 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   {
                     selected_onepiece = codi_list[idx].onepiece.imagepath;
                     onepiece_yesno = 1;
+                    top_yesno = 0;
+                    bottom_yesno = 0;
                   } else {
                     onepiece_yesno = 0;
+                    top_yesno = 1;
+                    bottom_yesno = 1;
                   }
                   if (codi_list[idx].outer != null) //아우터
                   {
@@ -813,13 +835,17 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   {
                     selected_top = codi_list[idx].top.imagepath;
                     top_yesno = 1;
+                    bottom_yesno = 1;
+                    onepiece_yesno = 0;
                   } else {
                     top_yesno = 0;
                   }
                   if (codi_list[idx].bottom.imagepath != null) //하의
                   {
                     selected_bottom = codi_list[idx].bottom.imagepath;
+                    top_yesno = 1;
                     bottom_yesno = 1;
+                    onepiece_yesno = 0;
                   } else {
                     bottom_yesno = 0;
                   }
@@ -827,8 +853,12 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   {
                     selected_onepiece = codi_list[idx].onepiece.imagepath;
                     onepiece_yesno = 1;
+                    top_yesno = 0;
+                    bottom_yesno = 0;
                   } else {
                     onepiece_yesno = 0;
+                    top_yesno = 1;
+                    bottom_yesno = 1;
                   }
                   if (codi_list[idx].outer.imagepath != null) //아우터
                   {
@@ -956,12 +986,21 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   setState(() {
                     if (what_type == 1) //상의
                     {
+                      onepiece_yesno = 0;
+                      top_yesno = 1;
+                      bottom_yesno = 1;
                       selected_top = recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 2) //하의
                     {
+                      onepiece_yesno = 0;
+                      top_yesno = 1;
+                      bottom_yesno = 1;
                       selected_bottom = recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 3) //원피스
                     {
+                      onepiece_yesno = 1;
+                      top_yesno = 0;
+                      bottom_yesno = 0;
                       selected_onepiece =
                           recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 4) //하의
@@ -1001,12 +1040,21 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   setState(() {
                     if (what_type == 1) //상의
                     {
+                      onepiece_yesno = 0;
+                      top_yesno = 1;
+                      bottom_yesno = 1;
                       selected_top = recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 2) //하의
                     {
+                      onepiece_yesno = 0;
+                      top_yesno = 1;
+                      bottom_yesno = 1;
                       selected_bottom = recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 3) //원피스
                     {
+                      onepiece_yesno = 1;
+                      top_yesno = 0;
+                      bottom_yesno = 0;
                       selected_onepiece =
                           recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 4) //하의
