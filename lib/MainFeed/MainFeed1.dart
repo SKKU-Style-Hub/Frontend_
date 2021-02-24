@@ -8,21 +8,6 @@ class MainFeed1 extends StatefulWidget {
 }
 
 class _MainFeed1State extends State<MainFeed1> {
-  Widget bottomTab(int index) {
-    if (index == 0) {
-      return Container(
-          padding: EdgeInsets.only(bottom: 10),
-          child: Text(
-            '옆으로 스크롤하여 추천된 코디를 확인해보세요.',
-            style: kTitleTextStyle,
-          ));
-    } else {
-      return Container(
-          padding: EdgeInsets.only(bottom: 10),
-          child: Image.asset('assets/images/bottomlist.png'));
-    }
-  }
-
   Card StylingCard() {
     List<Widget> pageViewChildren = [
       Container(child: Image.asset('assets/images/sample_knit.png')),
@@ -31,6 +16,7 @@ class _MainFeed1State extends State<MainFeed1> {
     ];
     int currentIndexPage = 0;
     final controller = PageController(initialPage: 0);
+    final bottomController = PageController(initialPage: 0);
 
     return Card(
       margin: EdgeInsets.all(20),
@@ -82,6 +68,7 @@ class _MainFeed1State extends State<MainFeed1> {
               ],
               onPageChanged: (int index) {
                 setState(() {
+                  bottomController.jumpToPage(index);
                   currentIndexPage = index;
                   print(currentIndexPage);
                 });
@@ -123,7 +110,30 @@ class _MainFeed1State extends State<MainFeed1> {
             color: Colors.grey,
             thickness: 1,
           ),
-          bottomTab(1)
+          Container(
+            height: 100,
+            width: 450,
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: bottomController,
+              children: [
+                Container(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Center(
+                      child: Text(
+                        '옆으로 스크롤하여 추천된 코디를 확인해보세요.',
+                        style: kTitleTextStyle,
+                      ),
+                    )),
+                Container(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Image.asset('assets/images/bottomlist1.png')),
+                Container(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Image.asset('assets/images/bottomlist1.png')),
+              ],
+            ),
+          )
         ],
       ),
     );
@@ -133,7 +143,15 @@ class _MainFeed1State extends State<MainFeed1> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [StylingCard()],
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                StylingCard(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
