@@ -35,23 +35,23 @@ class _RequestMainState extends State<RequestMain> {
             child: ListView(
               children: [
                 MyCodiRequests(
-                  explanation: "이 상의 아래에 무엇을\n입어야 할까요 ㅠㅠ 도와주세요",
+                  explanation: "이 블라우스 아래에 무엇을\n입어야 할까요 ㅠㅠ 도와주세요",
                   year: 2020,
                   month: 12,
                   day: 27,
                   answer_num: 2,
                   heart_num: 7,
-                  imagepath: "assets/request_codi/received_codi1_top.png",
+                  imagepath: "assets/request_codi/codi3.png",
                   index: 1,
                 ),
                 MyCodiRequests(
-                  explanation: "니트에 어울리는\n바지 추천해주세요!!",
+                  explanation: "이런 색 와이드 팬츠에 어울리는\n상의 추천해주세요!!",
                   year: 2020,
                   month: 11,
                   day: 3,
                   answer_num: 1,
                   heart_num: 5,
-                  imagepath: "assets/images/sample_knit.png",
+                  imagepath: "assets/request_codi/codi2.png",
                   index: 2,
                 ),
                 MyCodiRequests(
@@ -61,7 +61,7 @@ class _RequestMainState extends State<RequestMain> {
                   day: 3,
                   answer_num: 1,
                   heart_num: 10,
-                  imagepath: "assets/images/top2.png",
+                  imagepath: "assets/request_codi/codi1.png",
                   index: 3,
                 ),
               ],

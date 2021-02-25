@@ -94,23 +94,35 @@ class _MyClosetPageState extends State<MyClosetPage> {
     };
     http.Response response = await http
         .post(url, headers: headers, body: jsonEncode(data))
-        .timeout(Duration(seconds: 20));
+        .timeout(Duration(seconds: 180));
     //print(response.body);
     var result = json.decode(response.body);
-    print(result['Deep']['predictions_info'].length);
+    //print(result['Deep']['predictions_info'].length);
     for (int i = 0; i < 15; i++) {
+      // ProductClothingDatabase.insertProduct(ProductClothing(
+      //     request_num: 23,
+      //     encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
+      //     brand: result['Deep']['predictions_info'][i]['brand'],
+      //     detail_url: result['Deep']['predictions_info'][i]['detail_url'],
+      //     fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
+      //     item_url: result['Deep']['predictions_info'][i]['item_url'],
+      //     name: result['Deep']['predictions_info'][i]['name'],
+      //     price: result['Deep']['predictions_info'][i]['price'],
+      //     score: result['Deep']['predictions_info'][i]['score']));
+      // int total = await ProductClothingDatabase.totalProductNum();
+      // print(total);
       ProductClothingDatabase.insertProduct(ProductClothing(
-          request_num: 1,
-          encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
-          brand: result['Deep']['predictions_info'][i]['brand'],
-          detail_url: result['Deep']['predictions_info'][i]['detail_url'],
-          fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
-          item_url: result['Deep']['predictions_info'][i]['item_url'],
-          name: result['Deep']['predictions_info'][i]['name'],
-          price: result['Deep']['predictions_info'][i]['price'],
-          score: result['Deep']['predictions_info'][i]['score']));
-      //int total = await ProductClothingDatabase.totalProductNum();
-      //print(total);
+        request_num: 100,
+        encoded_img: result['DeepGraph']['topk'][i]['encoded_img'],
+        brand: result['DeepGraph']['topk'][i]['brand'],
+        detail_url: result['DeepGraph']['topk'][i]['detail_url'],
+        fashion_url: result['DeepGraph']['topk'][i]['fashion_url'],
+        item_url: result['DeepGraph']['topk'][i]['item_url'],
+        name: result['DeepGraph']['topk'][i]['name'],
+        price: result['DeepGraph']['topk'][i]['price'].toString(),
+      ));
+      int total = await ProductClothingDatabase.totalProductNum();
+      print(total);
     }
   }
 

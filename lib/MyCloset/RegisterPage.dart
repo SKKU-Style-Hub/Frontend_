@@ -48,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final response = await http.post(url,
         headers: <String, String>{
           "Content-Type": "application/json",
-          "x-api-key": "djCaMq4KpsOh15lxL8gu29Pro7BIybYeFzADtE6Z",
+          "x-api-key": "bWqzpLE4Y36vBugQ20ceSkZAGMDdU9xFOyrRnTo1",
           "accept-language": "ko"
         },
         body: jsonEncode({
