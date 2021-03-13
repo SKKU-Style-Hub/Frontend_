@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:speech_bubble/speech_bubble.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Codi_click {
   //코디화면에서 클릭했는지 안 클릭했는지를 나타내는 class
@@ -72,11 +73,21 @@ Cloth_sbw codi2_swb = Cloth_sbw(
     wish_name: "asdfas",
     wish_path: 'assets/mainfeed_person/codi1_outer_wish.jpg');
 
+bool product_clicked = false;
+
 class _MainFeed1State extends State<MainFeed1> {
   void initState() {
     codi1.outer = 1;
     codi2.outer = 1;
     super.initState();
+  }
+
+  void goToUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget swb_info(Cloth_sbw tmp) {
@@ -308,26 +319,27 @@ class _MainFeed1State extends State<MainFeed1> {
                     Image.asset('assets/images/friend4_circle.png'),
                     Text(
                       'Yeji',
-                      style: kHashtagTextStyle,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(right: 15),
-                child: Image.asset('assets/images/icon_styling.png'),
-              )
             ],
           ),
           Container(
-            height: 350,
+            height: 330,
             width: 300,
             child: PageView(
               //physics: BouncingScrollPhysics(),
               controller: controller,
               children: [
                 //첫번째 페이지
-                Container(child: Image.asset('assets/images/sample_knit.png')),
+                Container(
+                    child: Image.asset(
+                  'assets/images/sample_knit.png',
+                  //fit: BoxFit.fill,
+                )),
                 //첫번째코디
                 Container(
                   child: Stack(
@@ -365,6 +377,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi1.bag = 0;
                               codi1.bottom = 0;
                               codi1.shoes = 0;
@@ -401,29 +414,35 @@ class _MainFeed1State extends State<MainFeed1> {
                             if (codi1.outer == 1) {
                               return InkWell(
                                   onTap: () {},
-                                  child: SpeechBubble(
-                                    color: Colors.black,
-                                    nipLocation: NipLocation.BOTTOM,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text(
-                                          "kuho",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      goToUrl(
+                                          "https://www.ssfshop.com/kuho-plus/GM0021020140940/good?dspCtgryNo=SFMA41A07&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA41A07\$set:1\$\$dpos:1");
+                                    },
+                                    child: SpeechBubble(
+                                      color: Colors.black,
+                                      nipLocation: NipLocation.BOTTOM,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            "kuho",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          "389,000원",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold,
+                                          Text(
+                                            "389,000원",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ));
                             } else {
@@ -459,6 +478,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi1.bag = 0;
                               codi1.bottom = 0;
                               codi1.outer = 0;
@@ -549,6 +569,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi1.bag = 0;
                               codi1.outer = 0;
                               codi1.shoes = 0;
@@ -581,7 +602,10 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: Builder(builder: (context) {
                           if (codi1.bottom == 1) {
                             return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  goToUrl(
+                                      "https://www.ssfshop.com/8Seconds/GM0020122404426/good?dspCtgryNo=SFMA41A05&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA41A05\$ref_gtp:GNRL_CTGRY\$set:1\$\$dpos:23");
+                                },
                                 child: SpeechBubble(
                                   color: Colors.black,
                                   nipLocation: NipLocation.BOTTOM,
@@ -638,6 +662,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi1.bottom = 0;
                               codi1.outer = 0;
                               codi1.shoes = 0;
@@ -728,6 +753,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi1.bag = 0;
                               codi1.bottom = 0;
                               codi1.outer = 0;
@@ -812,6 +838,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi2.bag = 0;
                               codi2.bottom = 0;
                               codi2.shoes = 0;
@@ -886,6 +913,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi2.bag = 0;
                               codi2.bottom = 0;
                               codi2.outer = 0;
@@ -957,6 +985,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi2.bag = 0;
                               codi2.outer = 0;
                               codi2.shoes = 0;
@@ -1027,6 +1056,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi2.bottom = 0;
                               codi2.outer = 0;
                               codi2.shoes = 0;
@@ -1098,6 +1128,7 @@ class _MainFeed1State extends State<MainFeed1> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
+                              product_clicked = true;
                               codi2.bag = 0;
                               codi2.bottom = 0;
                               codi2.outer = 0;
@@ -1168,6 +1199,7 @@ class _MainFeed1State extends State<MainFeed1> {
               ],
               onPageChanged: (int index) {
                 setState(() {
+                  product_clicked = false;
                   bottomController.jumpToPage(index);
                   currentIndexPage = index;
                   print(currentIndexPage);
@@ -1186,11 +1218,11 @@ class _MainFeed1State extends State<MainFeed1> {
                 child: Image.asset(
                   'assets/images/heart_btn.png',
                 ),
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 15),
               ),
               Container(
                 child: Image.asset('assets/images/comments_btn.png'),
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
               )
             ],
           ),
@@ -1226,15 +1258,89 @@ class _MainFeed1State extends State<MainFeed1> {
                       ),
                     )),
                 //첫번째코디 밑 사진
-                Container(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: swb_info(codi1_swb),
-                ),
+                product_clicked
+                    ? Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: swb_info(codi1_swb),
+                      )
+                    : Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Styling Thanks to',
+                              style: TextStyle(
+                                  fontFamily: 'GreatVibes',
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/mainfeed_person/codi1_top_wish.jpg'),
+                                  radius: 24,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'YesongJung',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
                 //두번째코디 밑 사진
-                Container(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: swb_info(codi2_swb),
-                ),
+                product_clicked
+                    ? Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: swb_info(codi2_swb),
+                      )
+                    : Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Styling Thanks to',
+                              style: TextStyle(
+                                  fontFamily: 'GreatVibes',
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      'assets/mainfeed_person/codi1_outer_wish.jpg'),
+                                  radius: 24,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'JihyeJung',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
               ],
             ),
           )
@@ -1245,6 +1351,7 @@ class _MainFeed1State extends State<MainFeed1> {
 
   @override
   Widget build(BuildContext context) {
+    final spareController = PageController(initialPage: 0);
     return Scaffold(
       body: Column(
         children: [
@@ -1252,6 +1359,79 @@ class _MainFeed1State extends State<MainFeed1> {
             child: ListView(
               children: [
                 StylingCard(),
+                Card(
+                  margin: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadowColor: Colors.black,
+                  elevation: 7,
+                  child: GestureDetector(
+                    child: Image.asset("assets/images/ad1.png"),
+                    onTap: () {
+                      goToUrl("https://codibook.net/codi/7816381");
+                    },
+                  ),
+                ),
+                Card(
+                  margin: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadowColor: Colors.black,
+                  elevation: 7,
+                  child: Image.asset("assets/images/feed1.png"),
+                ),
+                Card(
+                  margin: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadowColor: Colors.black,
+                  elevation: 7,
+                  child: Image.asset("assets/images/feed2.png"),
+                ),
+                Card(
+                  margin: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadowColor: Colors.black,
+                  elevation: 7,
+                  child: GestureDetector(
+                    child: Image.asset("assets/images/ad2.png"),
+                    onTap: () {
+                      goToUrl("https://codibook.net/codi/7816381");
+                    },
+                  ),
+                ),
+                Card(
+                  margin: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadowColor: Colors.black,
+                  elevation: 7,
+                  child: Container(
+                    height: 710,
+                    child: PageView(
+                      controller: spareController,
+                      children: [
+                        Image.asset("assets/images/style1.jpg"),
+                        Image.asset("assets/images/style2.jpg")
+                      ],
+                    ),
+                  ),
+                ),
+                Card(
+                  margin: EdgeInsets.all(20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  shadowColor: Colors.black,
+                  elevation: 7,
+                  child: Image.asset("assets/images/feed3.png"),
+                ),
               ],
             ),
           ),

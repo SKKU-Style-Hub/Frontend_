@@ -31,10 +31,10 @@ double bottom_offset_x = 113;
 double bottom_offset_y = 155;
 double shoes_offset_x = 280;
 double shoes_offset_y = 280;
-double onepiece_offset_x = 113;
-double onepiece_offset_y = 30;
+double onepiece_offset_x = 105;
+double onepiece_offset_y = 40;
 double outer_offset_x = -10;
-double outer_offset_y = 30;
+double outer_offset_y = 50;
 double bag_offset_x = 280;
 double bag_offset_y = 150;
 
@@ -50,7 +50,7 @@ int select_index = 0; //0은 내옷장, 1은 코디들을 의미
 
 double swipeStartY;
 String swipeDirection;
-double bottomsheet_size = 200;
+double bottomsheet_size = 150;
 Axis bottomsheet_axis = Axis.horizontal;
 
 List<dynamic> recommended_top = [];
@@ -76,16 +76,25 @@ List<dynamic> codis = [];
 
 //코디 정보를 가지고 있느 객체
 class Cloth_info {
+  int center_yesno; //이 옷을 중심으로 만들어진 코디인가요? 1 아니면 0
   String imagepath;
   int price;
   String brandname;
   String clothname;
+  String detail_url;
   Cloth_info(
-      {String brandname, String clothname, String imagepath, int price}) {
+      {String brandname,
+      String clothname,
+      String imagepath,
+      int price,
+      String detail_url,
+      int center_yesno}) {
     this.brandname = brandname;
     this.clothname = clothname;
     this.imagepath = imagepath;
     this.price = price;
+    this.detail_url = detail_url;
+    this.center_yesno = center_yesno;
   }
 }
 
@@ -186,6 +195,9 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
     //select_index = 0;
 
     select_index = widget.selected_index_bycodi; //1 or 2 or 3
+
+    //시작
+
     if (select_index == 0) //내 옷장
     {
     } else if (select_index >= 1) //코디1
@@ -194,45 +206,45 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         selected_top = codis[select_index - 1][0].top.imagepath;
         top_yesno = 1;
         onepiece_yesno = 0;
-        print("top");
+        selected_bottom = "";
       } else {
         top_yesno = 0;
       }
-      if (codis[select_index - 1][0].bottom != null) {
-        selected_bottom = codis[select_index - 1][0].bottom.imagepath;
-        bottom_yesno = 1;
-        onepiece_yesno = 0;
-      } else {
-        bottom_yesno = 0;
-      }
-      if (codis[select_index - 1][0].shoes != null) {
-        selected_shoes = codis[select_index - 1][0].shoes.imagepath;
-        shoes_yesno = 1;
-      } else {
-        shoes_yesno = 0;
-      }
-      if (codis[select_index - 1][0].outer != null) {
-        selected_outer = codis[select_index - 1][0].outer.imagepath;
-        outer_yesno = 1;
-      } else {
-        outer_yesno = 0;
-      }
-      if (codis[select_index - 1][0].onepiece != null) {
-        selected_onepiece = codis[select_index - 1][0].onepiece.imagepath;
-        onepiece_yesno = 1;
-        top_yesno = 0;
-        bottom_yesno = 0;
-      } else {
-        onepiece_yesno = 0;
-        top_yesno = 1;
-        bottom_yesno = 1;
-      }
-      if (codis[select_index - 1][0].bag != null) {
-        selected_bag = codis[select_index - 1][0].bag.imagepath;
-        bag_yesno = 1;
-      } else {
-        bag_yesno = 0;
-      }
+      // if (codis[select_index - 1][0].bottom != null) {
+      //   selected_bottom = codis[select_index - 1][0].bottom.imagepath;
+      //   bottom_yesno = 1;
+      //   onepiece_yesno = 0;
+      // } else {
+      //   bottom_yesno = 0;
+      // }
+      // if (codis[select_index - 1][0].shoes != null) {
+      //   selected_shoes = codis[select_index - 1][0].shoes.imagepath;
+      //   shoes_yesno = 1;
+      // } else {
+      //   shoes_yesno = 0;
+      // }
+      // if (codis[select_index - 1][0].outer != null) {
+      //   selected_outer = codis[select_index - 1][0].outer.imagepath;
+      //   outer_yesno = 1;
+      // } else {
+      //   outer_yesno = 0;
+      // }
+      // if (codis[select_index - 1][0].onepiece != null) {
+      //   selected_onepiece = codis[select_index - 1][0].onepiece.imagepath;
+      //   onepiece_yesno = 1;
+      //   top_yesno = 0;
+      //   bottom_yesno = 0;
+      // } else {
+      //   onepiece_yesno = 0;
+      //   top_yesno = 1;
+      //   bottom_yesno = 1;
+      // }
+      // if (codis[select_index - 1][0].bag != null) {
+      //   selected_bag = codis[select_index - 1][0].bag.imagepath;
+      //   bag_yesno = 1;
+      // } else {
+      //   bag_yesno = 0;
+      // }
     }
     _dragToExpandController2 = DragToExpandController();
 
@@ -250,10 +262,11 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
     mycloset_pants = await MyClothingDatabase.getBottom();
     mycloset_onepiece = await MyClothingDatabase.getOnePiece();
     mycloset_outer = await MyClothingDatabase.getOuter();
-
-    selected_top = mycloset_top[0].clothingImgBase64;
-    selected_bottom = mycloset_pants[2].clothingImgBase64;
-    //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
+    if (select_index == 0) {
+      selected_top = mycloset_top[0].clothingImgBase64;
+      selected_bottom = mycloset_pants[2].clothingImgBase64;
+      //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
+    }
   }
 
   void getProduct() async {
@@ -282,7 +295,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
     print(build);
 
     ///여기다가 배열에 추가하는 코드 넣기
-    ///recommended_top = [];
+    recommended_top = [];
     recommended_pants = [];
     recommended_shoes = [];
     recommended_outer = [];
@@ -351,73 +364,106 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
 
     //코디 배열 만들기
     codi1 = [];
+    codi2 = [];
     codi3 = [];
     Codi_clothes codi1_1 = Codi_clothes(
         top: Cloth_info(
-            imagepath: "assets/request_codi/received_codi1_top.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+          imagepath: "assets/request_codi/received_codi1_top.png",
+          price: 59000,
+          brandname: "ZARA",
+          clothname: "Grey Cardigan",
+          center_yesno: 1,
+        ),
         outer: Cloth_info(
             imagepath: "assets/request_codi/received_codi1_outer.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+            price: 389000,
+            brandname: "kuho plus",
+            clothname: "21SS Signature Mac Trench Coat - Beige",
+            detail_url:
+                "https://www.ssfshop.com/kuho-plus/GM0021020140940/good?dspCtgryNo=SFMA41A07&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA41A07\$set:1\$\$dpos:1"),
         bottom: Cloth_info(
             imagepath: "assets/request_codi/received_codi1_bottom.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+            price: 29900,
+            brandname: "8Seconds",
+            clothname: "21SS 베이지 울 라이크 플리츠 롱 스커트",
+            detail_url:
+                "https://www.ssfshop.com/8Seconds/GM0020122404426/good?dspCtgryNo=SFMA41A05&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA41A05\$ref_gtp:GNRL_CTGRY\$set:1\$\$dpos:23"),
         shoes: Cloth_info(
             imagepath: "assets/request_codi/received_codi1_shoes.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+            price: 133200,
+            brandname: "Rachel Cox",
+            clothname: "Flat_Cecile R2338p_2cm",
+            detail_url:
+                "https://www.ssfshop.com/Rachel-Cox/GPVC21012131378/good?dspCtgryNo=SFMA46A12&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA46A12\$set:1\$\$dpos:32"),
         total_path: "assets/request_codi/received_codi1_total.png",
         bag: Cloth_info(
             imagepath: "assets/request_codi/received_codi1_bag.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"));
+            price: 565250,
+            brandname: "HEREU",
+            clothname: "21SS Leather Handle Shoulder Bag - Khaki",
+            detail_url:
+                "https://www.ssfshop.com/HEREU/GM0020122909035/good?dspCtgryNo=SFMA46A09&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA46A09\$ref_gtp:GNRL_CTGRY\$set:4\$\$dpos:31"));
     Codi_clothes codi1_2 = Codi_clothes(
         top: Cloth_info(
-            imagepath: "assets/request_codi/received_codi2_top.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+          imagepath: "assets/request_codi/received_codi2_top.png",
+          price: 59000,
+          brandname: "ZARA",
+          clothname: "Grey Cardigan",
+          center_yesno: 1,
+        ),
         outer: Cloth_info(
             imagepath: "assets/request_codi/received_codi2_outer.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+            price: 485100,
+            brandname: "Beanpole Ladies",
+            clothname: "21SS 카키 체크 더블 버튼 점퍼",
+            detail_url:
+                "https://www.ssfshop.com/Beanpole-Ladies/GM0021012029715/good?dspCtgryNo=SFMA41A07&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA41A07\$ref_gtp:GNRL_CTGRY\$set:1\$\$dpos:5"),
         bottom: Cloth_info(
             imagepath: "assets/request_codi/received_codi2_bottom.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+            price: 13970,
+            brandname: "8Seconds",
+            clothname: "20FW 네이비 절개 포켓 포인트 스커트",
+            detail_url:
+                "https://www.ssfshop.com/8Seconds/GM0020070397919/good?dspCtgryNo=SFMA41A05A02&brandShopNo=&brndShopId=&keyword=&leftBrandNM=&utag=ref_cat:SFMA41A05A02\$set:1\$\$dpos:23"),
         shoes: Cloth_info(
             imagepath: "assets/request_codi/received_codi2_shoes.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+            price: 378000,
+            brandname: "Athe Vanessabruno",
+            clothname: "블랙 소가죽 워커 부츠(굽:4.5cm)(VKSO0F989BK)",
+            detail_url:
+                "https://www.ssfshop.com/Athe-Vanessabruno/GPCS20091804420/good?dspCtgryNo=SFMA46A12&brandShopNo=&brndShopId=&keyword=&leftBrandNM"),
         total_path: "assets/request_codi/received_codi2_total.png",
         bag: Cloth_info(
             imagepath: "assets/request_codi/received_codi2_bag.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"));
+            price: 103200,
+            brandname: "Beanpole Accessory",
+            clothname: "21SS 하루 핸드폰 미니백 - Black",
+            detail_url:
+                "https://www.ssfshop.com/Beanpole-Accessory/GM0020121089449/good?utag=ref_cat:SFMA46A09\$ref_gtp:GNRL_CTGRY\$set:1\$\$dpos:15\$ref_prd:GM0020121089448\$otherColor:5&dspCtgryNo=SFMA46A09A02&brandShopNo=&brndShopId="));
     codi1.add(codi1_1);
     codi1.add(codi1_2);
+
+    Codi_clothes codi2_1 = Codi_clothes(
+      top: Cloth_info(
+          imagepath: "assets/images/sample_knit.png",
+          price: 147250,
+          brandname: "MAISON KITSUNE",
+          clothname:
+              "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+      bottom: Cloth_info(
+          imagepath: "assets/images/sample_pants.png",
+          price: 147250,
+          brandname: "MAISON KITSUNE",
+          clothname:
+              "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+      shoes: Cloth_info(
+          imagepath: "assets/images/sample_shoes.png",
+          price: 147250,
+          brandname: "MAISON KITSUNE",
+          clothname:
+              "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+    );
+    codi2.add(codi2_1);
 
     Codi_clothes codi3_1 = Codi_clothes(
       top: Cloth_info(
@@ -427,7 +473,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
           clothname:
               "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
       bottom: Cloth_info(
-          imagepath: "assets/images/pants3.png",
+          imagepath: "assets/images/longskirt1.png",
           price: 147250,
           brandname: "MAISON KITSUNE",
           clothname:
@@ -441,7 +487,8 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
     );
     codi3.add(codi3_1);
 
-    codis = [codi1_ai, codi2_ai, codi3];
+//여기가 문제
+    codis = [codi1, codi2, codi3];
 
     //Scaffold 시작
     return Scaffold(
@@ -521,7 +568,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                   });
                 },
                 onVerticalDragEnd: (details) {
-                  if (swipeDirection == "Down" && bottomsheet_size == 200) {
+                  if (swipeDirection == "Down" && bottomsheet_size == 150) {
                     print("한번더 내려가게");
                     _dragToExpandController2.toggle();
                   }
@@ -529,7 +576,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                     bottomsheet_size = 350;
                     bottomsheet_axis = Axis.vertical;
                   } else if (swipeDirection == "Down") {
-                    bottomsheet_size = 200;
+                    bottomsheet_size = 150;
                     bottomsheet_axis = Axis.horizontal;
                   }
                 },
@@ -561,7 +608,8 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                             )),
                       ),
                       draggableWhenOpened: Container(
-                        height: 100,
+                        //여기 높이
+                        height: 80,
                         width: 10,
                         color: Colors.transparent,
                         child: Container(
@@ -701,7 +749,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       },
       onVerticalDragEnd: (details) {
         setState(() {
-          if (swipeDirection == "Down" && bottomsheet_size == 200) {
+          if (swipeDirection == "Down" && bottomsheet_size == 150) {
             print("한번더 내려가게");
             _dragToExpandController2.toggle();
           }
@@ -709,7 +757,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             bottomsheet_size = 350;
             bottomsheet_axis = Axis.vertical;
           } else if (swipeDirection == "Down") {
-            bottomsheet_size = 200;
+            bottomsheet_size = 150;
             bottomsheet_axis = Axis.horizontal;
           }
         });
@@ -727,9 +775,10 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
           scrollDirection: bottomsheet_axis,
           children: List.generate(recommended_list.length, (idx) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
               child: InkWell(
                 child: Container(
+                  width: 80,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -882,12 +931,12 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       },
       onVerticalDragEnd: (details) {
         setState(() {
-          if (swipeDirection == "Down" && bottomsheet_size == 200) {
+          if (swipeDirection == "Down" && bottomsheet_size == 150) {
             print("한번더 내려가게");
             _dragToExpandController2.toggle();
           }
           if (swipeDirection == "Down") {
-            bottomsheet_size = 200;
+            bottomsheet_size = 150;
             bottomsheet_axis = Axis.horizontal;
             print("Down");
           }
@@ -909,10 +958,11 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         scrollDirection: bottomsheet_axis,
         children: List.generate(codi_list.length, (idx) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
             child: InkWell(
               child: Container(
                 height: 100,
+                width: 90,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -980,27 +1030,33 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                     context: context,
                     builder: (BuildContext context) {
                       List tmp = [];
-                      if (codi_list[idx].top != null) //상의
+                      if (codi_list[idx].top != null &&
+                          codi_list[idx].top.center_yesno != 1) //상의
                       {
                         tmp.add(codi_list[idx].top);
                       }
-                      if (codi_list[idx].bottom != null) //하의
+                      if (codi_list[idx].bottom != null &&
+                          codi_list[idx].bottom.center_yesno != 1) //하의
                       {
                         tmp.add(codi_list[idx].bottom);
                       }
-                      if (codi_list[idx].onepiece != null) //원피스
+                      if (codi_list[idx].onepiece != null &&
+                          codi_list[idx].onepiece.center_yesno != 1) //원피스
                       {
                         tmp.add(codi_list[idx].onepiece);
                       }
-                      if (codi_list[idx].outer != null) //아우터
+                      if (codi_list[idx].outer != null &&
+                          codi_list[idx].outer.center_yesno != 1) //아우터
                       {
                         tmp.add(codi_list[idx].outer);
                       }
-                      if (codi_list[idx].shoes != null) //신발
+                      if (codi_list[idx].shoes != null &&
+                          codi_list[idx].shoes.center_yesno != 1) //신발
                       {
                         tmp.add(codi_list[idx].shoes);
                       }
-                      if (codi_list[idx].bag != null) //가방
+                      if (codi_list[idx].bag != null &&
+                          codi_list[idx].bag.center_yesno != 1) //가방
                       {
                         tmp.add(codi_list[idx].bag);
                       }
@@ -1091,27 +1147,33 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                     context: context,
                     builder: (BuildContext context) {
                       List tmp = [];
-                      if (codi_list[idx].top != null) //상의
+                      if (codi_list[idx].top != null &&
+                          codi_list[idx].top.center_yesno != 1) //상의
                       {
                         tmp.add(codi_list[idx].top);
                       }
-                      if (codi_list[idx].bottom != null) //하의
+                      if (codi_list[idx].bottom != null &&
+                          codi_list[idx].bottom.center_yesno != 1) //하의
                       {
                         tmp.add(codi_list[idx].bottom);
                       }
-                      if (codi_list[idx].onepiece != null) //원피스
+                      if (codi_list[idx].onepiece != null &&
+                          codi_list[idx].onepiece.center_yesno != 1) //원피스
                       {
                         tmp.add(codi_list[idx].onepiece);
                       }
-                      if (codi_list[idx].outer != null) //아우터
+                      if (codi_list[idx].outer != null &&
+                          codi_list[idx].outer.center_yesno != 1) //아우터
                       {
                         tmp.add(codi_list[idx].outer);
                       }
-                      if (codi_list[idx].shoes != null) //신발
+                      if (codi_list[idx].shoes != null &&
+                          codi_list[idx].shoes.center_yesno != 1) //신발
                       {
                         tmp.add(codi_list[idx].shoes);
                       }
-                      if (codi_list[idx].bag != null) //가방
+                      if (codi_list[idx].bag != null &&
+                          codi_list[idx].bag.center_yesno != 1) //가방
                       {
                         tmp.add(codi_list[idx].bag);
                       }
@@ -1144,7 +1206,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
       },
       onVerticalDragEnd: (details) {
         setState(() {
-          if (swipeDirection == "Down" && bottomsheet_size == 200) {
+          if (swipeDirection == "Down" && bottomsheet_size == 150) {
             print("한번더 내려가게");
             _dragToExpandController2.toggle();
           }
@@ -1152,7 +1214,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             bottomsheet_size = 350;
             bottomsheet_axis = Axis.vertical;
           } else if (swipeDirection == "Down") {
-            bottomsheet_size = 200;
+            bottomsheet_size = 150;
             bottomsheet_axis = Axis.horizontal;
           }
         });
@@ -1169,9 +1231,10 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
           scrollDirection: bottomsheet_axis,
           children: List.generate(recommended_list.length, (idx) {
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
               child: InkWell(
                 child: Container(
+                  width: 80,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -1259,8 +1322,9 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                       bottom_yesno = 0;
                       selected_onepiece =
                           recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 4) //하의
+                    } else if (what_type == 4) //아우터
                     {
+                      outer_yesno = 1;
                       selected_outer = recommended_list[idx].clothingImgBase64;
                     } else if (what_type == 5) //신발
                     {
@@ -1335,6 +1399,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
   //내옷장 관련 하위탭
   Widget tabWidget_mycloset({List intab_widgets}) {
     return Container(
+        //두번째 높이
         height: 200,
         color: Colors.transparent,
         child: DefaultTabController(
@@ -1409,18 +1474,45 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         left: offset_x,
         top: offset_y,
         child: Draggable(
-          child: SizedBox(
-            width: width_,
-            child: selected_imagepath.contains('.')
-                ? Image.asset(selected_imagepath,
-                    width: width_, height: height_, fit: BoxFit.fitWidth)
-                : Image.memory(
-                    base64Decode(selected_imagepath),
-                    width: width_,
-                    height: height_,
-                    fit: BoxFit.fitWidth,
-                    //colorBlendMode: BlendMode.srcOut,
-                  ),
+          child: GestureDetector(
+            onDoubleTap: () {
+              print("double tap");
+              setState(() {
+                switch (type) {
+                  case 1:
+                    selected_top = "";
+                    break;
+                  case 2:
+                    selected_bottom = "";
+                    break;
+                  case 3:
+                    selected_onepiece = "";
+                    break;
+                  case 4:
+                    selected_outer = "";
+                    break;
+                  case 5:
+                    selected_shoes = "";
+                    break;
+                  case 6:
+                    selected_bag = "";
+                    break;
+                }
+              });
+            },
+            child: SizedBox(
+              width: width_,
+              child: selected_imagepath.contains('.')
+                  ? Image.asset(selected_imagepath,
+                      width: width_, height: height_, fit: BoxFit.fitWidth)
+                  : Image.memory(
+                      base64Decode(selected_imagepath),
+                      width: width_,
+                      height: height_,
+                      fit: BoxFit.fitWidth,
+                      //colorBlendMode: BlendMode.srcOut,
+                    ),
+            ),
           ),
           feedback: selected_imagepath.contains('.')
               ? Image.asset(selected_imagepath,
@@ -1474,8 +1566,9 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
         child: Container(
           alignment: Alignment.center,
           margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
-          height: 100,
-          width: 100,
+          //높이
+          height: 80,
+          width: 80,
           decoration: select_index == index
               ? BoxDecoration(
                   color: Colors.transparent,
@@ -1492,8 +1585,9 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
             children: [
               imagepath != null
                   ? SizedBox(
-                      height: 60,
-                      width: 60,
+                      //여기 높이
+                      height: 35,
+                      width: 35,
                       child: Image.asset(
                         imagepath,
                       ),
@@ -1502,12 +1596,12 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
               Text(name,
                   style: select_index == index
                       ? TextStyle(
-                          fontSize: 15,
+                          fontSize: 13,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )
                       : TextStyle(
-                          fontSize: 15,
+                          fontSize: 13,
                           color: Colors.grey[600],
                           fontWeight: FontWeight.bold,
                         )),

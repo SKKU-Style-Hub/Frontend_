@@ -34,7 +34,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
           return 230;
           break;
         case '노멀':
-          return 190;
+          return 200;
         case '크롭':
           return 170;
         // 마저 끝내기
@@ -79,8 +79,8 @@ class _MyClosetPageState extends State<MyClosetPage> {
     return 200;
   }
 
-  void getStyling(String clothBase64) async {
-    //print(clothBase64);
+  Future<List<ProductClothing>> getStyling(String clothBase64) async {
+    print("request sent");
     String url = "http://115.145.212.100:51122/post";
     Map<String, String> headers = {
       'Content-type': 'application/json',
@@ -97,43 +97,107 @@ class _MyClosetPageState extends State<MyClosetPage> {
         .timeout(Duration(seconds: 180));
     //print(response.body);
     var result = json.decode(response.body);
-    //print(result['Deep']['predictions_info'].length);
+    print(result['Deep']['predictions_info'].toString());
     for (int i = 0; i < 15; i++) {
-      // ProductClothingDatabase.insertProduct(ProductClothing(
-      //     request_num: 23,
-      //     encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
-      //     brand: result['Deep']['predictions_info'][i]['brand'],
-      //     detail_url: result['Deep']['predictions_info'][i]['detail_url'],
-      //     fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
-      //     item_url: result['Deep']['predictions_info'][i]['item_url'],
-      //     name: result['Deep']['predictions_info'][i]['name'],
-      //     price: result['Deep']['predictions_info'][i]['price'],
-      //     score: result['Deep']['predictions_info'][i]['score']));
-      // int total = await ProductClothingDatabase.totalProductNum();
-      // print(total);
       ProductClothingDatabase.insertProduct(ProductClothing(
-        request_num: 100,
-        encoded_img: result['DeepGraph']['topk'][i]['encoded_img'],
-        brand: result['DeepGraph']['topk'][i]['brand'],
-        detail_url: result['DeepGraph']['topk'][i]['detail_url'],
-        fashion_url: result['DeepGraph']['topk'][i]['fashion_url'],
-        item_url: result['DeepGraph']['topk'][i]['item_url'],
-        name: result['DeepGraph']['topk'][i]['name'],
-        price: result['DeepGraph']['topk'][i]['price'].toString(),
-      ));
+          request_num: 99,
+          encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
+          brand: result['Deep']['predictions_info'][i]['brand'],
+          detail_url: result['Deep']['predictions_info'][i]['detail_url'],
+          fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
+          item_url: result['Deep']['predictions_info'][i]['item_url'],
+          name: result['Deep']['predictions_info'][i]['name'],
+          price: result['Deep']['predictions_info'][i]['price'],
+          score: result['Deep']['predictions_info'][i]['score']));
       int total = await ProductClothingDatabase.totalProductNum();
       print(total);
+      // ProductClothingDatabase.insertProduct(ProductClothing(
+      //   request_num: 100,
+      //   encoded_img: result['DeepGraph']['topk'][i]['encoded_img'],
+      //   brand: result['DeepGraph']['topk'][i]['brand'],
+      //   detail_url: result['DeepGraph']['topk'][i]['detail_url'],
+      //   fashion_url: result['DeepGraph']['topk'][i]['fashion_url'],
+      //   item_url: result['DeepGraph']['topk'][i]['item_url'],
+      //   name: result['DeepGraph']['topk'][i]['name'],
+      //   price: result['DeepGraph']['topk'][i]['price'].toString(),
+      // ));
+      // int total = await ProductClothingDatabase.totalProductNum();
+      // print(total);
     }
+    return ProductClothingDatabase.getRecoResult(99);
   }
 
   Widget buildRow(Future<List<MyClothing>> list) {
+    Widget customDialog({String base64, Future<List<ProductClothing>> list1}) {
+      final controller1 = PageController(initialPage: 0);
+      return Container(
+        height: 550,
+        width: 300,
+        child: ListView(
+          children: [
+            Center(
+              child: Text(
+                '즉석 코디 제안',
+                style: kHashtagTextStyle,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              child: Image.memory(
+                base64Decode(base64),
+                fit: BoxFit.fitHeight,
+              ),
+              height: 180,
+            ),
+            Container(
+              height: 290,
+              //width: 300,
+              child: FutureBuilder<List>(
+                  future: list1,
+                  initialData: [],
+                  builder: (context, snapshot) {
+                    return snapshot.hasData
+                        ? PageView.builder(
+                            controller: controller1,
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Image.memory(
+                                base64Decode(snapshot.data[index].encoded_img),
+                              );
+                            },
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          );
+                  }),
+            ),
+            RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+              disabledColor: Colors.black,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  '피팅룸 이동하기',
+                  style: kButtonTextStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return FutureBuilder<List>(
       future: list,
       initialData: [],
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                reverse: true,
+                //reverse: true,
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
@@ -147,7 +211,19 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         ),
                         GestureDetector(
                           onLongPress: () {
-                            getStyling(snapshot.data[index].clothingImgBase64);
+                            //getStyling(snapshot.data[index].clothingImgBase64);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  Future<List<ProductClothing>> list1;
+
+                                  return AlertDialog(
+                                      content: customDialog(
+                                          base64: snapshot
+                                              .data[index].clothingImgBase64,
+                                          list1: ProductClothingDatabase
+                                              .getRecoResult(99)));
+                                });
                           },
                           child: Container(
                               height: containerHeight(
@@ -175,7 +251,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
   @override
   Widget build(BuildContext context) {
     //ProductClothingDatabase.clearProduct();
-    //MyClothingDatabase.deleteClothing(4);
+    //MyClothingDatabase.deleteClothing(11);
     //MyClothingDatabase.clearCloset();
     return Scaffold(
       body: Column(

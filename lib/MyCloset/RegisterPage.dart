@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
@@ -21,6 +22,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   File mPhoto;
+  bool isLoading = false;
   void onPhoto(ImageSource source) async {
     File f = await ImagePicker.pickImage(source: source);
     Img.Image initialImg = Img.decodeImage(f.readAsBytesSync());
@@ -93,6 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() {
       RegisterPage.registered = true;
+      isLoading = false;
     });
     Navigator.push(
       context,
@@ -161,23 +164,29 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 60,
           ),
           Center(
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ),
-              disabledColor: Colors.black,
-              onPressed: () {
-                getOmnious();
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 55),
-                child: Text(
-                  '옷 등록하기',
-                  style: kButtonTextStyle,
-                ),
-              ),
-            ),
+            child: !isLoading
+                ? RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    disabledColor: Colors.black,
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      getOmnious();
+                      //sleep(Duration(seconds: 5));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 55),
+                      child: Text(
+                        '옷 등록하기',
+                        style: kButtonTextStyle,
+                      ),
+                    ),
+                  )
+                : Center(child: CircularProgressIndicator()),
           ),
           SizedBox(
             height: 26,

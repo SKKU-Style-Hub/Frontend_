@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
-import 'file:///D:/Development/AndroidStudio/stylehub_flutter/lib/RequestCodi/ChooseClothingPage.dart';
+import 'ChooseClothingPage.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../components/Colorbutton.dart';
 import '../components/Stylebutton.dart';

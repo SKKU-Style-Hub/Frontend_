@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'FittingRoom.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductSetDetail extends StatefulWidget {
   List codi_clothes;
@@ -13,6 +14,14 @@ class ProductSetDetail extends StatefulWidget {
 
 //사진, 브랜드이름. 이름. 가격 받아오자. + 구매하기 버튼 만들기
 class _ProductSetDetailState extends State<ProductSetDetail> {
+  void goToUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       drawerEdgeDragWidth: 0,
@@ -73,7 +82,9 @@ class _ProductSetDetailState extends State<ProductSetDetail> {
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       disabledColor: Colors.black,
-                      onPressed: () {},
+                      onPressed: () {
+                        goToUrl(widget.codi_clothes[idx].detail_url);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(5),
                         child: Text(
