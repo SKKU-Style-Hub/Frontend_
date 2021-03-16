@@ -11,6 +11,9 @@ import '../components/Budgetline.dart';
 import 'AfterRequest.dart';
 import 'ChooseClothingPage.dart';
 
+//사용자이름
+String userName = 'minjoo123';
+
 class RequestPage extends StatefulWidget {
   String chosenBase64;
   int index;
@@ -84,7 +87,7 @@ class _RequestPageState extends State<RequestPage> {
                         flex: 10,
                       ),
                       Text(
-                        "minjoo123 님의\n코디 요청서",
+                        "${userName} 님의\n코디 요청서",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 18,

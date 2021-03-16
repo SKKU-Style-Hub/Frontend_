@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import '../FittingRoom/FittingRoom.dart';
 import '../Navigation.dart';
-
 import 'RequestPage2.dart';
 import 'RequestPage.dart';
 
@@ -35,13 +34,13 @@ class _RequestMainState extends State<RequestMain> {
             child: ListView(
               children: [
                 MyCodiRequests(
-                  explanation: "어떤 바지가 잘 어울릴까요??",
+                  explanation: "이 블라우스 아래에 무엇을\n입어야 할까요 ㅠㅠ 도와주세요",
                   year: 2020,
-                  month: 11,
-                  day: 3,
-                  answer_num: 1,
-                  heart_num: 10,
-                  imagepath: "assets/request_codi/codi1.png",
+                  month: 12,
+                  day: 27,
+                  answer_num: 2,
+                  heart_num: 7,
+                  imagepath: "assets/request_codi/codi3.png",
                   index: 1,
                 ),
                 MyCodiRequests(
@@ -55,13 +54,13 @@ class _RequestMainState extends State<RequestMain> {
                   index: 2,
                 ),
                 MyCodiRequests(
-                  explanation: "이 블라우스 아래에 무엇을\n입어야 할까요 ㅠㅠ 도와주세요",
+                  explanation: "어떤 바지가 잘 어울릴까요??",
                   year: 2020,
-                  month: 12,
-                  day: 27,
-                  answer_num: 2,
-                  heart_num: 7,
-                  imagepath: "assets/request_codi/codi3.png",
+                  month: 11,
+                  day: 3,
+                  answer_num: 1,
+                  heart_num: 10,
+                  imagepath: "assets/request_codi/codi1.png",
                   index: 3,
                 ),
               ],

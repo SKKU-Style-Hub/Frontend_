@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-//진짜 메인 아닌 거 알지..?ㅜㅜ기억해둬..
 import '../Navigation.dart';
 import 'RequestChoose.dart';
 
 class AfterRequest extends StatefulWidget {
-  static int afterRequest = 0;
   AfterRequest({Key key}) : super(key: key) {}
   _AfterRequestState createState() {
     return _AfterRequestState();
@@ -55,7 +53,6 @@ class _AfterRequestState extends State<AfterRequest> {
               ),
             ),
             onTap: () {
-              AfterRequest.afterRequest = 1;
               //메인페이지 이동 이동
               Navigator.push(
                 context,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'RequestPage2.dart';
-import 'Checkcodi.dart';
-import 'Checkcodi.dart';
+import 'CheckCodi.dart';
 
 class RequestChoose extends StatelessWidget {
   Widget build(BuildContext context) {
