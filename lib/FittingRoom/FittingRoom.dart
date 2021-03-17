@@ -251,8 +251,13 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
     mycloset_onepiece = await MyClothingDatabase.getOnePiece();
     mycloset_outer = await MyClothingDatabase.getOuter();
 
-    selected_top = mycloset_top[0].clothingImgBase64;
-    selected_bottom = mycloset_pants[2].clothingImgBase64;
+    if (mycloset_top.isNotEmpty) {
+      selected_top = mycloset_top[0].clothingImgBase64;
+    }
+    if (mycloset_pants.isNotEmpty) {
+      selected_bottom = mycloset_pants[0].clothingImgBase64;
+    }
+
     //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
   }
 

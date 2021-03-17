@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import '../FittingRoom/FittingRoom.dart';
+import 'RawData.dart';
 
-class Received_codi {
+class ReceivedCodi {
   String top_path;
   String bottom_path;
   String shoes_path;
   String onepiece_path;
   String outer_path;
-  Received_codi(
-      {String top_path,
-      String bottom_path,
-      String shoes_path,
-      String onepiece_path,
-      String outer_path}) {
-    this.top_path = top_path;
-    this.bottom_path = bottom_path;
-    this.shoes_path = shoes_path;
-    this.onepiece_path = onepiece_path;
-    this.outer_path = outer_path;
-  }
+  String stylist;
+  ReceivedCodi(
+      {this.top_path,
+      this.bottom_path,
+      this.shoes_path,
+      this.onepiece_path,
+      this.outer_path,
+      this.stylist}) {}
 }
 
-List<dynamic> Received_codi_list = [];
+List<dynamic> receivedCodiList = [];
 
 class CheckCodiForm extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -41,43 +38,17 @@ class CheckCodi extends StatefulWidget {
 
 class _CheckCodiState extends State<CheckCodi> {
   Widget build(BuildContext context) {
-    Received_codi_list = [];
-    Received_codi rc1 = Received_codi(
-        top_path: "assets/images/sample_knit.png",
-        bottom_path: "assets/images/sample_pants.png",
-        shoes_path: "assets/images/sample_shoes.png",
-        onepiece_path: null,
-        outer_path: null);
-    Received_codi_list.add(rc1);
-    Received_codi rc2 = Received_codi(
-        top_path: "assets/request_codi/received_codi2_top.png",
-        bottom_path: "assets/request_codi/received_codi2_bottom.png",
-        shoes_path: "assets/request_codi/received_codi2_shoes.png",
-        //일단 원피스에 전체크기 넣어놓자..
-        onepiece_path: "assets/request_codi/received_codi2_total.png",
-        //아우터에 가방을 넣어놓자..
-        outer_path: "assets/request_codi/received_codi2_bag.png");
-    Received_codi_list.add(rc2);
-    Received_codi rc3 = Received_codi(
-        top_path: "assets/request_codi/received_codi1_top.png",
-        bottom_path: "assets/request_codi/received_codi1_bottom.png",
-        shoes_path: "assets/request_codi/received_codi1_shoes.png",
-        //일단 원피스에 전체크기 넣어놓자..
-        onepiece_path: "assets/request_codi/received_codi1_total.png",
-        //아우터에 가방을 넣어놓자..
-        outer_path: "assets/request_codi/received_codi1_bag.png");
-    Received_codi_list.add(rc3);
-    Received_codi rc4 = Received_codi(
-        top_path: "assets/images/top2.png",
-        bottom_path: "assets/images/pants3.png",
-        shoes_path: "assets/images/sample_shoes.png",
-        onepiece_path: null,
-        outer_path: null);
-    Received_codi_list.add(rc4);
+    //for raw-data
+    receivedCodiList = [];
+    receivedCodiList.add(rc1);
+    receivedCodiList.add(rc2);
+    receivedCodiList.add(rc3);
+    receivedCodiList.add(rc4);
+    //receivedCodiList에 옷정보 받아오면 된다
     return Container(
       child: ListView(
           scrollDirection: Axis.vertical,
-          children: List.generate(Received_codi_list.length, (idx) {
+          children: List.generate(receivedCodiList.length, (idx) {
             return Container(
               margin: EdgeInsets.only(
                 bottom: 10,
@@ -102,7 +73,7 @@ class _CheckCodiState extends State<CheckCodi> {
                 children: [
                   Positioned(
                     child: Text(
-                      "From.Yesong",
+                      "From.${receivedCodiList[idx].stylist}",
                       style: kTitleTextStyle,
                     ),
                     top: 10,
@@ -115,7 +86,7 @@ class _CheckCodiState extends State<CheckCodi> {
                     child: SizedBox(
                       height: 140,
                       width: 140,
-                      child: Image.asset(Received_codi_list[idx].top_path),
+                      child: Image.asset(receivedCodiList[idx].top_path),
                     ),
                   ),
                   Positioned(
@@ -154,22 +125,19 @@ class _CheckCodiState extends State<CheckCodi> {
                               ),
                             ),
                             onTap: () {
-                              print("her");
                               //다음 페이지 이동
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  print("haha");
                                   return Fittingroom(
                                       selected_top1:
-                                          Received_codi_list[idx].top_path,
+                                          receivedCodiList[idx].top_path,
                                       selected_bottom1:
-                                          Received_codi_list[idx].bottom_path,
+                                          receivedCodiList[idx].bottom_path,
                                       selected_shoes1:
-                                          Received_codi_list[idx].shoes_path,
+                                          receivedCodiList[idx].shoes_path,
                                       selected_onepiece1: null,
                                       selected_outer1: null);
-                                  //return Fittingroom();
                                 }),
                               );
                             },

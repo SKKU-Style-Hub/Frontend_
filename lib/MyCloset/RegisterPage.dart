@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:image_size_getter/file_input.dart';
+import 'package:image_size_getter/image_size_getter.dart';
 import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';
 import 'package:stylehub_flutter/Constants.dart';
@@ -22,13 +24,14 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   File mPhoto;
   void onPhoto(ImageSource source) async {
-    File f = await ImagePicker.pickImage(source: source);
-    Img.Image initialImg = Img.decodeImage(f.readAsBytesSync());
-    Img.Image afterImg = Img.copyResize(initialImg, width: 120);
-    //print(Img.encodePng(afterImg));
+    File f = await ImagePicker.pickImage(
+        source: source, maxHeight: 500, maxWidth: 450);
+    print("imgSizeWidth " + ImageSizeGetter.getSize(FileInput(f)).toString());
+    print("imgSizeHeight " + Image.file(f).height.toString());
+
+    var bytes = await f.readAsBytes();
+    print("imgSize " + bytes.length.toString());
     setState(() {
-      //mPhoto..writeAsBytesSync(Img.encodePng(afterImg));
-      //print(mPhoto.readAsBytesSync().toString());
       mPhoto = f;
     });
   }
@@ -42,13 +45,12 @@ class _RegisterPageState extends State<RegisterPage> {
   void getOmnious() async {
     final bytes = mPhoto.readAsBytesSync();
     widget.base64Img = base64Encode(bytes);
-    saveFile(bytes);
 
     String url = "https://api.omnious.com/tagger/v2.12/tags";
     final response = await http.post(url,
         headers: <String, String>{
           "Content-Type": "application/json",
-          "x-api-key": "bWqzpLE4Y36vBugQ20ceSkZAGMDdU9xFOyrRnTo1",
+          "x-api-key": "uWHs0KwUapQYJfBz6PnkrTx13cIE7jGMO2qAyCli",
           "accept-language": "ko"
         },
         body: jsonEncode({
