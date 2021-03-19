@@ -1,15 +1,18 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:image_pick/image_pick.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'Navigation.dart';
-import 'package:http/http.dart' as http;
 
 void main() async {
   runApp(StyleHub());
 }
 
-class StyleHub extends StatelessWidget {
+class StyleHub extends StatefulWidget {
+  @override
+  _StyleHubState createState() => _StyleHubState();
+}
+
+class _StyleHubState extends State<StyleHub> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +20,7 @@ class StyleHub extends StatelessWidget {
         buttonColor: Colors.black,
       ),
       home: AnimatedSplashScreen(
-        duration: 2000,
+        duration: 1500,
         splashIconSize: 500,
         splash: Image.asset(
           "assets/images/SPLASH_image.png",

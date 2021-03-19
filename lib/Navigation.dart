@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
 import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
+import 'package:stylehub_flutter/SettingsScreen.dart';
 import 'MainFeed/MainFeed.dart';
 import 'MyCloset/MyClosetPage.dart';
 import 'package:stylehub_flutter/common/custom_icons_icons.dart';
-import 'MainFeed/MainFeed.dart';
-import 'MyCloset/RegisterPage.dart';
 import 'RequestCodi/RequestChoose.dart';
 import 'RequestCodi/RequestMain.dart';
+import 'package:flutter/foundation.dart';
+import 'package:kakao_flutter_sdk/all.dart';
+import 'LoginScreen.dart';
 
 class Navigation extends StatefulWidget {
   int _selectedItemPosition = 0;
@@ -23,6 +25,26 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
+  var token;
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      AuthCodeClient.instance.retrieveAuthCode();
+    }
+    _checkAccessToken();
+  }
+
+  _checkAccessToken() async {
+    token = await AccessTokenStore.instance.fromStore();
+    if (token.refreshToken == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
+  }
+
   final BorderRadius _borderRadius = const BorderRadius.only(
     topLeft: Radius.circular(0),
     topRight: Radius.circular(0),
@@ -45,6 +67,19 @@ class _NavigationState extends State<Navigation> {
           fit: BoxFit.cover,
         ),
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                );
+              })
+        ],
       ),
       bottomNavigationBar: SnakeNavigationBar.color(
         behaviour: SnakeBarBehaviour.pinned,

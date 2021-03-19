@@ -80,7 +80,6 @@ class _MyClosetPageState extends State<MyClosetPage> {
   }
 
   void getStyling(String clothBase64) async {
-    //print(clothBase64);
     String url = "http://115.145.212.100:51122/post";
     Map<String, String> headers = {
       'Content-type': 'application/json',
