@@ -3,6 +3,8 @@ import 'MainFeed.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:speech_bubble/speech_bubble.dart';
+import 'package:stylehub_flutter/MainFeed/CodiFittingRoom.dart';
+import 'package:stylehub_flutter/components/ClothInfo.dart';
 import 'RawData.dart';
 
 class StylingCard extends StatefulWidget {
@@ -14,131 +16,6 @@ class StylingCard extends StatefulWidget {
 }
 
 class _StylingCardState extends State<StylingCard> {
-  /*Widget SwbInfo(ClothSbw tmp) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        //style
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                height: 55,
-                width: 55,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage(
-                    tmp.style_path,
-                  ),
-                  radius: 48,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                    left: 2.0, top: 1.0, right: 2.0, bottom: 1.0),
-                child: Text(" STYLE ",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      backgroundColor: Colors.indigo,
-                    )),
-              ),
-              //아이디
-              Text(
-                tmp.style_name,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        //wish
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                height: 55,
-                width: 55,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage(
-                    tmp.wish_path,
-                  ),
-                  radius: 48,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                    left: 2.0, top: 1.0, right: 2.0, bottom: 1.0),
-                child: Text(" WISH ",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      backgroundColor: Colors.green,
-                    )),
-              ),
-              //아이디
-              Text(
-                tmp.wish_name,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        //buy
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                height: 55,
-                width: 55,
-                child: CircleAvatar(
-                  backgroundImage: AssetImage(
-                    tmp.buy_path,
-                  ),
-                  radius: 48,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                    left: 2.0, top: 1.0, right: 2.0, bottom: 1.0),
-                child: Text(" BUY ",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      backgroundColor: Colors.red,
-                    )),
-              ),
-              //아이디
-              Text(
-                tmp.buy_name,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }*/
-
   Widget EachInfoButton(ProposedCodi codiTotal, int index) {
     return Positioned(
       //위치 정보를 넣어야 함
@@ -281,11 +158,33 @@ class _StylingCardState extends State<StylingCard> {
     );
   }
 
+  Widget goToCodiScreen() {
+    return Container(
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                //피팅룸에 넘어갈 옷
+                builder: (context) => CodiFittingRoom(
+                  requestClothInfo: ClothInfo(
+                    image: 'assets/images/sample_knit.png',
+                    type: 1,
+                  ),
+                ),
+              ));
+        },
+        child: Text("나도 코디하러가기"),
+      ),
+    );
+  }
+
   Card StylingCardWidget(AllProposedCodi tmpProposedCodi) {
     List<Widget> pageViewChildren = [
       Container(child: Image.asset('assets/images/sample_knit.png')),
       Container(child: Image.asset('assets/images/sample_knit_styling1.png')),
       Container(child: Image.asset('assets/images/sample_knit_styling2.png')),
+      Container(),
     ];
     int currentIndexPage = 0;
     final controller = PageController(initialPage: 0);
@@ -337,6 +236,8 @@ class _StylingCardState extends State<StylingCard> {
                 EachCodi(tmpProposedCodi.proposedCodiList[0]),
                 //두번째코디
                 EachCodi(tmpProposedCodi.proposedCodiList[1]),
+                //코디하기 버튼 있는 페이지
+                goToCodiScreen(),
               ],
               onPageChanged: (int index) {
                 setState(() {
