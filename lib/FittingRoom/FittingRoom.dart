@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:drag_to_expand/drag_to_expand.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stylehub_flutter/RequestCodi/Checkcodi.dart';
@@ -14,536 +15,705 @@ import 'ProductSetDetail.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
+import 'RawData.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-//화면에 이미 선택된 옷
-String selected_top = "assets/images/sample_knit.png";
-String selected_bottom = ""; //'assets/images/sample_pants.png'
-String selected_shoes = ""; //'assets/images/sample_shoes.png'
-String selected_onepiece = 'assets/images/sample_shoes.png';
-String selected_outer;
-String selected_bag;
+//화면에 선택된 옷과 위치
+////모든 순서는 1:top, 2:bottom, 3: onepiece, 4:outer, 5:shoes, 6:bag
+List<Map<String, dynamic>> selectedClothList = [
+  null,
+  //상의
+  {
+    "image": "assets/images/sample_knit.png",
+    "offsetX": 113,
+    "offsetY": 30,
+    "width": 180,
+    "originalOffsetX": 113,
+    "originalOffsetY": 30,
+  },
+  //하의
+  {
+    "image": "assets/images/sample_pants.png",
+    "offsetX": 113,
+    "offsetY": 155,
+    "width": 200,
+    "originalOffsetX": 113,
+    "originalOffsetY": 155,
+  },
+  //원피스
+  {
+    "image": null,
+    "offsetX": 113,
+    "offsetY": 30,
+    "width": 250,
+    "originalOffsetX": 113,
+    "originalOffsetY": 30,
+  },
+  //아우터
+  {
+    "image": null,
+    "offsetX": 30,
+    "offsetY": 0,
+    "width": 220,
+    "originalOffsetX": 30,
+    "originalOffsetY": 0,
+  },
+  //신발
+  {
+    "image": "assets/images/sample_shoes.png",
+    "offsetX": 280,
+    "offsetY": 280,
+    "width": 80,
+    "originalOffsetX": 280,
+    "originalOffsetY": 280,
+  },
+  //가방
+  {
+    "image": null,
+    "offsetX": 280,
+    "offsetY": 150,
+    "width": 120,
+    "originalOffsetX": 280,
+    "originalOffsetY": 150,
+  },
+];
 
-//첫 화면 배치offset
-double top_offset_x = 113;
-double top_offset_y = 30;
-double bottom_offset_x = 113;
-double bottom_offset_y = 155;
-double shoes_offset_x = 280;
-double shoes_offset_y = 280;
-double onepiece_offset_x = 113;
-double onepiece_offset_y = 30;
-double outer_offset_x = -10;
-double outer_offset_y = 30;
-double bag_offset_x = 280;
-double bag_offset_y = 150;
-
-//어떤 옷인가요?//1이면 선택 0이면 선택x
-int top_yesno = 1;
-int bottom_yesno = 1;
-int shoes_yesno = 1;
-int outer_yesno = 0;
-int onepiece_yesno = 0;
-int bag_yesno = 0;
-
-int select_index = 0; //0은 내옷장, 1은 코디들을 의미
-
-double swipeStartY;
-String swipeDirection;
-double bottomsheet_size = 200;
-Axis bottomsheet_axis = Axis.horizontal;
-
-List<dynamic> recommended_top = [];
-List<dynamic> recommended_pants = [];
-List<dynamic> recommended_shoes = [];
-List<dynamic> recommended_outer = [];
-List<dynamic> recommended_onepiece = [];
-
-List<MyClothing> mycloset_top = [];
-List<MyClothing> mycloset_pants = [];
-List<MyClothing> mycloset_shoes = [];
-List<MyClothing> mycloset_outer = [];
-List<MyClothing> mycloset_onepiece = [];
-
-List<ProductClothing> codi1_ai = [];
-List<ProductClothing> codi2_ai = [];
-List<ProductClothing> codi3_ai = [];
-//List<ProductClothing> codi1_seller = [];
-List<dynamic> codi1 = [];
-List<dynamic> codi2 = [];
-List<dynamic> codi3 = [];
-List<dynamic> codis = [];
-
-//코디 정보를 가지고 있느 객체
-class Cloth_info {
-  String imagepath;
+//코디 정보를 가지고 있느 class
+class ClothInfo {
+  String image;
   int price;
   String brandname;
   String clothname;
-  Cloth_info(
-      {String brandname, String clothname, String imagepath, int price}) {
-    this.brandname = brandname;
-    this.clothname = clothname;
-    this.imagepath = imagepath;
-    this.price = price;
+  String url;
+  int type;
+  ClothInfo(
+      {this.brandname,
+      this.clothname,
+      this.image,
+      this.price,
+      this.type,
+      this.url}) {}
+}
+
+List<ClothInfo> myClosetListTop = [];
+List<ClothInfo> myClosetListBottom = [];
+List<ClothInfo> myClosetListOnepiece = [];
+List<ClothInfo> myClosetListOuter = [];
+List<ClothInfo> myClosetListAcc = [];
+
+double swipeStartY;
+String swipeDirection;
+double bottomSheetSize = 200;
+var codiKey;
+
+_showToast(String info) {
+  Fluttertoast.showToast(msg: info, toastLength: Toast.LENGTH_LONG);
+}
+
+void _capture() async {
+  var renderObject = codiKey.currentContext.findRenderObject();
+  if (renderObject.debugNeedsPaint) {
+    print("Waiting for boundary to be painted.");
+    await Future.delayed(const Duration(milliseconds: 20));
+    return _capture();
+  }
+  if (renderObject is RenderRepaintBoundary) {
+    RenderRepaintBoundary boundary = codiKey.currentContext.findRenderObject();
+    ui.Image image = await boundary.toImage();
+    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final result = await ImageGallerySaver.saveImage(
+        byteData.buffer.asUint8List(),
+        quality: 100);
+    _showToast("이미지가 갤러리에 저장되었습니다.");
+  } else {
+    print("!");
   }
 }
 
-class Codi_clothes {
-  Cloth_info top, bottom, shoes, outer, onepiece, bag;
-  String total_path;
-
-  //유무는 null로 판단
-  Codi_clothes({
-    this.top,
-    this.bottom,
-    this.shoes,
-    this.outer,
-    this.onepiece,
-    this.bag,
-    this.total_path,
-  }) {}
+void saveCodi() {
+  _capture();
 }
 
-class Codi_lists {
-  List ai; //ai추천
-  List user; //유저추천
-  List shop; //판매자추천
-  Codi_lists({this.ai, this.user, this.shop}) {}
+_requestPermission() async {
+  Map<Permission, PermissionStatus> statuses = await [
+    Permission.location,
+    Permission.storage,
+  ].request();
+
+  final info = statuses[Permission.storage].toString();
 }
 
-class FittingRoomForm extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "피팅룸",
-      home: Fittingroom(),
-    );
+void goToUrl(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
-} //end of Myapp
+}
 
-class Fittingroom extends StatelessWidget {
-  Fittingroom(
-      {Key key,
-      String selected_top1,
-      String selected_bottom1,
-      String selected_shoes1,
-      String selected_onepiece1,
-      String selected_outer1})
-      : super(key: key) {
-    selected_top = selected_top1;
-    selected_bottom = selected_bottom1;
-    selected_shoes = selected_shoes1;
-    selected_onepiece = selected_onepiece1;
-    selected_outer = selected_outer1;
-    select_index = 0;
-  }
+class FittingRoom extends StatefulWidget {
+  FittingRoom({Key key}) : super(key: key);
+  @override
+  _FittingRoomState createState() => _FittingRoomState();
+}
 
+class _FittingRoomState extends State<FittingRoom> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Container(
           alignment: Alignment.center,
           child: Image.asset(
-            "assets/applogo.png",
-            //width: 115,
+            "assets/images/applogo.png",
             alignment: Alignment.center,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () {
+                  //actions
+                  //스크린샷 넣기
+                  _capture();
+                },
+                child: Text("저장 ",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15)),
+              ),
+            ],
+          ),
+        ],
       ),
-      body: Fittingroom_main(),
+      body: FittingRoomMain(),
     );
   }
 }
 
-class Fittingroom_main extends StatefulWidget {
-  int selected_index_bycodi = 0;
-  Fittingroom_main({int selected_index}) {
-    if (selected_index != null) {
-      //코디에서 넘어온 index
-      selected_index_bycodi = selected_index;
-    }
-  }
-  _Fittingroom_mainState createState() {
-    top_offset_x = 113;
-    top_offset_y = 30;
-    bottom_offset_x = 105;
-    bottom_offset_y = 155;
-    shoes_offset_x = 280;
-    shoes_offset_y = 280;
-    if (CheckCodi.checkCodi == 1) select_index = 0;
-    return _Fittingroom_mainState();
-  }
+class FittingRoomMain extends StatefulWidget {
+  //rawdata
+  FittingRoomMain({Key key}) : super(key: key);
+  @override
+  _FittingRoomMainState createState() => _FittingRoomMainState();
 }
 
-class _Fittingroom_mainState extends State<Fittingroom_main> {
-  DragToExpandController _dragToExpandController2;
-  List<Color> select_color = [Colors.black, Colors.grey[600]];
+class _FittingRoomMainState extends State<FittingRoomMain> {
+  DragToExpandController _dragToExpandController; //하단메뉴 drag
+  int menuIndex = 0; //상위탭 내에서의 index
+  int myClosetIndex = 1; //내 옷장 내에서의 index
+  int contentType = 0; //0: 옷들, 1: 삭제, 2: 상품정보
+  ClothInfo detailClothInfo;
+  List<dynamic> myClosetListTotal = [];
 
-  @override
   void initState() {
-    //select_index = 0;
-
-    select_index = widget.selected_index_bycodi; //1 or 2 or 3
-    if (select_index == 0) //내 옷장
-    {
-    } else if (select_index >= 1) //코디1
-    {
-      if (codis[select_index - 1][0].top != null) {
-        selected_top = codis[select_index - 1][0].top.imagepath;
-        top_yesno = 1;
-        onepiece_yesno = 0;
-        print("top");
-      } else {
-        top_yesno = 0;
-      }
-      if (codis[select_index - 1][0].bottom != null) {
-        selected_bottom = codis[select_index - 1][0].bottom.imagepath;
-        bottom_yesno = 1;
-        onepiece_yesno = 0;
-      } else {
-        bottom_yesno = 0;
-      }
-      if (codis[select_index - 1][0].shoes != null) {
-        selected_shoes = codis[select_index - 1][0].shoes.imagepath;
-        shoes_yesno = 1;
-      } else {
-        shoes_yesno = 0;
-      }
-      if (codis[select_index - 1][0].outer != null) {
-        selected_outer = codis[select_index - 1][0].outer.imagepath;
-        outer_yesno = 1;
-      } else {
-        outer_yesno = 0;
-      }
-      if (codis[select_index - 1][0].onepiece != null) {
-        selected_onepiece = codis[select_index - 1][0].onepiece.imagepath;
-        onepiece_yesno = 1;
-        top_yesno = 0;
-        bottom_yesno = 0;
-      } else {
-        onepiece_yesno = 0;
-        top_yesno = 1;
-        bottom_yesno = 1;
-      }
-      if (codis[select_index - 1][0].bag != null) {
-        selected_bag = codis[select_index - 1][0].bag.imagepath;
-        bag_yesno = 1;
-      } else {
-        bag_yesno = 0;
-      }
-    }
-    _dragToExpandController2 = DragToExpandController();
-
-    getCloset();
-    getProduct();
+    codiKey = new GlobalKey();
+    _dragToExpandController = DragToExpandController();
     super.initState();
+    _requestPermission();
   }
 
   dispose() {
+    _dragToExpandController.dispose();
     super.dispose();
   }
 
-  void getCloset() async {
-    mycloset_top = await MyClothingDatabase.getTop();
-    mycloset_pants = await MyClothingDatabase.getBottom();
-    mycloset_onepiece = await MyClothingDatabase.getOnePiece();
-    mycloset_outer = await MyClothingDatabase.getOuter();
-
-    if (mycloset_top.isNotEmpty) {
-      selected_top = mycloset_top[0].clothingImgBase64;
-    }
-    if (mycloset_pants.isNotEmpty) {
-      selected_bottom = mycloset_pants[0].clothingImgBase64;
-    }
-
-    //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
-  }
-
-  void getProduct() async {
-    codi1_ai = await ProductClothingDatabase.getRecoResult(21);
-    codi2_ai = await ProductClothingDatabase.getRecoResult(22);
-    codi3_ai = await ProductClothingDatabase.getRecoResult(23);
-  }
-
-  Future<File> getImageFileFromAssets(String path) async {
-    final byteData = await rootBundle.load('assets/$path');
-
-    final file = File('${(await getTemporaryDirectory()).path}/$path');
-    await file.writeAsBytes(byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-
-    return file;
-  }
-
-  String convert(String filePath) {
-    final bytes = File(filePath).readAsBytesSync();
-    return base64Encode(bytes);
-  }
-
-  Widget build(BuildContext context) {
-    //getCloset();
-    print(build);
-
-    ///여기다가 배열에 추가하는 코드 넣기
-    ///recommended_top = [];
-    recommended_pants = [];
-    recommended_shoes = [];
-    recommended_outer = [];
-    recommended_onepiece = [];
-    //상의 배열 만들기
-    Cloth_info top1 = Cloth_info(
-        brandname: "프롬비기닝",
-        imagepath: "assets/images/top1.png",
-        price: 30000,
-        clothname: "21AS Victoria Sweatshirt");
-    Cloth_info top2 = Cloth_info(
-        brandname: "H&M",
-        imagepath: "assets/images/top2.png",
-        price: 35000,
-        clothname: "21SS Unisex Tricolor Fox Patch Classic Marin");
-    recommended_top.add(top1);
-    recommended_top.add(top2);
-    //하의 배열 만들기
-    Cloth_info bottom1 = Cloth_info(
-        brandname: "ROEM",
-        imagepath: "assets/images/sample_pants.png",
-        price: 50000,
-        clothname: "PANT NAME1");
-    Cloth_info bottom2 = Cloth_info(
-        brandname: "MUSINSA",
-        imagepath: "assets/images/pants1.png",
-        price: 55000,
-        clothname: "PANT NAME2");
-    Cloth_info bottom3 = Cloth_info(
-        brandname: "FOFOFO",
-        imagepath: "assets/images/pants2.png",
-        price: 55000,
-        clothname: "PANT NAME3");
-    recommended_pants.add(bottom1);
-    recommended_pants.add(bottom2);
-    recommended_pants.add(bottom3);
-    //신발 배열 만들기
-    Cloth_info shoes1 = Cloth_info(
-        brandname: "SHOEEE",
-        imagepath: "assets/images/sample_shoes.png",
-        price: 70000,
-        clothname: "SHOES NAME1");
-    recommended_shoes.add(shoes1);
-    //아우터 배열 만들기
-    Cloth_info outer1 = Cloth_info(
-        brandname: "SHOEEE",
-        imagepath: "assets/images/outer1.png",
-        price: 100000,
-        clothname: "OUTER NAME1");
-    Cloth_info outer2 = Cloth_info(
-        brandname: "SHOEEE",
-        imagepath: "assets/images/outer2.png",
-        price: 100000,
-        clothname: "OUTER NAME2");
-    recommended_outer.add(outer1);
-    recommended_outer.add(outer2);
-    //원피스 배열 만들기
-    Cloth_info onepiece1 = Cloth_info(
-        brandname: "POPOPOP",
-        imagepath: "assets/images/onepiece1.png",
-        price: 80000,
-        clothname: "ONEPIECE NAME1");
-    recommended_onepiece.add(onepiece1);
-
-    //코디 배열 만들기
-
-    //코디 배열 만들기
-    codi1 = [];
-    codi3 = [];
-    Codi_clothes codi1_1 = Codi_clothes(
-        top: Cloth_info(
-            imagepath: "assets/request_codi/received_codi1_top.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        outer: Cloth_info(
-            imagepath: "assets/request_codi/received_codi1_outer.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        bottom: Cloth_info(
-            imagepath: "assets/request_codi/received_codi1_bottom.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        shoes: Cloth_info(
-            imagepath: "assets/request_codi/received_codi1_shoes.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        total_path: "assets/request_codi/received_codi1_total.png",
-        bag: Cloth_info(
-            imagepath: "assets/request_codi/received_codi1_bag.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"));
-    Codi_clothes codi1_2 = Codi_clothes(
-        top: Cloth_info(
-            imagepath: "assets/request_codi/received_codi2_top.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        outer: Cloth_info(
-            imagepath: "assets/request_codi/received_codi2_outer.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        bottom: Cloth_info(
-            imagepath: "assets/request_codi/received_codi2_bottom.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        shoes: Cloth_info(
-            imagepath: "assets/request_codi/received_codi2_shoes.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-        total_path: "assets/request_codi/received_codi2_total.png",
-        bag: Cloth_info(
-            imagepath: "assets/request_codi/received_codi2_bag.png",
-            price: 147250,
-            brandname: "MAISON KITSUNE",
-            clothname:
-                "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"));
-    codi1.add(codi1_1);
-    codi1.add(codi1_2);
-
-    Codi_clothes codi3_1 = Codi_clothes(
-      top: Cloth_info(
-          imagepath: "assets/images/top2.png",
-          price: 147250,
-          brandname: "MAISON KITSUNE",
-          clothname:
-              "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-      bottom: Cloth_info(
-          imagepath: "assets/images/pants3.png",
-          price: 147250,
-          brandname: "MAISON KITSUNE",
-          clothname:
-              "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
-      shoes: Cloth_info(
-          imagepath: "assets/images/sample_shoes.png",
-          price: 147250,
-          brandname: "MAISON KITSUNE",
-          clothname:
-              "21SS ★황민현 착용★ Unisex Tee-Shirt Double Fox Head Patch - Ivory"),
+  Widget deleteScreen() {
+    return Container(
+      height: 130,
+      width: 330,
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.black12,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: "삭제하려면  ",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    )),
+                TextSpan(
+                    text: "여기에",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.black,
+                        decorationThickness: 2)),
+                TextSpan(
+                    text: "  끌어다 놓으세요.",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.delete_forever_outlined,
+            size: 60,
+          ),
+        ],
+      ),
     );
-    codi3.add(codi3_1);
+  }
 
-    codis = [codi1_ai, codi2_ai, codi3];
-
-    //Scaffold 시작
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          //배경
-          Positioned(
-            child: Image.asset('assets/images/background_ui.png'),
-          ),
-
-          //화면에 하의
-          draggablewidget(
-            offset_x: bottom_offset_x,
-            offset_y: bottom_offset_y,
-            type: 2,
-            selected_imagepath: selected_bottom,
-            width_: 200,
-            //height_: 400,
-          ),
-          //화면에 상의
-          draggablewidget(
-            offset_x: top_offset_x,
-            offset_y: top_offset_y,
-            type: 1,
-            selected_imagepath: selected_top,
-            width_: 180,
-            //height_: 190,
-          ),
-          //화면에 원피스
-          draggablewidget(
-            offset_x: onepiece_offset_x,
-            offset_y: onepiece_offset_y,
-            type: 3,
-            selected_imagepath: selected_onepiece,
-            width_: 250,
-            //height_: 190,
-          ),
-          //화면에 신발
-          draggablewidget(
-            offset_x: shoes_offset_x,
-            offset_y: shoes_offset_y,
-            type: 5,
-            selected_imagepath: selected_shoes,
-            width_: 80,
-            //height_: 150,
-          ),
-          //화면에 아우터
-          draggablewidget(
-            offset_x: outer_offset_x,
-            offset_y: outer_offset_y,
-            type: 4,
-            selected_imagepath: selected_outer,
-            width_: 220,
-            //height_: 150,
-          ),
-          //화면에 가방
-          draggablewidget(
-            offset_x: bag_offset_x,
-            offset_y: bag_offset_y,
-            type: 6,
-            selected_imagepath: selected_bag,
-            width_: 120,
-            //height_: 150,
-          ),
-          //-------------bottomsheet---------------
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: GestureDetector(
-                onVerticalDragStart: (details) {
-                  swipeStartY = details.globalPosition.dy;
-                },
-                onVerticalDragUpdate: (details) {
+  //detailClothInfo에 넣어놓은 옷의 상품정보
+  Widget detailScreen() {
+    return Container(
+      color: Colors.white60,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("  상품 정보",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  )),
+              InkWell(
+                onTap: () {
                   setState(() {
-                    swipeDirection = (details.globalPosition.dy < swipeStartY)
-                        ? "Up"
-                        : "Down";
+                    contentType = 0;
                   });
                 },
-                onVerticalDragEnd: (details) {
-                  if (swipeDirection == "Down" && bottomsheet_size == 200) {
-                    print("한번더 내려가게");
-                    _dragToExpandController2.toggle();
-                  }
-                  if (swipeDirection == "Up") {
-                    bottomsheet_size = 350;
-                    bottomsheet_axis = Axis.vertical;
-                  } else if (swipeDirection == "Down") {
-                    bottomsheet_size = 200;
-                    bottomsheet_axis = Axis.horizontal;
-                  }
+                child: Icon(Icons.close, size: 25),
+              ),
+            ],
+          ),
+          Container(
+            width: 500,
+            child: Divider(
+              color: Colors.black,
+              thickness: 2,
+            ),
+          ),
+          Row(
+            children: [
+              Container(
+                /*decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: Colors.indigo, width: 2)),*/
+                padding: EdgeInsets.all(5),
+                child: Image.asset(
+                  detailClothInfo.image,
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    width: 230,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: Colors.indigo, width: 2)),
+                    padding: EdgeInsets.all(5),
+                    child: Column(
+                      children: [
+                        Text(detailClothInfo.brandname,
+                            style: TextStyle(color: Colors.black)),
+                        Text(detailClothInfo.clothname,
+                            style: TextStyle(color: Colors.black)),
+                        Text("${detailClothInfo.price}원",
+                            style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.indigo, width: 2)),
+                        child: Text(" 위시리스트 ",
+                            style: TextStyle(color: Colors.black)),
+                      ),
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.indigo, width: 2)),
+                        child: InkWell(
+                          onTap: () {
+                            if (detailClothInfo.url != null) {
+                              goToUrl(detailClothInfo.url);
+                            }
+                          },
+                          child: Text(" 구매하기 ",
+                              style: TextStyle(color: Colors.black)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget clothWidget({ClothInfo clothInfo}) {
+    return InkWell(
+      onTap: () {
+        //클릭시에 위에 옷 바뀌도록
+        setState(() {
+          selectedClothList[clothInfo.type]["image"] = clothInfo.image;
+        });
+      },
+      onLongPress: () {
+        setState(() {
+          contentType = 2;
+          detailClothInfo = clothInfo;
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
+        height: 100,
+        decoration:
+            clothInfo.image == selectedClothList[clothInfo.type]["image"]
+                ? BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                    border: Border.all(color: Colors.indigo, width: 2.5))
+                : null,
+        child: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: bottomSheetSize == 200 ? 100 : 120,
+                child: Image.asset(clothInfo.image,
+                    width: bottomSheetSize == 200 ? 100 : 120,
+                    fit: BoxFit.contain),
+              ),
+            ),
+            //선택된 옷일 때 here보이게끔
+            clothInfo.image == selectedClothList[clothInfo.type]["image"]
+                ? Center(
+                    child: Text("    Select!",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  )
+                : Container(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget myClosetContent({int myClosetIndex}) {
+    if (contentType == 1) //삭제를 위한 움직임
+    {
+      return deleteScreen();
+    }
+    if (bottomSheetSize == 350) {
+      return Container(
+        height: 300,
+        child: GridView.count(
+          crossAxisCount: 3,
+          children: List.generate(
+            myClosetListTotal[myClosetIndex - 1].length,
+            (idx) {
+              return clothWidget(
+                  clothInfo: myClosetListTotal[myClosetIndex - 1][idx]);
+            },
+          ),
+        ),
+      );
+    }
+    return Container(
+      height: 150,
+      // ignore: missing_return
+      child: Builder(builder: (context) {
+        return ListView(
+          scrollDirection: Axis.horizontal,
+          children: List.generate(
+            myClosetListTotal[myClosetIndex - 1].length,
+            (idx) {
+              return clothWidget(
+                  clothInfo: myClosetListTotal[myClosetIndex - 1][idx]);
+            },
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget myClosetMenuElement({int index, String typeName}) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          myClosetIndex = index;
+        });
+      },
+      child: Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
+          height: 30,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: myClosetIndex == index
+                ? Border(
+                    bottom: BorderSide(
+                      color: Colors.indigo,
+                      width: 3,
+                    ),
+                  )
+                : null,
+          ),
+          child: Text(
+            "  " + typeName + "  ",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          )),
+    );
+  }
+
+  Widget myCloset() {
+    if (contentType == 2) {
+      return detailScreen();
+    }
+    //
+    return Column(
+      children: [
+        //내옷장에서 위의 메뉴들
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            myClosetMenuElement(index: 1, typeName: "상의"),
+            myClosetMenuElement(index: 2, typeName: "하의"),
+            myClosetMenuElement(index: 3, typeName: "원피스"),
+            myClosetMenuElement(index: 4, typeName: "아우터"),
+            myClosetMenuElement(index: 5, typeName: "ACC"),
+          ],
+        ),
+        //메뉴에 따른 옷 보이기
+        myClosetContent(myClosetIndex: myClosetIndex),
+      ],
+    );
+  }
+
+  Widget draggableWidget({int type}) {
+    //움직이는 위젯
+    //type은 1: 상의 2: 하의...임을 나타냄. 위 참조
+    return Builder(
+      builder: (context) {
+        if (selectedClothList[type]["image"] != null) {
+          return Positioned(
+            left: selectedClothList[type]["offsetX"].toDouble(),
+            top: selectedClothList[type]["offsetY"].toDouble(),
+            child: Draggable(
+              child: SizedBox(
+                width: selectedClothList[type]["width"].toDouble(),
+                child: Image.asset(selectedClothList[type]["image"],
+                    width: selectedClothList[type]["width"].toDouble(),
+                    fit: BoxFit.fitWidth),
+              ),
+              feedback: SizedBox(
+                width: selectedClothList[type]["width"].toDouble(),
+                child: Image.asset(selectedClothList[type]["image"],
+                    width: selectedClothList[type]["width"].toDouble(),
+                    fit: BoxFit.fitWidth),
+              ),
+              childWhenDragging: Container(),
+              onDragEnd: (DraggableDetails details) {
+                setState(() {
+                  selectedClothList[type]["offsetX"] = details.offset.dx;
+                  selectedClothList[type]["offsetY"] = details.offset.dy - 80;
+                });
+              },
+              data: type,
+            ),
+          );
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget totalTab() {
+    if (contentType == 2) //상품정보일 때
+    {
+      return Container();
+    }
+    return Row(
+      children: [
+        Expanded(
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    menuIndex = 0;
+                  });
                 },
                 child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: DragToExpand(
-                      controller: _dragToExpandController2,
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(
+                      left: 5.0,
+                      right: 5.0,
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.all(Radius.circular(18)),
+                      border: Border.all(width: 1, color: Colors.black),
+                    ),
+                    child: Text(
+                      "내 옷장",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    )),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    myClosetListTotal = [];
+    //rawdata
+    putRawData();
+    //myClosetListTotal는 index0부터 시작함을 까먹지 말기
+    myClosetListTotal.add(myClosetListTop);
+    myClosetListTotal.add(myClosetListBottom);
+    myClosetListTotal.add(myClosetListOnepiece);
+    myClosetListTotal.add(myClosetListOuter);
+    myClosetListTotal.add(myClosetListAcc);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          //캡쳐할 범위
+          RepaintBoundary(
+            key: codiKey,
+            child: Container(
+              color: Colors.white,
+              child: Stack(
+                children: [
+                  //배경
+                  Positioned(
+                    child: Image.asset('assets/images/background_ui.png'),
+                  ),
+                  //상의
+                  draggableWidget(type: 1),
+                  //하의
+                  draggableWidget(type: 2),
+                  //원피스
+                  draggableWidget(type: 3),
+                  //아우터
+                  draggableWidget(type: 4),
+                  //신발
+                  draggableWidget(type: 5),
+                  //가방
+                  draggableWidget(type: 6),
+                ],
+              ),
+            ),
+          ),
+          /*//상의
+          draggableWidget(type: 1),
+          //하의
+          draggableWidget(type: 2),
+          //원피스
+          draggableWidget(type: 3),
+          //아우터
+          draggableWidget(type: 4),
+          //신발
+          draggableWidget(type: 5),
+          //가방
+          draggableWidget(type: 6),*/
+          //하단메뉴 bottomsheet
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: GestureDetector(
+              onVerticalDragStart: (details) {
+                swipeStartY = details.globalPosition.dy;
+              },
+              onVerticalDragUpdate: (details) {
+                setState(() {
+                  swipeDirection =
+                      (details.globalPosition.dy < swipeStartY) ? "Up" : "Down";
+                });
+              },
+              onVerticalDragEnd: (details) {
+                if (swipeDirection == "Down" && bottomSheetSize == 200) {
+                  print("toggle");
+                  _dragToExpandController.toggle();
+                } else if (swipeDirection == "Up") {
+                  print("up");
+                  setState(() {
+                    bottomSheetSize = 350;
+                  });
+                } else if (swipeDirection == "Down") {
+                  print("down");
+                  setState(() {
+                    bottomSheetSize = 200;
+                  });
+                }
+              },
+              child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: DragToExpand(
+                      controller: _dragToExpandController,
                       minSize: 0,
-                      maxSize: bottomsheet_size,
+                      //길이 크게할 때 여기를 건드리자
+                      maxSize: bottomSheetSize,
                       baseSide: BaseSide.bottom,
                       toggleOnTap: true,
                       draggable: Container(
@@ -557,7 +727,7 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                                     topRight: Radius.circular(20.0))),
                             child: Center(
                               child: Text(
-                                '다른 옷 가져오기',
+                                'More Clothes',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -566,972 +736,58 @@ class _Fittingroom_mainState extends State<Fittingroom_main> {
                             )),
                       ),
                       draggableWhenOpened: Container(
-                        height: 100,
-                        width: 10,
+                        height: 40,
                         color: Colors.transparent,
                         child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20.0),
-                                    topRight: Radius.circular(20.0))),
-                            child: Center(
-                              //=-------first tab menu start---------
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  firsttabmenu(
-                                      name: "내 옷장", index: 0), //0은 내 옷장 의미
-                                  firsttabmenu(
-                                      name: "Codi1",
-                                      index: 1,
-                                      imagepath:
-                                          "assets/images/sample_knit.png"), //1은 코디 1 의미
-                                  firsttabmenu(
-                                      name: "Codi2",
-                                      index: 2,
-                                      imagepath:
-                                          "assets/images/sample_pants.png"), //2은 코디 2 의미
-                                  firsttabmenu(
-                                      name: "Codi3",
-                                      index: 3,
-                                      imagepath:
-                                          "assets/images/top2.png"), //2은 코디 3 의미
-                                ],
-                              ),
-                            )),
-                      ),
-                      //------------tab아래에 들어갈 내용
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Builder(
-                          // ignore: missing_return
-                          builder: (BuildContext context) {
-                            if (select_index >= 1) {
-                              //codi에서 받아온 거는 123순서라..
-                              //코디 요청서 결과에서 받아오기
-                              List intab_widgets_1 = [
-                                intabWidget_productForm(
-                                    recommended_list: codi1_ai, what_type: 2),
-                                intabWidget_codiForm(
-                                  codi_list: codi1,
-                                ),
-                                intabWidget_productForm(
-                                    recommended_list: codi1_seller,
-                                    what_type: 2),
-                              ];
-                              List intab_widgets_2 = [
-                                intabWidget_productForm(
-                                    recommended_list: codi2_ai, what_type: 1),
-                                intabWidget_codiForm(
-                                  codi_list: codi1,
-                                ),
-                                intabWidget_codiForm(
-                                  codi_list: codi1,
-                                ),
-                              ];
-                              List intab_widgets_3 = [
-                                intabWidget_productForm(
-                                    recommended_list: codi3_ai, what_type: 2),
-                                intabWidget_codiForm(
-                                  codi_list: codi1,
-                                ),
-                                intabWidget_codiForm(
-                                  codi_list: codi1,
-                                ),
-                              ];
-                              List intab_widgets = [
-                                intab_widgets_1,
-                                intab_widgets_2,
-                                intab_widgets_3
-                              ];
-
-                              return tabWidget_codi(
-                                  intab_widgets:
-                                      intab_widgets[select_index - 1]);
-                            } else if (select_index == 0) {
-                              //내옷장에서 받아오기
-                              List intab_widgets_1 = [
-                                intabWidget_myclosetForm(
-                                  recommended_list: mycloset_top,
-                                  what_type: 1,
-                                ),
-                                //-------------pants
-                                intabWidget_myclosetForm(
-                                  recommended_list: mycloset_pants,
-                                  what_type: 2,
-                                ),
-                                //-------------onepiece
-                                intabWidget_myclosetForm(
-                                  recommended_list: mycloset_onepiece,
-                                  what_type: 3,
-                                ),
-                                //-----------outer
-                                intabWidget_myclosetForm(
-                                  recommended_list: mycloset_outer,
-                                  what_type: 4,
-                                ),
-                                //--------------shoes
-                                intabWidget_myclosetForm(
-                                  recommended_list: mycloset_shoes,
-                                  what_type: 5,
-                                )
-                              ];
-                              return tabWidget_mycloset(
-                                  intab_widgets: intab_widgets_1);
-                            }
-                          },
+                          decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20.0),
+                                  topRight: Radius.circular(20.0))),
+                          child: totalTab(),
                         ),
                       ),
-                    )),
-              )),
+                      //여기에는 아래에 들어갈 내용
+                      child: DragTarget(
+                        builder:
+                            // ignore: missing_return
+                            (context, List<int> candidateData, rejectedData) {
+                          if (menuIndex == 0) //내 옷장일 때
+                          {
+                            return Column(
+                              children: [myCloset()],
+                            );
+                          }
+                        },
+                        //들어온 상태. 이때는 화면 다르게
+                        onWillAccept: (data) {
+                          setState(() {
+                            contentType = 1;
+                          });
+                          return true;
+                        },
+                        //accept한 상태. 삭제하자
+                        onAccept: (data) {
+                          setState(() {
+                            selectedClothList[data]["image"] = null;
+                            selectedClothList[data]["offsetX"] =
+                                selectedClothList[data]["originalOffsetX"];
+                            selectedClothList[data]["offsetY"] =
+                                selectedClothList[data]["originalOffsetY"];
+                            contentType = 0;
+                          });
+                        },
+                        //다시 떠날 때
+                        onLeave: (object) {
+                          setState(() {
+                            contentType = 0;
+                          });
+                        },
+                      ))),
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  Widget intabWidget_productForm(
-      {int what_type, List<ProductClothing> recommended_list}) {
-    return GestureDetector(
-      onVerticalDragStart: (details) {
-        setState(() {
-          swipeStartY = details.globalPosition.dy;
-        });
-      },
-      onVerticalDragUpdate: (details) {
-        setState(() {
-          swipeDirection =
-              (details.globalPosition.dy < swipeStartY) ? "Up" : "Down";
-        });
-      },
-      onVerticalDragEnd: (details) {
-        setState(() {
-          if (swipeDirection == "Down" && bottomsheet_size == 200) {
-            print("한번더 내려가게");
-            _dragToExpandController2.toggle();
-          }
-          if (swipeDirection == "Up") {
-            bottomsheet_size = 350;
-            bottomsheet_axis = Axis.vertical;
-          } else if (swipeDirection == "Down") {
-            bottomsheet_size = 200;
-            bottomsheet_axis = Axis.horizontal;
-          }
-        });
-      },
-      child: intabWidget_product(
-          recommended_list: recommended_list, what_type: what_type),
-    );
-  }
-
-//하위 탭의 옷들 listview로 나타낸 것
-  Widget intabWidget_product(
-      {int what_type, List<ProductClothing> recommended_list}) {
-    if (bottomsheet_axis == Axis.horizontal) {
-      return ListView(
-          scrollDirection: bottomsheet_axis,
-          children: List.generate(recommended_list.length, (idx) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-              child: InkWell(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(18)),
-                    border: Border.all(width: 1, color: Colors.black26),
-                  ),
-                  child: recommended_list[idx].encoded_img.contains('.')
-                      ? Image.asset(
-                          recommended_list[idx].encoded_img,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.scaleDown,
-                        )
-                      : Image.memory(
-                          base64Decode(recommended_list[idx].encoded_img),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.scaleDown,
-                        ),
-                ),
-                onTap: () async {
-                  setState(() {
-                    if (what_type == 1) //상의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_top = recommended_list[idx].encoded_img;
-                    } else if (what_type == 2) //하의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_bottom = recommended_list[idx].encoded_img;
-                    } else if (what_type == 3) //원피스
-                    {
-                      onepiece_yesno = 1;
-                      top_yesno = 0;
-                      bottom_yesno = 0;
-                      selected_onepiece = recommended_list[idx].encoded_img;
-                    } else if (what_type == 4) //하의
-                    {
-                      selected_outer = recommended_list[idx].encoded_img;
-                    } else if (what_type == 5) //신발
-                    {
-                      selected_shoes = recommended_list[idx].encoded_img;
-                    }
-                  });
-                },
-                onLongPress: () {
-                  //옷 이미지, 가격, 이름 받아오기
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          content: ProductDetail(
-                            product: recommended_list[idx],
-                          ),
-                        );
-                      });
-                },
-              ),
-            );
-          }));
-    } else {
-      return GridView.count(
-          crossAxisCount: 3,
-          children: List.generate(recommended_list.length, (idx) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-              child: InkWell(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(18)),
-                    border: Border.all(width: 1, color: Colors.black26),
-                  ),
-                  child: recommended_list[idx].encoded_img.contains('.')
-                      ? Image.asset(
-                          recommended_list[idx].encoded_img,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.scaleDown,
-                        )
-                      : Image.memory(
-                          base64Decode(recommended_list[idx].encoded_img),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.scaleDown,
-                        ),
-                ),
-                onTap: () async {
-                  setState(() {
-                    if (what_type == 1) //상의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_top = recommended_list[idx].encoded_img;
-                    } else if (what_type == 2) //하의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_bottom = recommended_list[idx].encoded_img;
-                    } else if (what_type == 3) //원피스
-                    {
-                      onepiece_yesno = 1;
-                      top_yesno = 0;
-                      bottom_yesno = 0;
-                      selected_onepiece = recommended_list[idx].encoded_img;
-                    } else if (what_type == 4) //하의
-                    {
-                      selected_outer = recommended_list[idx].encoded_img;
-                    } else if (what_type == 5) //신발
-                    {
-                      selected_shoes = recommended_list[idx].encoded_img;
-                    }
-                  });
-                },
-                onLongPress: () {
-                  //옷 이미지, 가격, 이름 받아오기
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          content: ProductDetail(
-                            product: recommended_list[idx],
-                          ),
-                        );
-                      });
-                },
-              ),
-            );
-          }));
-    }
-  }
-
-  Widget intabWidget_codiForm({List codi_list}) {
-    return GestureDetector(
-      onVerticalDragStart: (details) {
-        setState(() {
-          swipeStartY = details.globalPosition.dy;
-        });
-      },
-      onVerticalDragUpdate: (details) {
-        setState(() {
-          swipeDirection =
-              (details.globalPosition.dy < swipeStartY) ? "Up" : "Down";
-        });
-      },
-      onVerticalDragEnd: (details) {
-        setState(() {
-          if (swipeDirection == "Down" && bottomsheet_size == 200) {
-            print("한번더 내려가게");
-            _dragToExpandController2.toggle();
-          }
-          if (swipeDirection == "Down") {
-            bottomsheet_size = 200;
-            bottomsheet_axis = Axis.horizontal;
-            print("Down");
-          }
-          if (swipeDirection == "Up") {
-            bottomsheet_size = 350;
-            bottomsheet_axis = Axis.vertical;
-            print("up");
-          }
-        });
-      },
-      child: intabWidget_codi(codi_list: codi_list),
-    );
-  }
-
-  //codi위젯을 listview로 나타낸 것
-  Widget intabWidget_codi({List codi_list}) {
-    if (bottomsheet_axis == Axis.horizontal) {
-      return ListView(
-        scrollDirection: bottomsheet_axis,
-        children: List.generate(codi_list.length, (idx) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            child: InkWell(
-              child: Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18)),
-                  border: Border.all(width: 1, color: Colors.black26),
-                ),
-                child: Image.asset(
-                  codi_list[idx].total_path == null
-                      ? codi_list[idx].top.imagepath
-                      : codi_list[idx].total_path,
-                  width: 150,
-                  height: 203,
-                  colorBlendMode: BlendMode.srcOut,
-                ),
-              ),
-              onTap: () async {
-                //누르면 화면상에서 바뀌게 하자!!!!!!
-                setState(() {
-                  if (codi_list[idx].top != null) //상의
-                  {
-                    selected_top = codi_list[idx].top.imagepath;
-                    top_yesno = 1;
-                  } else {
-                    top_yesno = 0;
-                  }
-                  if (codi_list[idx].bottom != null) //하의
-                  {
-                    selected_bottom = codi_list[idx].bottom.imagepath;
-                    bottom_yesno = 1;
-                  } else {
-                    bottom_yesno = 0;
-                  }
-                  if (codi_list[idx].onepiece != null) //원피스
-                  {
-                    selected_onepiece = codi_list[idx].onepiece.imagepath;
-                    onepiece_yesno = 1;
-                  } else {
-                    onepiece_yesno = 0;
-                  }
-                  if (codi_list[idx].outer != null) //아우터
-                  {
-                    selected_outer = codi_list[idx].outer.imagepath;
-                    outer_yesno = 1;
-                  } else {
-                    outer_yesno = 0;
-                  }
-                  if (codi_list[idx].shoes != null) //신발
-                  {
-                    selected_shoes = codi_list[idx].shoes.imagepath;
-                    shoes_yesno = 1;
-                  } else {
-                    shoes_yesno = 0;
-                  }
-                  if (codi_list[idx].bag != null) //가방
-                  {
-                    selected_bag = codi_list[idx].bag.imagepath;
-                    bag_yesno = 1;
-                  } else {
-                    bag_yesno = 0;
-                  }
-                });
-              },
-              onLongPress: () {
-                //옷 이미지, 가격, 이름 받아오기
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      List tmp = [];
-                      if (codi_list[idx].top != null) //상의
-                      {
-                        tmp.add(codi_list[idx].top);
-                      }
-                      if (codi_list[idx].bottom != null) //하의
-                      {
-                        tmp.add(codi_list[idx].bottom);
-                      }
-                      if (codi_list[idx].onepiece != null) //원피스
-                      {
-                        tmp.add(codi_list[idx].onepiece);
-                      }
-                      if (codi_list[idx].outer != null) //아우터
-                      {
-                        tmp.add(codi_list[idx].outer);
-                      }
-                      if (codi_list[idx].shoes != null) //신발
-                      {
-                        tmp.add(codi_list[idx].shoes);
-                      }
-                      if (codi_list[idx].bag != null) //가방
-                      {
-                        tmp.add(codi_list[idx].bag);
-                      }
-                      return AlertDialog(
-                        content: ProductSetDetail(
-                          codi_clothes: tmp,
-                        ),
-                      );
-                    });
-              },
-            ),
-          );
-        }),
-      );
-    }
-    if (bottomsheet_axis == Axis.vertical) {
-      return GridView.count(
-        crossAxisCount: 3,
-        children: List.generate(codi_list.length, (idx) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            child: InkWell(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18)),
-                  border: Border.all(width: 1, color: Colors.black26),
-                ),
-                child: Image.asset(
-                  codi_list[idx].total_path == null
-                      ? codi_list[idx].top.imagepath
-                      : codi_list[idx].total_path,
-                  width: 150,
-                  height: 203,
-                  colorBlendMode: BlendMode.srcOut,
-                ),
-              ),
-              onTap: () async {
-                //누르면 화면상에서 바뀌게 하자!!!!!!
-                setState(() {
-                  if (codi_list[idx].top.imagepath != null) //상의
-                  {
-                    selected_top = codi_list[idx].top.imagepath;
-                    top_yesno = 1;
-                  } else {
-                    top_yesno = 0;
-                  }
-                  if (codi_list[idx].bottom.imagepath != null) //하의
-                  {
-                    selected_bottom = codi_list[idx].bottom.imagepath;
-                    bottom_yesno = 1;
-                  } else {
-                    bottom_yesno = 0;
-                  }
-                  if (codi_list[idx].onepiece.imagepath != null) //원피스
-                  {
-                    selected_onepiece = codi_list[idx].onepiece.imagepath;
-                    onepiece_yesno = 1;
-                  } else {
-                    onepiece_yesno = 0;
-                  }
-                  if (codi_list[idx].outer.imagepath != null) //아우터
-                  {
-                    selected_outer = codi_list[idx].outer.imagepath;
-                    outer_yesno = 1;
-                  } else {
-                    outer_yesno = 0;
-                  }
-                  if (codi_list[idx].shoes.imagepath != null) //신발
-                  {
-                    selected_shoes = codi_list[idx].shoes.imagepath;
-                    shoes_yesno = 1;
-                  } else {
-                    shoes_yesno = 0;
-                  }
-                  if (codi_list[idx].bag.imagepath != null) //가방
-                  {
-                    selected_bag = codi_list[idx].bag.imagepath;
-                    bag_yesno = 1;
-                  } else {
-                    bag_yesno = 0;
-                  }
-                });
-              },
-              onLongPress: () {
-                //옷 이미지, 가격, 이름 받아오기
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      List tmp = [];
-                      if (codi_list[idx].top != null) //상의
-                      {
-                        tmp.add(codi_list[idx].top);
-                      }
-                      if (codi_list[idx].bottom != null) //하의
-                      {
-                        tmp.add(codi_list[idx].bottom);
-                      }
-                      if (codi_list[idx].onepiece != null) //원피스
-                      {
-                        tmp.add(codi_list[idx].onepiece);
-                      }
-                      if (codi_list[idx].outer != null) //아우터
-                      {
-                        tmp.add(codi_list[idx].outer);
-                      }
-                      if (codi_list[idx].shoes != null) //신발
-                      {
-                        tmp.add(codi_list[idx].shoes);
-                      }
-                      if (codi_list[idx].bag != null) //가방
-                      {
-                        tmp.add(codi_list[idx].bag);
-                      }
-                      return AlertDialog(
-                        content: ProductSetDetail(
-                          codi_clothes: tmp,
-                        ),
-                      );
-                    });
-              },
-            ),
-          );
-        }),
-      );
-    }
-  }
-
-  Widget intabWidget_myclosetForm({int what_type, List recommended_list}) {
-    return GestureDetector(
-      onVerticalDragStart: (details) {
-        setState(() {
-          swipeStartY = details.globalPosition.dy;
-        });
-      },
-      onVerticalDragUpdate: (details) {
-        setState(() {
-          swipeDirection =
-              (details.globalPosition.dy < swipeStartY) ? "Up" : "Down";
-        });
-      },
-      onVerticalDragEnd: (details) {
-        setState(() {
-          if (swipeDirection == "Down" && bottomsheet_size == 200) {
-            print("한번더 내려가게");
-            _dragToExpandController2.toggle();
-          }
-          if (swipeDirection == "Up") {
-            bottomsheet_size = 350;
-            bottomsheet_axis = Axis.vertical;
-          } else if (swipeDirection == "Down") {
-            bottomsheet_size = 200;
-            bottomsheet_axis = Axis.horizontal;
-          }
-        });
-      },
-      child: intabWidget_mycloset(
-          recommended_list: recommended_list, what_type: what_type),
-    );
-  }
-
-  //하위 탭의 옷들 listview로 나타낸 것
-  Widget intabWidget_mycloset({int what_type, List recommended_list}) {
-    if (bottomsheet_axis == Axis.horizontal) {
-      return ListView(
-          scrollDirection: bottomsheet_axis,
-          children: List.generate(recommended_list.length, (idx) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-              child: InkWell(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(18)),
-                    border: Border.all(width: 1, color: Colors.black26),
-                  ),
-                  child: Image.memory(
-                    base64Decode(recommended_list[idx].clothingImgBase64),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.scaleDown,
-                  ),
-                ),
-                onTap: () async {
-                  setState(() {
-                    if (what_type == 1) //상의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_top = recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 2) //하의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_bottom = recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 3) //원피스
-                    {
-                      onepiece_yesno = 1;
-                      top_yesno = 0;
-                      bottom_yesno = 0;
-                      selected_onepiece =
-                          recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 4) //하의
-                    {
-                      selected_outer = recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 5) //신발
-                    {
-                      selected_shoes = recommended_list[idx].clothingImgBase64;
-                    }
-                  });
-                },
-              ),
-            );
-          }));
-    } else {
-      return GridView.count(
-          crossAxisCount: 3,
-          children: List.generate(recommended_list.length, (idx) {
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-              child: InkWell(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(18)),
-                    border: Border.all(width: 1, color: Colors.black26),
-                  ),
-                  child: Image.memory(
-                    base64Decode(recommended_list[idx].clothingImgBase64),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.scaleDown,
-                    //colorBlendMode: BlendMode.srcOut,
-                  ),
-                ),
-                onTap: () async {
-                  setState(() {
-                    if (what_type == 1) //상의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_top = recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 2) //하의
-                    {
-                      onepiece_yesno = 0;
-                      top_yesno = 1;
-                      bottom_yesno = 1;
-                      selected_bottom = recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 3) //원피스
-                    {
-                      onepiece_yesno = 1;
-                      top_yesno = 0;
-                      bottom_yesno = 0;
-                      selected_onepiece =
-                          recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 4) //하의
-                    {
-                      selected_outer = recommended_list[idx].clothingImgBase64;
-                    } else if (what_type == 5) //신발
-                    {
-                      selected_shoes = recommended_list[idx].clothingImgBase64;
-                    }
-                  });
-                },
-                // onLongPress: () {
-                //   //옷 이미지, 가격, 이름 받아오기
-                //   showDialog(
-                //       context: context,
-                //       builder: (BuildContext context) {
-                //         return AlertDialog(
-                //           content: ProductDetail(
-                //             codi_clothes: [
-                //               Cloth_info(
-                //                   imagepath: recommended_list[idx].imagepath,
-                //                   brandname: recommended_list[idx].brandname,
-                //                   clothname: recommended_list[idx].clothname,
-                //                   price: recommended_list[idx].price)
-                //             ],
-                //           ),
-                //         );
-                //       });
-                // },
-              ),
-            );
-          }));
-    }
-  }
-
-  //코디관련 하위탭
-  Widget tabWidget_codi({List intab_widgets}) {
-    return Container(
-        height: 200,
-        color: Colors.transparent,
-        child: DefaultTabController(
-          length: 3, //유저, ai, 판매자
-          child: Scaffold(
-            appBar: TabBar(
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.black,
-              labelColor: Colors.black,
-              //indicatorSize: TabBarIndicatorSize.label,
-              tabs: const <Widget>[
-                Tab(
-                  child: Text("AI", style: TextStyle(fontSize: 15.0)),
-                ),
-                Tab(
-                  child: Text('스타일리스트', style: TextStyle(fontSize: 15.0)),
-                ),
-                Tab(
-                  //icon: Icon(Icons.looks_3),
-                  child: Text('판매자', style: TextStyle(fontSize: 15.0)),
-                ),
-              ],
-            ),
-            body: TabBarView(
-              children: <Widget>[
-                //------------------코디1
-                intab_widgets[0],
-                //-------------코디2
-                intab_widgets[1],
-                //-------------코디3
-                intab_widgets[2],
-              ],
-            ),
-          ),
-        ));
-  }
-
-  //내옷장 관련 하위탭
-  Widget tabWidget_mycloset({List intab_widgets}) {
-    return Container(
-        height: 200,
-        color: Colors.transparent,
-        child: DefaultTabController(
-          length: 5,
-          child: Scaffold(
-            appBar: TabBar(
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.black,
-              labelColor: Colors.black,
-              //indicatorSize: TabBarIndicatorSize.label,
-              tabs: const <Widget>[
-                Tab(
-                  child: Text("상의", style: TextStyle(fontSize: 15.0)),
-                ),
-                Tab(
-                  child: Text('하의', style: TextStyle(fontSize: 15.0)),
-                ),
-                Tab(
-                  //icon: Icon(Icons.looks_3),
-                  child: Text('원피스', style: TextStyle(fontSize: 15.0)),
-                ),
-                Tab(
-                  child: Text('아우터', style: TextStyle(fontSize: 15.0)),
-                ),
-                Tab(
-                  child: Text('신발', style: TextStyle(fontSize: 15.0)),
-                ),
-              ],
-            ),
-            body: TabBarView(
-              children: <Widget>[
-                //------------------top
-                intab_widgets[0],
-                //-------------pants
-                intab_widgets[1],
-                //-------------onepiece
-                intab_widgets[2],
-                //-----------outer
-                intab_widgets[3],
-                //--------------shoes
-                intab_widgets[4],
-              ],
-            ),
-          ),
-        ));
-  }
-
-  //draggablewidget
-  Widget draggablewidget(
-      {double offset_x,
-      double offset_y,
-      int type,
-      String selected_imagepath,
-      double width_,
-      double height_}) {
-    int yesno = 0;
-    if (type == 1 && top_yesno == 1) {
-      yesno = 1;
-    } else if (type == 2 && bottom_yesno == 1) {
-      yesno = 1;
-    } else if (type == 3 && onepiece_yesno == 1) {
-      yesno = 1;
-    } else if (type == 4 && outer_yesno == 1) {
-      yesno = 1;
-    } else if (type == 5 && shoes_yesno == 1) {
-      yesno = 1;
-    } else if (type == 6 && bag_yesno == 1) {
-      yesno = 1;
-    }
-    if (yesno == 1) {
-      return Positioned(
-        left: offset_x,
-        top: offset_y,
-        child: Draggable(
-          child: SizedBox(
-            width: width_,
-            child: selected_imagepath.contains('.')
-                ? Image.asset(selected_imagepath,
-                    width: width_, height: height_, fit: BoxFit.fitWidth)
-                : Image.memory(
-                    base64Decode(selected_imagepath),
-                    width: width_,
-                    height: height_,
-                    fit: BoxFit.fitWidth,
-                    //colorBlendMode: BlendMode.srcOut,
-                  ),
-          ),
-          feedback: selected_imagepath.contains('.')
-              ? Image.asset(selected_imagepath,
-                  width: width_, height: height_, fit: BoxFit.fitWidth)
-              : Image.memory(
-                  base64Decode(selected_imagepath),
-                  width: width_,
-                  height: height_,
-                  fit: BoxFit.fitWidth,
-                  //colorBlendMode: BlendMode.srcOut,
-                ),
-          childWhenDragging: Text(" "),
-          onDragEnd: (DraggableDetails details) {
-            setState(() {
-              if (type == 1) //상의
-              {
-                top_offset_x = details.offset.dx;
-                top_offset_y = details.offset.dy - 80;
-              } else if (type == 2) //하의
-              {
-                bottom_offset_x = details.offset.dx;
-                bottom_offset_y = details.offset.dy - 80;
-              } else if (type == 3) //원피스
-              {
-                onepiece_offset_x = details.offset.dx;
-                onepiece_offset_y = details.offset.dy - 80;
-              } else if (type == 4) //아우터
-              {
-                outer_offset_x = details.offset.dx;
-                outer_offset_y = details.offset.dy - 80;
-              } else if (type == 5) //신발
-              {
-                shoes_offset_x = details.offset.dx;
-                shoes_offset_y = details.offset.dy - 80;
-              } else if (type == 6) //가방
-              {
-                bag_offset_x = details.offset.dx;
-                bag_offset_y = details.offset.dy - 80;
-              }
-            });
-          },
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  Widget firsttabmenu({String name, int index, String imagepath}) {
-    return InkWell(
-        child: Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
-          height: 100,
-          width: 100,
-          decoration: select_index == index
-              ? BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(width: 1, color: Colors.black),
-                )
-              : BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(width: 1, color: Colors.grey[600]),
-                ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              imagepath != null
-                  ? SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: Image.asset(
-                        imagepath,
-                      ),
-                    )
-                  : Container(),
-              Text(name,
-                  style: select_index == index
-                      ? TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        )
-                      : TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.bold,
-                        )),
-            ],
-          ),
-        ),
-        onTap: () {
-          setState(() {
-            select_index = index;
-            if (select_index == 1) {
-              selected_top = "assets/request_codi/codi1.png";
-            }
-            if (select_index == 2) {
-              selected_bottom = "assets/request_codi/codi2.png";
-            }
-            if (select_index == 3) {
-              selected_top = "assets/request_codi/codi3.png";
-            }
-          });
-        });
   }
 }

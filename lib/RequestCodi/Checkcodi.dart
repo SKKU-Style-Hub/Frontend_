@@ -129,15 +129,16 @@ class _CheckCodiState extends State<CheckCodi> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  return Fittingroom(
-                                      selected_top1:
+                                  return FittingRoom(
+                                      /*selected_top1:
                                           receivedCodiList[idx].top_path,
                                       selected_bottom1:
                                           receivedCodiList[idx].bottom_path,
                                       selected_shoes1:
                                           receivedCodiList[idx].shoes_path,
                                       selected_onepiece1: null,
-                                      selected_outer1: null);
+                                      selected_outer1: null,*/
+                                      );
                                 }),
                               );
                             },
