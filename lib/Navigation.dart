@@ -13,11 +13,8 @@ import 'LoginScreen.dart';
 
 class Navigation extends StatefulWidget {
   int _selectedItemPosition = 0;
-  int fittingroom_select = 0;
-  Navigation({Key key, int selectedPosition, int fittingroom_select})
-      : super(key: key) {
+  Navigation({Key key, int selectedPosition}) : super(key: key) {
     _selectedItemPosition = selectedPosition;
-    this.fittingroom_select = fittingroom_select;
   }
   //static bool newPage = false;
   @override
@@ -54,7 +51,7 @@ class _NavigationState extends State<Navigation> {
     MainFeed(),
     MyClosetPage(),
     RequestChoose(),
-    Fittingroom_main()
+    FittingRoomMain()
   ];
 
   @override
@@ -144,8 +141,9 @@ class _NavigationState extends State<Navigation> {
             child: TickerMode(
               enabled: widget._selectedItemPosition == 3,
               child: Scaffold(
-                body:
-                    Fittingroom_main(selected_index: widget.fittingroom_select),
+                body: FittingRoomMain(
+                    //selected_index: widget.fittingroom_select
+                    ),
                 //debugShowCheckedModeBanner: false,
               ),
             ),

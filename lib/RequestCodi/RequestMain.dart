@@ -117,7 +117,7 @@ class _RequestMainState extends State<RequestMain> {
           MaterialPageRoute(
               builder: (context) => Navigation(
                     selectedPosition: 3,
-                    fittingroom_select: index,
+                    //fittingroom_select: index,
                   )),
         );
       },

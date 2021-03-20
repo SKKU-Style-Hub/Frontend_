@@ -48,6 +48,9 @@ dependencies:
   flutter_bloc: ^0.20.0
   cupertino_icons: ^1.0.0
   settings_ui: ^0.6.0
+  image_gallery_saver: '^1.6.8'
+  permission_handler: ^5.1.0+2
+  fluttertoast: ^7.1.8
 
 dev_dependencies:
   flutter_test:
