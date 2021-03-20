@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_size_getter/file_input.dart';
@@ -12,6 +13,8 @@ import 'dart:io';
 import '../data/MyClothingDatabase.dart';
 import '../Navigation.dart';
 import 'package:image/image.dart' as Img;
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 class RegisterPage extends StatefulWidget {
   static bool registered = false;
@@ -29,10 +32,29 @@ class _RegisterPageState extends State<RegisterPage> {
     print("imgSizeWidth " + ImageSizeGetter.getSize(FileInput(f)).toString());
     print("imgSizeHeight " + Image.file(f).height.toString());
 
+    String fileName = f.path.split('/').last;
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(f.path,
+          filename: fileName, contentType: MediaType("image", "jpg")),
+      "submit": "upload"
+    });
+    var response = await Dio().post("http://14.49.45.139:443 ", data: formData);
+    print("response");
+    print(response.data);
+    print("response");
+    File responseFile = File(f.path);
+    var raf = responseFile.openSync(mode: FileMode.WRITE);
+    raf.writeStringSync(response.data);
+    await raf.close();
+    print(await responseFile.length());
+    print(response.data.toString());
+
     var bytes = await f.readAsBytes();
     print("imgSize " + bytes.length.toString());
     setState(() {
       mPhoto = f;
+
+      mPhoto = responseFile;
     });
   }
 
@@ -105,6 +127,35 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Future _askOption() async {
+    await showDialog(
+        context: context,
+        child: SimpleDialog(
+          title: Text(
+            "옷 이미지 업로드 경로",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          children: [
+            SimpleDialogOption(
+              child: Text(
+                "카메라로 촬영하기",
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                onPhoto(ImageSource.camera);
+              },
+            ),
+            SimpleDialogOption(
+              child: Text("앨범에서 가져오기"),
+              onPressed: () {
+                Navigator.pop(context);
+                onPhoto(ImageSource.gallery);
+              },
+            ),
+          ],
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,9 +197,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: const EdgeInsets.all(20),
                       child: GestureDetector(
                         onTap: () {
-                          setState(() {
-                            onPhoto(ImageSource.gallery);
-                          });
+                          _askOption();
                         },
                         child:
                             mPhoto == null ? beforeCard() : afterCard(mPhoto),
