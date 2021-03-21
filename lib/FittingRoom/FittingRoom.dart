@@ -218,6 +218,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   }
 
   void getCloset() async {
+    //rawdata
+    putRawData();
+    //localDB
     myClosetListTop = await MyClothingDatabase.getTop();
     myClosetListBottom = await MyClothingDatabase.getBottom();
     myClosetListOnepiece = await MyClothingDatabase.getOnePiece();
@@ -257,7 +260,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   //-----------------Widget-----------------
   Widget deleteScreen() {
     return Container(
-      height: 130,
+      height: bottomSheetSize == 200 ? 130 : 280,
       width: 330,
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -340,7 +343,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               thickness: 2,
             ),
           ),
-          if (detailClothInfo == ProductClothing) //내옷장상품 아닐 때만 상품정보 띄우기
+          if (detailClothInfo is ProductClothing) //내옷장상품 아닐 때만 상품정보 띄우기
             Row(
               children: [
                 Container(
@@ -431,7 +434,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               ],
             )
           else
-            Text("옷장 상품은 정보가 없습니다."),
+            Container(
+              height: bottomSheetSize == 200 ? 150 : 300,
+              child: Center(
+                child: Text("해당 상품은 옷 정보가 없습니다."),
+              ),
+            ),
         ],
       ),
     );
@@ -578,7 +586,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     if (contentType == 2) {
       return detailScreen();
     }
-    //
     return Container(
         color: Colors.white60,
         child: Column(
@@ -609,21 +616,23 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           return Positioned(
             left: selectedClothList[type]["offsetX"].toDouble(),
             top: selectedClothList[type]["offsetY"].toDouble(),
-            child: Draggable(
-              child: InkWell(
-                onTap: () {
-                  setState() {
-                    if (selectedClothList[type]["clothing"] is MyClothing) {
-                      //null을 보내자
-                      detailClothInfo = null;
-                      contentType = 2;
-                    } else {
-                      //product일 때는 보내지 말자
-                      detailClothInfo = selectedClothList[type]["clothing"];
-                      contentType = 2;
-                    }
-                  }
-                },
+            child: InkWell(
+              onTap: () {
+                if (selectedClothList[type]["clothing"] is MyClothing) {
+                  //null을 보내자
+                  setState(() {
+                    detailClothInfo = null;
+                    contentType = 2;
+                  });
+                } else {
+                  //product일 때는 보내지 말자
+                  setState(() {
+                    detailClothInfo = selectedClothList[type]["clothing"];
+                    contentType = 2;
+                  });
+                }
+              },
+              child: Draggable(
                 child: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
                   child: selectedClothList[type]["image"].contains('.')
@@ -639,30 +648,34 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                           //fit: BoxFit.scaleDown,
                           ),
                 ),
+                feedback: SizedBox(
+                  width: selectedClothList[type]["width"].toDouble(),
+                  child: selectedClothList[type]["image"].contains('.')
+                      ? Image.asset(selectedClothList[type]["image"],
+                          width: selectedClothList[type]["width"].toDouble(),
+                          fit: BoxFit.fitWidth)
+                      : Image.memory(
+                          base64Decode(selectedClothList[type]["image"]),
+                          width: selectedClothList[type]["width"].toDouble(),
+                          fit: BoxFit.fitWidth
+                          //fit: BoxFit.contain
+                          //height: 100,
+                          //fit: BoxFit.scaleDown,
+                          ),
+                ),
+                childWhenDragging: Container(),
+                onDragEnd: (DraggableDetails details) {
+                  setState(() {
+                    //다시 생길 때는 원래 자리로
+                    if (selectedClothList[type]["image"] != null) {
+                      selectedClothList[type]["offsetX"] = details.offset.dx;
+                      selectedClothList[type]["offsetY"] =
+                          details.offset.dy - 80;
+                    }
+                  });
+                },
+                data: type,
               ),
-              feedback: SizedBox(
-                width: selectedClothList[type]["width"].toDouble(),
-                child: selectedClothList[type]["image"].contains('.')
-                    ? Image.asset(selectedClothList[type]["image"],
-                        width: selectedClothList[type]["width"].toDouble(),
-                        fit: BoxFit.fitWidth)
-                    : Image.memory(
-                        base64Decode(selectedClothList[type]["image"]),
-                        width: selectedClothList[type]["width"].toDouble(),
-                        fit: BoxFit.fitWidth
-                        //fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
-              ),
-              childWhenDragging: Container(),
-              onDragEnd: (DraggableDetails details) {
-                setState(() {
-                  selectedClothList[type]["offsetX"] = details.offset.dx;
-                  selectedClothList[type]["offsetY"] = details.offset.dy - 80;
-                });
-              },
-              data: type,
             ),
           );
         }
@@ -723,8 +736,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   @override
   Widget build(BuildContext context) {
     myClosetListTotal = [];
-    //rawdata
-    putRawData();
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);
     myClosetListTotal.add(myClosetListBottom);
