@@ -67,25 +67,13 @@ class _NavigationState extends State<Navigation> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()),
-              );
-            },
-          ),
           widget._selectedItemPosition == 3
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     InkWell(
                       onTap: saveCodi,
-                      child: Text("저장 ",
+                      child: Text("저장     ",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -93,7 +81,18 @@ class _NavigationState extends State<Navigation> {
                     ),
                   ],
                 )
-              : Container(),
+              : IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingsScreen()),
+                    );
+                  },
+                ),
         ],
       ),
       bottomNavigationBar: SnakeNavigationBar.color(
