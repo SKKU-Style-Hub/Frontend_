@@ -35,11 +35,13 @@ class _NavigationState extends State<Navigation> {
   _checkAccessToken() async {
     token = await AccessTokenStore.instance.fromStore();
     if (token.refreshToken == null) {
+      print("token null");
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
-    }
+    } else
+      print("token not null");
   }
 
   final BorderRadius _borderRadius = const BorderRadius.only(

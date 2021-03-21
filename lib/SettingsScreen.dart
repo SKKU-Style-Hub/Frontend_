@@ -47,6 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onPressed: (context) async {
                         try {
                           var code = await UserApi.instance.logout();
+
                           print(code.toString());
                           Navigator.push(
                             context,
