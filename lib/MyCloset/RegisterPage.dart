@@ -38,10 +38,8 @@ class _RegisterPageState extends State<RegisterPage> {
           filename: fileName, contentType: MediaType("image", "jpg")),
       "submit": "upload"
     });
-    var response = await Dio().post("http://14.49.45.139:443 ", data: formData);
-    print("response");
+    var response = await Dio().post("http://14.49.45.139:443", data: formData);
     print(response.data);
-    print("response");
     File responseFile = File(f.path);
     var raf = responseFile.openSync(mode: FileMode.WRITE);
     raf.writeStringSync(response.data);
@@ -58,11 +56,11 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  void saveFile(bytes) async {
-    Directory documentDirectory = await getApplicationDocumentsDirectory();
-    File file = File(Path.join(documentDirectory.path, 'image.png'));
-    file.writeAsBytesSync(bytes);
-  }
+  // void saveFile(bytes) async {
+  //   Directory documentDirectory = await getApplicationDocumentsDirectory();
+  //   File file = File(Path.join(documentDirectory.path, 'image.png'));
+  //   file.writeAsBytesSync(bytes);
+  // }
 
   void getOmnious() async {
     final bytes = mPhoto.readAsBytesSync();
@@ -158,90 +156,113 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textController = TextEditingController();
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Image.asset(
-          'assets/applogo.png',
-          fit: BoxFit.cover,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Image.asset(
+            'assets/applogo.png',
+            fit: BoxFit.cover,
+          ),
+          backgroundColor: Colors.white,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.close),
+              color: Colors.black,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
-        backgroundColor: Colors.white,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.close),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(12),
-            child: Text('MY 옷장', style: kPageTitleTextStyle),
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 60),
-              child: Card(
-                elevation: 10,
+        body: LayoutBuilder(builder: (context, constraint) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraint.maxHeight),
+              child: IntrinsicHeight(
                 child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: GestureDetector(
-                        onTap: () {
-                          _askOption();
+                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 90,
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 60),
+                        child: Card(
+                          elevation: 10,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _askOption();
+                                  },
+                                  child: mPhoto == null
+                                      ? beforeCard()
+                                      : afterCard(mPhoto),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 60),
+                        child: TextField(
+                            controller: textController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: '브랜드 입력',
+                            )),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Center(
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                        disabledColor: Colors.black,
+                        onPressed: () {
+                          getOmnious();
                         },
-                        child:
-                            mPhoto == null ? beforeCard() : afterCard(mPhoto),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 55),
+                          child: Text(
+                            '옷 등록하기',
+                            style: kButtonTextStyle,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 26,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 80,
+                        alignment: Alignment.bottomCenter,
+                        child: Image.asset('assets/wall_texture.png'),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 60,
-          ),
-          Center(
-            child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ),
-              disabledColor: Colors.black,
-              onPressed: () {
-                getOmnious();
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 55),
-                child: Text(
-                  '옷 등록하기',
-                  style: kButtonTextStyle,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 26,
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.bottomCenter,
-              child: Image.asset('assets/wall_texture.png'),
-            ),
-          ),
-        ],
-      ),
-    );
+          );
+        }));
   }
 }
 

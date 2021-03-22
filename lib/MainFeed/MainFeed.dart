@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
+import 'package:stylehub_flutter/MyCloset/MyRoom/Userfeedinput1.dart';
 import 'RawData.dart';
 import 'StylingCard.dart';
 
@@ -101,6 +102,13 @@ class _MainFeedState extends State<MainFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.create),
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => Userfeedinput1()));
+        },
+      ),
       body: Column(
         children: [
           Expanded(

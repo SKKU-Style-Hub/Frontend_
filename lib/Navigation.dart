@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
 import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
+import 'package:stylehub_flutter/MyCloset/MyRoom/Userfeedinput1.dart';
 import 'package:stylehub_flutter/SettingsScreen.dart';
 import 'MainFeed/MainFeed.dart';
 import 'MyCloset/MyClosetPage.dart';
@@ -48,13 +49,6 @@ class _NavigationState extends State<Navigation> {
     topLeft: Radius.circular(0),
     topRight: Radius.circular(0),
   );
-
-  static List<Widget> _widgetOptions = <Widget>[
-    MainFeed(),
-    MyClosetPage(),
-    RequestChoose(),
-    FittingRoomMain()
-  ];
 
   @override
   Widget build(BuildContext context) {

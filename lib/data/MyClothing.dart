@@ -20,6 +20,7 @@ class MyClothing {
   String neckLine;
   String fit;
   String shape;
+  String brandName;
 
   MyClothing(
       {this.id,
@@ -35,7 +36,8 @@ class MyClothing {
       this.sleeveLength,
       this.neckLine,
       this.fit,
-      this.shape});
+      this.shape,
+      this.brandName});
 
   Map<String, dynamic> toMap() {
     return {
@@ -52,7 +54,8 @@ class MyClothing {
       'sleeveLength': sleeveLength,
       'neckLine': neckLine,
       'fit': fit,
-      'shape': shape
+      'shape': shape,
+      'brand': brandName
     };
   }
 }
