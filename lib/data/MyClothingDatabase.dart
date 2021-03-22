@@ -9,12 +9,12 @@ class MyClothingDatabase {
   static Future<Database> makeDatabase() async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = openDatabase(
-      join(await getDatabasesPath(), 'myclothing_database2.db'),
+      join(await getDatabasesPath(), 'myclothing_database3.db'),
       onCreate: (db, version) {
         print("onCreate!!");
         return db.execute(
           "CREATE TABLE MyCloset(id INTEGER PRIMARY KEY, clothingImgBase64 TEXT, category TEXT, color TEXT, colorDetail TEXT," +
-              "print TEXT, look TEXT, texture TEXT, detail TEXT, length TEXT, sleeveLength TEXT, neckLine TEXT, fit TEXT, shape TEXT)",
+              "print TEXT, look TEXT, texture TEXT, detail TEXT, length TEXT, sleeveLength TEXT, neckLine TEXT, fit TEXT, shape TEXT, brandName TEXT)",
         );
       },
       version: db_version,
@@ -72,7 +72,8 @@ class MyClothingDatabase {
           sleeveLength: maps[i]['sleeveLength'],
           neckLine: maps[i]['neckLine'],
           fit: maps[i]['fit'],
-          shape: maps[i]['shape']);
+          shape: maps[i]['shape'],
+          brandName: maps[i]['brandName']);
     });
     print("resultList size" + resultList.length.toString());
     return resultList[0];
@@ -100,7 +101,8 @@ class MyClothingDatabase {
           sleeveLength: maps[i]['sleeveLength'],
           neckLine: maps[i]['neckLine'],
           fit: maps[i]['fit'],
-          shape: maps[i]['shape']);
+          shape: maps[i]['shape'],
+          brandName: maps[i]['brandName']);
     });
   }
 
@@ -129,7 +131,8 @@ class MyClothingDatabase {
           sleeveLength: maps[i]['sleeveLength'],
           neckLine: maps[i]['neckLine'],
           fit: maps[i]['fit'],
-          shape: maps[i]['shape']);
+          shape: maps[i]['shape'],
+          brandName: maps[i]['brandName']);
     });
   }
 
@@ -158,7 +161,8 @@ class MyClothingDatabase {
           sleeveLength: maps[i]['sleeveLength'],
           neckLine: maps[i]['neckLine'],
           fit: maps[i]['fit'],
-          shape: maps[i]['shape']);
+          shape: maps[i]['shape'],
+          brandName: maps[i]['brandName']);
     });
   }
 
@@ -187,7 +191,8 @@ class MyClothingDatabase {
           sleeveLength: maps[i]['sleeveLength'],
           neckLine: maps[i]['neckLine'],
           fit: maps[i]['fit'],
-          shape: maps[i]['shape']);
+          shape: maps[i]['shape'],
+          brandName: maps[i]['brandName']);
     });
   }
 
@@ -216,7 +221,8 @@ class MyClothingDatabase {
           sleeveLength: maps[i]['sleeveLength'],
           neckLine: maps[i]['neckLine'],
           fit: maps[i]['fit'],
-          shape: maps[i]['shape']);
+          shape: maps[i]['shape'],
+          brandName: maps[i]['brandName']);
     });
   }
 

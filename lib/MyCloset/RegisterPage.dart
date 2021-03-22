@@ -26,33 +26,34 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   File mPhoto;
+  String brandInput;
   void onPhoto(ImageSource source) async {
     File f = await ImagePicker.pickImage(
         source: source, maxHeight: 500, maxWidth: 450);
     print("imgSizeWidth " + ImageSizeGetter.getSize(FileInput(f)).toString());
     print("imgSizeHeight " + Image.file(f).height.toString());
-
-    String fileName = f.path.split('/').last;
-    FormData formData = FormData.fromMap({
-      "file": await MultipartFile.fromFile(f.path,
-          filename: fileName, contentType: MediaType("image", "jpg")),
-      "submit": "upload"
-    });
-    var response = await Dio().post("http://14.49.45.139:443", data: formData);
-    print(response.data);
-    File responseFile = File(f.path);
-    var raf = responseFile.openSync(mode: FileMode.WRITE);
-    raf.writeStringSync(response.data);
-    await raf.close();
-    print(await responseFile.length());
-    print(response.data.toString());
+    //
+    // String fileName = f.path.split('/').last;
+    // FormData formData = FormData.fromMap({
+    //   "file": await MultipartFile.fromFile(f.path,
+    //       filename: fileName, contentType: MediaType("image", "jpg")),
+    //   "submit": "upload"
+    // });
+    // var response = await Dio().post("http://14.49.45.139:443", data: formData);
+    // print(response.data);
+    // File responseFile = File(f.path);
+    // var raf = responseFile.openSync(mode: FileMode.WRITE);
+    // raf.writeStringSync(response.data);
+    // await raf.close();
+    // print(await responseFile.length());
+    // print(response.data.toString());
 
     var bytes = await f.readAsBytes();
     print("imgSize " + bytes.length.toString());
     setState(() {
       mPhoto = f;
 
-      mPhoto = responseFile;
+      //mPhoto = responseFile;
     });
   }
 
@@ -109,6 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
       shape: tagResult['data']['objects'][0]['tags'][0]['shape'] != null
           ? tagResult['data']['objects'][0]['tags'][0]['shape']['name']
           : null,
+      brandName: brandInput
     ));
     final closet = await MyClothingDatabase.getMyCloset();
     print(closet.length);
@@ -219,6 +221,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: EdgeInsets.symmetric(horizontal: 60),
                         child: TextField(
                             controller: textController,
+                            onChanged: (String value) {
+                              brandInput = value;
+                            },
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: '브랜드 입력',

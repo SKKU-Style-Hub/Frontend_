@@ -55,7 +55,7 @@ class MyClothing {
       'neckLine': neckLine,
       'fit': fit,
       'shape': shape,
-      'brand': brandName
+      'brandName': brandName
     };
   }
 }
