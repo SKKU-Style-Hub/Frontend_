@@ -10,6 +10,8 @@ import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
+import 'package:stylehub_flutter/data/CodiClothing.dart';
+import 'package:stylehub_flutter/data/AllCodiClothing.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
@@ -94,6 +96,8 @@ List<MyClothing> myClosetListOnepiece = [];
 List<MyClothing> myClosetListOuter = [];
 List<MyClothing> myClosetListAcc = [];
 
+List<dynamic> codiRequestList = []; //일단 보여줄 코디요청list만들어놓음
+
 double swipeStartY;
 String swipeDirection;
 double bottomSheetSize = 200;
@@ -117,6 +121,8 @@ void _capture() async {
     final result = await ImageGallerySaver.saveImage(
         byteData.buffer.asUint8List(),
         quality: 100);
+    print("------------");
+    print(result);
     _showToast("이미지가 갤러리에 저장되었습니다.");
   } else {
     print("!");
@@ -132,6 +138,10 @@ _requestPermission() async {
     Permission.location,
     Permission.storage,
   ].request();
+
+  final info = statuses[Permission.storage].toString();
+  print(info);
+  _showToast(info);
 }
 
 void goToUrl(String url) async {
@@ -199,8 +209,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   DragToExpandController _dragToExpandController; //하단메뉴 drag
   int menuIndex = 0; //상위탭 내에서의 index
   int myClosetIndex = 1; //내 옷장 내에서의 index
-  int contentType = 0; //0: 옷들, 1: 삭제, 2: 상품정보
+  int allCodiClosetIndex = 0; //코디요청 첫화면에서의 index
+  int codiClosetIndex = 0; //코디요청 두번째 화면에서의 index
+  int contentType =
+      0; //0: 옷들, 1: 삭제, 2: 상품정보, 3:코디요청첫번째화면(total), 4:코디요청두번째화면(상세코디요청)
   ProductClothing detailClothInfo; //내옷장 말고 코디상품일 때만 띄워야함
+  AllCodiClothing mulcodiCloset;
   List<dynamic> myClosetListTotal = [];
 
   void initState() {
@@ -220,6 +234,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   void getCloset() async {
     //rawdata
     putRawData();
+    codiRequestList = [];
+    codiRequestList.add(tmpAllCodi);
+    mulcodiCloset = tmpAllCodi;
     //localDB
     myClosetListTop = await MyClothingDatabase.getTop();
     myClosetListBottom = await MyClothingDatabase.getBottom();
@@ -607,6 +624,231 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         ));
   }
 
+  //코디요청 관련 위젯들
+  Widget codiWidget(
+      {CodiClothing codiClothing,
+      int allCodiIndex,
+      int eachCodiIndex}) //몇번째 total코디 index인지
+  {
+    return InkWell(
+      onTap: () {
+        //클릭시에 더 많은 옷들을 볼 수 있는 화면으로 넘어가야 함 + select표시
+        setState(() {
+          allCodiClosetIndex = allCodiIndex;
+          codiClosetIndex = eachCodiIndex;
+          //옷 바뀌게 하자
+          for (int i = 0; i < 7; i++) {
+            if (codiClothing.codiClothes[i] != null) {
+              selectedClothList[i]["image"] =
+                  codiClothing.codiClothes[i].encoded_img;
+              selectedClothList[i]["clothing"] = codiClothing.codiClothes[i];
+            }
+          }
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
+        height: 100,
+        decoration: allCodiClosetIndex == allCodiIndex &&
+                eachCodiIndex == codiClosetIndex
+            ? BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                border: Border.all(color: Colors.indigo, width: 2.5))
+            : null,
+        child: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: bottomSheetSize == 200 ? 100 : 120,
+                child: codiClothing.totalImg.contains('.')
+                    ? Image.asset(codiClothing.totalImg,
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain)
+                    : Image.memory(base64Decode(codiClothing.totalImg),
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain
+                        //height: 100,
+                        //fit: BoxFit.scaleDown,
+                        ),
+              ),
+            ),
+            //선택된 코디일때 select뜨도록
+            allCodiClosetIndex == allCodiIndex &&
+                    eachCodiIndex == codiClosetIndex
+                ? Center(
+                    child: Text("    Select!",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  )
+                : Container(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget mulCodiContent({AllCodiClothing allCodiClothing, int allCodiIndex}) {
+    if (contentType == 1) //삭제를 위한 움직임
+    {
+      return deleteScreen();
+    }
+    if (bottomSheetSize == 350) {
+      return Container(
+        color: Colors.transparent,
+        height: 330,
+        child: GridView.count(
+          crossAxisCount: 3,
+          children: List.generate(
+            //안의 요소들
+            allCodiClothing.codiClothingList.length,
+            (idx) {
+              return codiWidget(
+                  codiClothing: allCodiClothing.codiClothingList[idx],
+                  allCodiIndex: allCodiIndex,
+                  eachCodiIndex: idx);
+            },
+          ),
+        ),
+      );
+    }
+    return Container(
+      height: 180,
+      // ignore: missing_return
+      child: Builder(builder: (context) {
+        return ListView(
+          scrollDirection: Axis.horizontal,
+          children: List.generate(
+            allCodiClothing.codiClothingList.length,
+            (idx) {
+              return codiWidget(
+                  codiClothing: allCodiClothing.codiClothingList[idx],
+                  allCodiIndex: allCodiIndex,
+                  eachCodiIndex: idx);
+            },
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget allCodiWidget(
+      {AllCodiClothing allCodiClothing, int allCodiIndex}) //몇번째 total코디 index인지
+  {
+    return InkWell(
+      onTap: () {
+        //클릭시에 더 많은 옷들을 볼 수 있는 화면으로 넘어가야 함 + select표시
+        setState(() {
+          allCodiClosetIndex = allCodiIndex;
+          contentType = 4;
+          mulcodiCloset = allCodiClothing;
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
+        height: 100,
+        decoration: allCodiClosetIndex == allCodiIndex
+            ? BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                border: Border.all(color: Colors.indigo, width: 2.5))
+            : null,
+        child: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: bottomSheetSize == 200 ? 100 : 120,
+                child: allCodiClothing.codiImg.contains('.')
+                    ? Image.asset(allCodiClothing.codiImg,
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain)
+                    : Image.memory(base64Decode(allCodiClothing.codiImg),
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain
+                        //height: 100,
+                        //fit: BoxFit.scaleDown,
+                        ),
+              ),
+            ),
+            //선택된 코디일때 select뜨도록
+            allCodiClosetIndex == allCodiIndex
+                ? Center(
+                    child: Text("    Select!",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  )
+                : Container(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget codiClosetContent() {
+    if (contentType == 1) //삭제를 위한 움직임
+    {
+      return deleteScreen();
+    }
+    if (bottomSheetSize == 350) {
+      return Container(
+        color: Colors.transparent,
+        height: 330,
+        child: GridView.count(
+          crossAxisCount: 3,
+          children: List.generate(
+            //안의 요소들
+            codiRequestList.length,
+            (idx) {
+              return allCodiWidget(
+                  allCodiClothing: codiRequestList[idx],
+                  allCodiIndex: idx.toInt());
+            },
+          ),
+        ),
+      );
+    }
+    return Container(
+      height: 180,
+      // ignore: missing_return
+      child: Builder(builder: (context) {
+        return ListView(
+          scrollDirection: Axis.horizontal,
+          children: List.generate(
+            codiRequestList.length,
+            (idx) {
+              return allCodiWidget(
+                  allCodiClothing: codiRequestList[idx], allCodiIndex: idx);
+            },
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget codiCloset() {
+    if (contentType == 2) {
+      return detailScreen();
+    }
+    return Container(
+        color: Colors.white60,
+        child: Column(
+          children: [
+            //코디요청에서 처음에는 요청 옷들 다 보여준다
+            contentType != 4
+                ? codiClosetContent()
+                : mulCodiContent(
+                    allCodiClothing: mulcodiCloset,
+                    allCodiIndex: allCodiClosetIndex),
+          ],
+        ));
+  }
+
   Widget draggableWidget({int type}) {
     //움직이는 위젯
     //type은 1: 상의 2: 하의...임을 나타냄. 위 참조
@@ -684,6 +926,43 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     );
   }
 
+  Widget totalTabElement(String name, int index) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          menuIndex = index;
+          if (index == 1) {
+            contentType = 3;
+          }
+        });
+      },
+      child: Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(
+            left: 5.0,
+            right: 5.0,
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 5,
+          ),
+          height: 30,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.all(Radius.circular(18)),
+            border: Border.all(width: 1, color: Colors.black),
+          ),
+          child: Text(
+            name,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          )),
+    );
+  }
+
   Widget totalTab() {
     if (contentType == 2) //상품정보일 때
     {
@@ -695,37 +974,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    menuIndex = 0;
-                  });
-                },
-                child: Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(
-                      left: 5.0,
-                      right: 5.0,
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.all(Radius.circular(18)),
-                      border: Border.all(width: 1, color: Colors.black),
-                    ),
-                    child: Text(
-                      "내 옷장",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    )),
-              ),
+              totalTabElement("내 옷장", 0),
+              totalTabElement("코디 요청", 1),
             ],
           ),
         ),
@@ -742,6 +992,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     myClosetListTotal.add(myClosetListOnepiece);
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
+    print("-----");
+    print(codiRequestList.length);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -851,6 +1103,11 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                           {
                             return Column(
                               children: [myCloset()],
+                            );
+                          } else if (menuIndex == 1) //코디요청 상품일때
+                          {
+                            return Column(
+                              children: [codiCloset()],
                             );
                           }
                         },
