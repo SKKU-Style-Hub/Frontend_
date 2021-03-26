@@ -9,11 +9,11 @@ class MyClothingDatabase {
   static Future<Database> makeDatabase() async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = openDatabase(
-      join(await getDatabasesPath(), 'myclothing_database3.db'),
+      join(await getDatabasesPath(), 'myclothing_database4.db'),
       onCreate: (db, version) {
         print("onCreate!!");
         return db.execute(
-          "CREATE TABLE MyCloset(id INTEGER PRIMARY KEY, clothingImgBase64 TEXT, category TEXT, color TEXT, colorDetail TEXT," +
+          "CREATE TABLE MyCloset(id INTEGER PRIMARY KEY, clothingImgPath TEXT,clothingImgBase64 TEXT, category TEXT, color TEXT, colorDetail TEXT," +
               "print TEXT, look TEXT, texture TEXT, detail TEXT, length TEXT, sleeveLength TEXT, neckLine TEXT, fit TEXT, shape TEXT, brandName TEXT)",
         );
       },
@@ -60,6 +60,7 @@ class MyClothingDatabase {
     final resultList = List.generate(maps.length, (i) {
       return MyClothing(
           id: maps[i]['id'],
+          clothingImgPath: maps[i]['clothingImgPath'],
           clothingImgBase64: maps[i]['clothingImgBase64'],
           category: maps[i]['category'],
           color: maps[i]['color'],
@@ -89,6 +90,7 @@ class MyClothingDatabase {
     return List.generate(maps.length, (i) {
       return MyClothing(
           id: maps[i]['id'],
+          clothingImgPath: maps[i]['clothingImgPath'],
           clothingImgBase64: maps[i]['clothingImgBase64'],
           category: maps[i]['category'],
           color: maps[i]['color'],
@@ -119,6 +121,7 @@ class MyClothingDatabase {
     return List.generate(maps.length, (i) {
       return MyClothing(
           id: maps[i]['id'],
+          clothingImgPath: maps[i]['clothingImgPath'],
           clothingImgBase64: maps[i]['clothingImgBase64'],
           category: maps[i]['category'],
           color: maps[i]['color'],
@@ -149,6 +152,7 @@ class MyClothingDatabase {
     return List.generate(maps.length, (i) {
       return MyClothing(
           id: maps[i]['id'],
+          clothingImgPath: maps[i]['clothingImgPath'],
           clothingImgBase64: maps[i]['clothingImgBase64'],
           category: maps[i]['category'],
           color: maps[i]['color'],
@@ -179,6 +183,7 @@ class MyClothingDatabase {
     return List.generate(maps.length, (i) {
       return MyClothing(
           id: maps[i]['id'],
+          clothingImgPath: maps[i]['clothingImgPath'],
           clothingImgBase64: maps[i]['clothingImgBase64'],
           category: maps[i]['category'],
           color: maps[i]['color'],
@@ -209,6 +214,7 @@ class MyClothingDatabase {
     return List.generate(maps.length, (i) {
       return MyClothing(
           id: maps[i]['id'],
+          clothingImgPath: maps[i]['clothingImgPath'],
           clothingImgBase64: maps[i]['clothingImgBase64'],
           category: maps[i]['category'],
           color: maps[i]['color'],

@@ -148,17 +148,21 @@ class _MyClosetPageState extends State<MyClosetPage> {
                             getStyling(snapshot.data[index].clothingImgBase64);
                           },
                           child: Container(
-                              height: containerHeight(
-                                  snapshot.data[index].category,
-                                  snapshot.data[index].length),
-                              width: 150,
-                              padding: EdgeInsets.only(top: 15),
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Image.memory(
-                                base64Decode(
-                                    snapshot.data[index].clothingImgBase64),
-                                fit: BoxFit.fill,
-                              )),
+                            height: containerHeight(
+                                snapshot.data[index].category,
+                                snapshot.data[index].length),
+                            width: 150,
+                            padding: EdgeInsets.only(top: 15),
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            child: Image.asset(
+                              snapshot.data[index].clothingImgPath,
+                              fit: BoxFit.fill,
+                            ),
+                            // Image.memory(
+                            //   base64Decode(
+                            //       snapshot.data[index].clothingImgBase64),
+                            //fit: BoxFit.fill,
+                          ),
                         ),
                       ]);
                 },

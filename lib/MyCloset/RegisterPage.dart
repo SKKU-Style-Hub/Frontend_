@@ -19,6 +19,7 @@ import 'package:http_parser/http_parser.dart';
 class RegisterPage extends StatefulWidget {
   static bool registered = false;
   String base64Img;
+  String imgPath;
   RegisterPage();
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -30,8 +31,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void onPhoto(ImageSource source) async {
     File f = await ImagePicker.pickImage(
         source: source, maxHeight: 500, maxWidth: 450);
-    print("imgSizeWidth " + ImageSizeGetter.getSize(FileInput(f)).toString());
-    print("imgSizeHeight " + Image.file(f).height.toString());
+    widget.imgPath = f.path;
+    print(f.path);
     //
     // String fileName = f.path.split('/').last;
     // FormData formData = FormData.fromMap({
@@ -60,17 +61,6 @@ class _RegisterPageState extends State<RegisterPage> {
   void getOmnious() async {
     final bytes = mPhoto.readAsBytesSync();
     widget.base64Img = base64Encode(bytes);
-    String url3 = "http://34.64.196.105:82/api/closet/read";
-    final response2 = await http.post(url3,
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          "userProfile": {"userName": "dddd", "gender": "eee"},
-        }));
-    print(jsonDecode(utf8.decode(response2.bodyBytes).toString()));
-
 
     String url = "https://api.omnious.com/tagger/v2.12/tags";
     final response = await http.post(url,
@@ -101,6 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final int closet_index = await MyClothingDatabase.totalClothingNum();
     await MyClothingDatabase.insertClothing(MyClothing(
       id: closet_index,
+        clothingImgPath: widget.imgPath,
       clothingImgBase64: widget.base64Img,
       category: tagResult['data']['objects'][0]['tags'][0]['category']['name'],
       color: tagResult['data']['objects'][0]['tags'][0]['colors'][0]['name'],
