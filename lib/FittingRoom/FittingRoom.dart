@@ -121,7 +121,9 @@ void _capture() async {
     final result = await ImageGallerySaver.saveImage(
         byteData.buffer.asUint8List(),
         quality: 100);
-    print("------------");
+
+    print("-----------");
+
     print(result);
     _showToast("이미지가 갤러리에 저장되었습니다.");
   } else {
@@ -139,9 +141,8 @@ _requestPermission() async {
     Permission.storage,
   ].request();
 
-  final info = statuses[Permission.storage].toString();
-  print(info);
-  _showToast(info);
+  final info1 = statuses[Permission.storage].toString();
+  print(info1);
 }
 
 void goToUrl(String url) async {

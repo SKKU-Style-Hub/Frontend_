@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:stylehub_flutter/MyCloset/MyRoom/Userfeedinput1.dart';
 import 'package:stylehub_flutter/data/ProposedCodi.dart';
+import 'CreatePost.dart';
 import 'RawData.dart';
 import 'StylingCard.dart';
 
@@ -24,8 +25,8 @@ class _MainFeedState extends State<MainFeed> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.create),
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => Userfeedinput1()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreatePost()));
         },
       ),
       body: Column(
