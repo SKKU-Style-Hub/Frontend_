@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
+import 'package:stylehub_flutter/data/ProposedCodi.dart';
 import 'MainFeed.dart';
 import 'CodiFittingRoom.dart';
 
@@ -169,6 +170,7 @@ ProposedCodi codiTotal2 = ProposedCodi(
   ),
 );
 AllProposedCodi allProposedCodi1 = new AllProposedCodi(
+    requestClothingImg: 'assets/images/sample_knit.png',
     proposedCodiList: [codiTotal1, codiTotal2],
     userId: "Yeji",
     explanation:
