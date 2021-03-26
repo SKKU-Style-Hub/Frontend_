@@ -5,6 +5,7 @@ import 'package:stylehub_flutter/Constants.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'package:stylehub_flutter/MainFeed/CodiFittingRoom.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
+import 'package:stylehub_flutter/data/ProposedCodi.dart';
 import 'RawData.dart';
 
 class StylingCard extends StatefulWidget {
@@ -180,12 +181,14 @@ class _StylingCardState extends State<StylingCard> {
   }
 
   Card StylingCardWidget(AllProposedCodi tmpProposedCodi) {
-    List<Widget> pageViewChildren = [
-      Container(child: Image.asset('assets/images/sample_knit.png')),
-      Container(child: Image.asset('assets/images/sample_knit_styling1.png')),
-      Container(child: Image.asset('assets/images/sample_knit_styling2.png')),
-      Container(),
-    ];
+    List<Widget> pageViewChildren = [];
+    pageViewChildren
+        .add(Container(child: Image.asset('assets/images/sample_knit.png')));
+    for (int i = 0; i < tmpProposedCodi.proposedCodiList.length; i++) {
+      pageViewChildren.add(Container(
+          child: Image.asset(tmpProposedCodi.proposedCodiList[i].codiImage)));
+    }
+    pageViewChildren.add(Container());
     int currentIndexPage = 0;
     final controller = PageController(initialPage: 0);
     final bottomController = PageController(initialPage: 0);
@@ -231,12 +234,10 @@ class _StylingCardState extends State<StylingCard> {
               controller: controller,
               children: [
                 //첫번째 페이지
-                Container(child: Image.asset('assets/images/sample_knit.png')),
-                //첫번째코디
-                EachCodi(tmpProposedCodi.proposedCodiList[0]),
-                //두번째코디
-                EachCodi(tmpProposedCodi.proposedCodiList[1]),
-                //코디하기 버튼 있는 페이지
+                Container(
+                    child: Image.asset(tmpProposedCodi.requestClothingImg)),
+                for (var i in [0, tmpProposedCodi.proposedCodiList.length - 1])
+                  EachCodi(tmpProposedCodi.proposedCodiList[i]),
                 goToCodiScreen(),
               ],
               onPageChanged: (int index) {
