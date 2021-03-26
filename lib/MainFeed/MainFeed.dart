@@ -5,6 +5,7 @@ import 'package:stylehub_flutter/data/ProposedCodi.dart';
 import 'CreatePost.dart';
 import 'RawData.dart';
 import 'StylingCard.dart';
+import 'UserPost.dart';
 
 Color notClickedColor = Colors.grey[800]; //선택하지 않은 버튼의 색깔
 Color clickedColor = Colors.indigo; //선택된 색깔
@@ -35,6 +36,11 @@ class _MainFeedState extends State<MainFeed> {
             child: ListView(
               children: [
                 StylingCard(tmpAllCodi: allProposedCodi1),
+                UserPost(
+                  userNickname: "ddd",
+                  userProfileImg:
+                      "https://www.ui4u.go.kr/depart/img/content/sub03/img_con03030100_01.jpg",
+                )
               ],
             ),
           ),

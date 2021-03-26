@@ -130,10 +130,6 @@ class _NavigationState extends State<Navigation> {
               enabled: (widget._selectedItemPosition == 1),
               child: Scaffold(
                 body: MyClosetPage(),
-                // debugShowCheckedModeBanner: false,
-                // theme: ThemeData(
-                //   buttonColor: Colors.black,
-                // ),
               ),
             ),
           ),
