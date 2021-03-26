@@ -78,9 +78,11 @@ class AllProposedCodi {
   String requestClothingImg; //요청한 옷 사진
   List<dynamic> proposedCodiList;
   String userId, explanation;
+  String userProfile; //유저 프로필사진
   AllProposedCodi(
       {this.proposedCodiList,
       this.userId,
       this.explanation,
-      this.requestClothingImg}) {}
+      this.requestClothingImg,
+      this.userProfile}) {}
 }
