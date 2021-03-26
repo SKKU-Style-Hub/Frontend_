@@ -175,7 +175,7 @@ class _StylingCardState extends State<StylingCard> {
                 ),
               ));
         },
-        child: Text("나도 코디하러가기"),
+        child: Center(child: Text("나도 코디하러가기")),
       ),
     );
   }
@@ -210,11 +210,27 @@ class _StylingCardState extends State<StylingCard> {
             children: [
               Container(
                 padding: EdgeInsets.only(left: 15),
-                child: Column(
+                child: Row(
                   children: [
-                    Image.asset('assets/images/friend4_circle.png'),
+                    Container(
+                      color: Colors.transparent,
+                      height: 60,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        child: tmpProposedCodi.userProfile.contains("https://")
+                            ? Image.network(
+                                tmpProposedCodi.userProfile,
+                                height: 60,
+                              )
+                            : Image.asset(
+                                tmpProposedCodi.userProfile,
+                                height: 60,
+                              ),
+                        radius: 50,
+                      ),
+                    ),
                     Text(
-                      'Yeji',
+                      tmpProposedCodi.userId,
                       style: kHashtagTextStyle,
                     )
                   ],
