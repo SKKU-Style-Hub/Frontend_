@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
     // });
     // var response = await Dio().post("http://14.49.45.139:443", data: formData);
     // print(response.data);
-    // File responseFile = File(f.path);
+    // File responseFile = File(f.path); ?
     // var raf = responseFile.openSync(mode: FileMode.WRITE);
     // raf.writeStringSync(response.data);
     // await raf.close();
@@ -57,15 +57,20 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  // void saveFile(bytes) async {
-  //   Directory documentDirectory = await getApplicationDocumentsDirectory();
-  //   File file = File(Path.join(documentDirectory.path, 'image.png'));
-  //   file.writeAsBytesSync(bytes);
-  // }
-
   void getOmnious() async {
     final bytes = mPhoto.readAsBytesSync();
     widget.base64Img = base64Encode(bytes);
+    String url3 = "http://34.64.196.105:82/api/closet/read";
+    final response2 = await http.post(url3,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "userProfile": {"userName": "dddd", "gender": "eee"},
+        }));
+    print(jsonDecode(utf8.decode(response2.bodyBytes).toString()));
+
 
     String url = "https://api.omnious.com/tagger/v2.12/tags";
     final response = await http.post(url,
@@ -80,6 +85,19 @@ class _RegisterPageState extends State<RegisterPage> {
 
     var tagResult = jsonDecode(utf8.decode(response.bodyBytes));
     print(tagResult.toString());
+
+    String url2 = "http://34.64.196.105:82/api/closet/create/cloth";
+    http.post(url2,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "userProfile": {"userName": "dddd", "gender": "eee"},
+          "clothing": tagResult
+        }));
+
+
     final int closet_index = await MyClothingDatabase.totalClothingNum();
     await MyClothingDatabase.insertClothing(MyClothing(
       id: closet_index,
@@ -130,34 +148,38 @@ class _RegisterPageState extends State<RegisterPage> {
   Future _askOption() async {
     await showDialog(
         context: context,
-        child: SimpleDialog(
-          title: Text(
-            "옷 이미지 업로드 경로",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          children: [
-            SimpleDialogOption(
-              child: Text(
-                "카메라로 촬영하기",
+        builder: (BuildContext context){
+          return SimpleDialog(
+            title: Text(
+              "옷 이미지 업로드 경로",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            children: [
+              SimpleDialogOption(
+                child: Text(
+                  "카메라로 촬영하기",
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onPhoto(ImageSource.camera);
+                },
               ),
-              onPressed: () {
-                Navigator.pop(context);
-                onPhoto(ImageSource.camera);
-              },
-            ),
-            SimpleDialogOption(
-              child: Text("앨범에서 가져오기"),
-              onPressed: () {
-                Navigator.pop(context);
-                onPhoto(ImageSource.gallery);
-              },
-            ),
-          ],
-        ));
+              SimpleDialogOption(
+                child: Text("앨범에서 가져오기"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onPhoto(ImageSource.gallery);
+                },
+              ),
+            ],
+          );
+        },
+        );
   }
 
   @override
   Widget build(BuildContext context) {
+
     final textController = TextEditingController();
     return Scaffold(
         appBar: AppBar(

@@ -22,7 +22,6 @@ class _MyClosetPageState extends State<MyClosetPage> {
   final controller = PageController();
 
   double containerHeight(String category, String length) {
-    print(category + length);
     if (category == "탑" ||
         category == "블라우스" ||
         category == "캐주얼상의" ||

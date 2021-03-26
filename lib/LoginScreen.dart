@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,8 @@ import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:kakao_flutter_sdk/common.dart';
 import 'package:bloc/bloc.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import 'Navigation.dart';
 
@@ -19,6 +23,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginScreen> {
+  Gen.Gender selectedGender = null;
   @override
   void initState() {
     super.initState();
@@ -44,10 +49,26 @@ class _LoginState extends State<LoginScreen> {
   _issueAccessToken(String authCode) async {
     try {
       var token = await AuthApi.instance.issueAccessToken(authCode);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       AccessTokenStore.instance.toStore(token);
       try {
         User user = await UserApi.instance.me();
         print(user.toString());
+        await prefs.setString('userNickname', user.properties["nickname"]);
+        await prefs.setString(
+            'user_profile_image', user.properties["profile_image"]);
+
+        String url = "http://34.64.196.105:82/api/auth/signup";
+        http.post(url,
+            headers: {
+              'Content-type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              "userName": user.properties["nickname"].toString(),
+              "gender": selectedGender.toString()
+            }));
+
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -64,7 +85,6 @@ class _LoginState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     isKakaoTalkInstalled();
-    Gen.Gender selectedGender = null;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -80,15 +100,6 @@ class _LoginState extends State<LoginScreen> {
               height: 450,
             ),
           ),
-          // Center(
-          //   child: Text(
-          //     "성별을 선택해주세요.",
-          //     style: TextStyle(color: Colors.white, fontSize: 18),
-          //   ),
-          // ),
-          // SizedBox(
-          //   height: 10,
-          // ),
           Center(
               child: GenderPickerWithImage(
             showOtherGender: false,
