@@ -159,7 +159,7 @@ class _StylingCardState extends State<StylingCard> {
     );
   }
 
-  Widget goToCodiScreen() {
+  Widget goToCodiScreen({String requestClothingImg}) {
     return Container(
       child: InkWell(
         onTap: () {
@@ -169,7 +169,7 @@ class _StylingCardState extends State<StylingCard> {
                 //피팅룸에 넘어갈 옷
                 builder: (context) => CodiFittingRoom(
                   requestClothInfo: ClothInfo(
-                    image: 'assets/images/sample_knit.png',
+                    image: requestClothingImg,
                     type: 1,
                   ),
                 ),
@@ -183,7 +183,7 @@ class _StylingCardState extends State<StylingCard> {
   Card StylingCardWidget(AllProposedCodi tmpProposedCodi) {
     List<Widget> pageViewChildren = [];
     pageViewChildren
-        .add(Container(child: Image.asset('assets/images/sample_knit.png')));
+        .add(Container(child: Image.asset(tmpProposedCodi.requestClothingImg)));
     for (int i = 0; i < tmpProposedCodi.proposedCodiList.length; i++) {
       pageViewChildren.add(Container(
           child: Image.asset(tmpProposedCodi.proposedCodiList[i].codiImage)));
@@ -238,7 +238,8 @@ class _StylingCardState extends State<StylingCard> {
                     child: Image.asset(tmpProposedCodi.requestClothingImg)),
                 for (var i in [0, tmpProposedCodi.proposedCodiList.length - 1])
                   EachCodi(tmpProposedCodi.proposedCodiList[i]),
-                goToCodiScreen(),
+                goToCodiScreen(
+                    requestClothingImg: tmpProposedCodi.requestClothingImg),
               ],
               onPageChanged: (int index) {
                 setState(() {
