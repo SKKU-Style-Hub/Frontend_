@@ -12,6 +12,7 @@ import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
 import 'package:stylehub_flutter/data/CodiClothing.dart';
 import 'package:stylehub_flutter/data/AllCodiClothing.dart';
+import 'package:stylehub_flutter/common/showToast.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
@@ -19,6 +20,7 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
 import 'RawData.dart';
+import 'showLinkDialog.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -103,10 +105,6 @@ String swipeDirection;
 double bottomSheetSize = 200;
 var codiKey;
 
-_showToast(String info) {
-  Fluttertoast.showToast(msg: info, toastLength: Toast.LENGTH_LONG);
-}
-
 void _capture() async {
   var renderObject = codiKey.currentContext.findRenderObject();
   if (renderObject.debugNeedsPaint) {
@@ -123,7 +121,7 @@ void _capture() async {
         quality: 100);
 
     print(result);
-    _showToast("이미지가 갤러리에 저장되었습니다.");
+    showToast("이미지가 갤러리에 저장되었습니다.");
   } else {
     print("!");
   }
@@ -974,6 +972,32 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             children: [
               totalTabElement("내 옷장", 0),
               totalTabElement("코디 요청", 1),
+              InkWell(
+                onTap: () {
+                  showLinkDialog(context);
+                },
+                child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(
+                      left: 5.0,
+                      right: 5.0,
+                    ),
+                    /*padding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),*/
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: Colors.indigo[200],
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      //border: Border.all(width: 1, color: Colors.indigo[200]),
+                    ),
+                    child: Icon(
+                      Icons.upgrade,
+                      size: 30,
+                    )),
+              ),
             ],
           ),
         ),

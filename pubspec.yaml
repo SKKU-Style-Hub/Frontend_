@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^0.5.7
   multi_image_picker: ^4.7.15
   number_selection: ^0.0.1
+  crop_your_image: ^0.5.1+1
 
 dev_dependencies:
   flutter_test:
