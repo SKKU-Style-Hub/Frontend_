@@ -10,6 +10,7 @@ import '../components/Itembutton.dart';
 import '../components/Budgetline.dart';
 import 'AfterRequest.dart';
 import 'ChooseClothingPage.dart';
+import 'package:http/http.dart' as http;
 
 //사용자이름
 String userName = 'minjoo123';
@@ -618,6 +619,27 @@ class _RequestPageState extends State<RequestPage> {
                     ),
                   ),
                   onTap: () {
+                    String url =
+                        "http://34.64.196.105:82/api/styling/request/create";
+                    http.post(url,
+                        headers: {
+                          'Content-type': 'application/json',
+                          'Accept': 'application/json',
+                        },
+                        body: jsonEncode({
+                          "userProfile": {
+                            "userNickname": "ddd",
+                            "userGender": "fff",
+                            "profileImg": "www"
+                          },
+                          "requestCloths": {"aaa": "ddd"},
+                          "budgetMin": 0,
+                          "budgetMax": 1000,
+                          "requestItems": {"item": "dd"},
+                          "requestStyle": ["eee", "ddd"],
+                          "requestContent": "ddddd"
+                        }));
+
                     //다음 페이지 이동
                     Navigator.push(
                       context,

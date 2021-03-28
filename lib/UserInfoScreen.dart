@@ -19,10 +19,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   getNickname() async {
     User user = await UserApi.instance.me();
-    setState(() {
-      kakaoNickname = user.properties["nickname"];
-      selectedNickname = kakaoNickname;
-    });
+    //setState(() {
+    kakaoNickname = user.properties["nickname"];
+    selectedNickname = kakaoNickname;
+    //});
   }
 
   @override

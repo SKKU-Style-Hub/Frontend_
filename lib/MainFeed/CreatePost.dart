@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -85,7 +86,14 @@ class _CreatePostState extends State<CreatePost> {
         ),
         actions: [
           FlatButton(
-              onPressed: () {
+              onPressed: () async {
+                List<String> postImgBase64 = [];
+                for (Asset a in images) {
+                  ByteData bytes = await a.getByteData(quality: 100);
+                  postImgBase64
+                      .add(base64.encode(Uint8List.view(bytes.buffer)));
+                }
+
                 String url = "http://34.64.196.105:82/api/post/general/create";
                 http.post(url,
                     headers: {
@@ -94,7 +102,7 @@ class _CreatePostState extends State<CreatePost> {
                     },
                     body: jsonEncode({
                       "userProfile": {"userName": "dddd", "gender": "eee"},
-                      "postImage": ["1", "2"],
+                      "postImage": postImgBase64,
                       "postContent": postContent.toString()
                     }));
                 Navigator.pop(context);

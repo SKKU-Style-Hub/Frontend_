@@ -51,12 +51,13 @@ class _LoginState extends State<LoginScreen> {
       var token = await AuthApi.instance.issueAccessToken(authCode);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       AccessTokenStore.instance.toStore(token);
+
       try {
         User user = await UserApi.instance.me();
         print("access code: 2 " + user.connectedAt.toString());
         await prefs.setString('userNickname', user.properties["nickname"]);
         await prefs.setString(
-            'user_profile_image', user.properties["profile_image"]);
+            'userProfileImg', user.properties["profile_image"]);
 
         String url = "http://34.64.196.105:82/api/auth/signup";
         http.post(url,
@@ -65,7 +66,7 @@ class _LoginState extends State<LoginScreen> {
               'Accept': 'application/json',
             },
             body: jsonEncode({
-              "userName": user.properties["nickname"].toString(),
+              "userNickName": user.properties["nickname"].toString(),
               "gender": selectedGender.toString()
             }));
 
