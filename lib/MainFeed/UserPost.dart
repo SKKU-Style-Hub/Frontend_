@@ -46,6 +46,7 @@ class _UserPostState extends State<UserPost> {
   final controller = PageController(initialPage: 0);
   bool isLiked = false;
   String myComment;
+  List<Comment> comments;
   getImages() {
     List<Widget> posts = [];
     for (String url in widget.postImgList) {
@@ -59,6 +60,11 @@ class _UserPostState extends State<UserPost> {
     super.initState();
     isLiked = widget.isLiked;
     myComment = widget.myComment;
+    if (widget.comments == null) {
+      comments = [];
+    } else {
+      comments = widget.comments;
+    }
   }
 
   @override
@@ -176,7 +182,7 @@ class _UserPostState extends State<UserPost> {
                                   ),
                                 ),
                               ),
-                              widget.comments == null
+                              comments.isEmpty
                                   ? Container(
                                       child: Text(
                                         "첫 댓글을 남겨보세요!",
@@ -192,9 +198,7 @@ class _UserPostState extends State<UserPost> {
                                           const EdgeInsets.only(bottom: 15),
                                       child: ListView.builder(
                                         shrinkWrap: true,
-                                        itemCount: widget.comments != null
-                                            ? widget.comments.length
-                                            : 0,
+                                        itemCount: comments.length,
                                         itemBuilder:
                                             (BuildContext context, int index) {
                                           return Padding(
@@ -208,7 +212,7 @@ class _UserPostState extends State<UserPost> {
                                                 CircleAvatar(
                                                   radius: 22,
                                                   backgroundImage: NetworkImage(
-                                                      widget.comments[index]
+                                                      comments[index]
                                                           .userProfileImg),
                                                 ),
                                                 SizedBox(
@@ -219,7 +223,7 @@ class _UserPostState extends State<UserPost> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      widget.comments[index]
+                                                      comments[index]
                                                           .userNickname,
                                                       style: TextStyle(
                                                           fontWeight:
@@ -227,7 +231,7 @@ class _UserPostState extends State<UserPost> {
                                                           fontSize: 16),
                                                     ),
                                                     Text(
-                                                      widget.comments[index]
+                                                      comments[index]
                                                           .commentContent,
                                                       style: TextStyle(
                                                           fontSize: 16),
@@ -279,7 +283,7 @@ class _UserPostState extends State<UserPost> {
                                       onTap: () {
                                         if (writingComment != null) {
                                           setState(() {
-                                            widget.comments.add(Comment(
+                                            comments.add(Comment(
                                                 userNickname: widget.myNickname,
                                                 userProfileImg:
                                                     widget.myProfileImg,
@@ -380,7 +384,7 @@ class _UserPostState extends State<UserPost> {
                   if (writingComment != null) {
                     setState(() {
                       myComment = writingComment;
-                      widget.comments.add(Comment(
+                      comments.add(Comment(
                           userNickname: widget.myNickname,
                           userProfileImg: widget.myProfileImg,
                           commentContent: writingComment));

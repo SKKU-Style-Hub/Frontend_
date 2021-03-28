@@ -72,7 +72,12 @@ class _MainFeedState extends State<MainFeed> {
             child: ListView(
               controller: scrollController,
               children: [
-                StylingCard(tmpAllCodi: allProposedCodi1),
+                StylingCard(
+                  tmpAllCodi: allProposedCodi1,
+                  myNickname: myNickname,
+                  myProfileImg: myProfileImg,
+                  isLiked: false,
+                ),
                 UserPost(
                   myNickname: myNickname,
                   myProfileImg: myProfileImg,

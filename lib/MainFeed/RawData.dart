@@ -173,7 +173,8 @@ AllProposedCodi allProposedCodi1 = new AllProposedCodi(
     requestClothingImg: 'assets/images/sample_knit.png',
     proposedCodiList: [codiTotal1, codiTotal2],
     userId: "Yeji",
-    userProfile: 'assets/images/friend4_circle.png',
+    userProfile:
+        'https://img4.yna.co.kr/photo/cms/2019/05/02/02/PCM20190502000402370_P2.jpg',
     explanation:
         '이 회색 가디건과 어울리는 코디 전체를 추천해주세요! 저는 여성스럽고 단정한 스타일을 좋아해요. 그리고 하의는 편한 밴딩으로 되어있는 스커트였으면 좋겠어요.');
 

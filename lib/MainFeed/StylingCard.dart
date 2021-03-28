@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylehub_flutter/MainFeed/Comment.dart';
 import 'MainFeed.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
@@ -10,13 +11,38 @@ import 'RawData.dart';
 
 class StylingCard extends StatefulWidget {
   AllProposedCodi tmpAllCodi;
-  StylingCard({Key key, this.tmpAllCodi}) : super(key: key) {}
+  String myNickname;
+  String myProfileImg;
+  bool isLiked;
+  List<Comment> comments;
+  StylingCard(
+      {Key key,
+      this.tmpAllCodi,
+      this.myNickname,
+      this.myProfileImg,
+      this.isLiked = false,
+      this.comments})
+      : super(key: key) {}
   _StylingCardState createState() {
     return _StylingCardState();
   }
 }
 
 class _StylingCardState extends State<StylingCard> {
+  bool isLiked = false;
+  List<Comment> comments;
+
+  @override
+  void initState() {
+    isLiked = widget.isLiked;
+
+    if (widget.comments == null) {
+      comments = [];
+    } else {
+      comments = widget.comments;
+    }
+  }
+
   Widget EachInfoButton(ProposedCodi codiTotal, int index) {
     return Positioned(
       //위치 정보를 넣어야 함
@@ -182,6 +208,7 @@ class _StylingCardState extends State<StylingCard> {
 
   Card StylingCardWidget(AllProposedCodi tmpProposedCodi) {
     List<Widget> pageViewChildren = [];
+
     pageViewChildren
         .add(Container(child: Image.asset(tmpProposedCodi.requestClothingImg)));
     for (int i = 0; i < tmpProposedCodi.proposedCodiList.length; i++) {
@@ -208,62 +235,68 @@ class _StylingCardState extends State<StylingCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: EdgeInsets.only(left: 15),
-                child: Row(
-                  children: [
-                    Container(
-                      color: Colors.transparent,
-                      height: 60,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        child: tmpProposedCodi.userProfile.contains("https://")
-                            ? Image.network(
-                                tmpProposedCodi.userProfile,
-                                height: 60,
-                              )
-                            : Image.asset(
-                                tmpProposedCodi.userProfile,
-                                height: 60,
-                              ),
-                        radius: 50,
-                      ),
-                    ),
-                    Text(
-                      tmpProposedCodi.userId,
-                      style: kHashtagTextStyle,
-                    )
-                  ],
-                ),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                  ),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(tmpProposedCodi.userProfile),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Text(
+                    tmpProposedCodi.userId,
+                    style: kHashtagTextStyle,
+                  )
+                ],
               ),
-              Container(
-                padding: EdgeInsets.only(right: 15),
-                child: Image.asset('assets/images/icon_styling.png'),
+              GestureDetector(
+                onTap: () {
+                  //goToCodiScreen
+                },
+                child: Container(
+                  height: 65,
+                  margin: EdgeInsets.only(right: 15),
+                  child: Image.asset('assets/images/icon_styling.png'),
+                ),
               )
             ],
           ),
-          Container(
-            height: 350,
-            width: 300,
-            child: PageView(
-              //physics: BouncingScrollPhysics(),
-              controller: controller,
-              children: [
-                //첫번째 페이지
-                Container(
-                    child: Image.asset(tmpProposedCodi.requestClothingImg)),
-                for (var i in [0, tmpProposedCodi.proposedCodiList.length - 1])
-                  EachCodi(tmpProposedCodi.proposedCodiList[i]),
-                goToCodiScreen(
-                    requestClothingImg: tmpProposedCodi.requestClothingImg),
-              ],
-              onPageChanged: (int index) {
-                setState(() {
-                  bottomController.jumpToPage(index);
-                  currentIndexPage = index;
-                  print(currentIndexPage);
-                });
-              },
+          GestureDetector(
+            onDoubleTap: () {
+              setState(() {
+                isLiked = !isLiked;
+              });
+            },
+            child: Container(
+              height: 350,
+              width: 300,
+              child: PageView(
+                //physics: BouncingScrollPhysics(),
+                controller: controller,
+                children: [
+                  //첫번째 페이지
+                  Container(
+                      child: Image.asset(tmpProposedCodi.requestClothingImg)),
+                  for (var i in [
+                    0,
+                    tmpProposedCodi.proposedCodiList.length - 1
+                  ])
+                    EachCodi(tmpProposedCodi.proposedCodiList[i]),
+                  goToCodiScreen(
+                      requestClothingImg: tmpProposedCodi.requestClothingImg),
+                ],
+                onPageChanged: (int index) {
+                  setState(() {
+                    bottomController.jumpToPage(index);
+                    currentIndexPage = index;
+                    print(currentIndexPage);
+                  });
+                },
+              ),
             ),
           ),
           SmoothPageIndicator(
@@ -273,15 +306,182 @@ class _StylingCardState extends State<StylingCard> {
           ),
           Row(
             children: [
-              Container(
-                child: Image.asset(
-                  'assets/images/heart_btn.png',
+              GestureDetector(
+                child: Container(
+                  height: 28,
+                  child: isLiked
+                      ? Image.asset(
+                          'assets/images/heart_btn_clicked.png',
+                        )
+                      : Image.asset(
+                          'assets/images/heart_btn_not_clicked.png',
+                        ),
+                  margin: EdgeInsets.all(15),
                 ),
-                padding: EdgeInsets.all(10),
+                onTap: () {
+                  setState(() {
+                    isLiked = !isLiked;
+                    //send server
+                  });
+                },
               ),
-              Container(
-                child: Image.asset('assets/images/comments_btn.png'),
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+              GestureDetector(
+                child: Container(
+                  height: 28,
+                  child: Image.asset('assets/images/comments_btn.png'),
+                  margin: EdgeInsets.symmetric(vertical: 15),
+                ),
+                onTap: () {
+                  showModalBottomSheet(
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(25),
+                              topRight: Radius.circular(25))),
+                      context: context,
+                      builder: (BuildContext context) {
+                        final commentController = TextEditingController();
+                        String writingComment = "";
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 20),
+                                child: Text(
+                                  "댓글",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                              ),
+                              comments.isEmpty
+                                  ? Container(
+                                      child: Text(
+                                        "첫 댓글을 남겨보세요!",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.grey[500]),
+                                      ),
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 30),
+                                    )
+                                  : Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 15),
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: comments != null
+                                            ? comments.length
+                                            : 0,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5),
+                                            child: Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 15,
+                                                ),
+                                                CircleAvatar(
+                                                  radius: 22,
+                                                  backgroundImage: NetworkImage(
+                                                      comments[index]
+                                                          .userProfileImg),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      comments[index]
+                                                          .userNickname,
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16),
+                                                    ),
+                                                    Text(
+                                                      comments[index]
+                                                          .commentContent,
+                                                      style: TextStyle(
+                                                          fontSize: 16),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        top: BorderSide(color: Colors.grey))),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 18,
+                                      backgroundImage:
+                                          NetworkImage(widget.myProfileImg),
+                                    ),
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    Container(
+                                      width: 280,
+                                      child: TextField(
+                                        controller: commentController,
+                                        decoration: InputDecoration(
+                                            hintText: "댓글 입력..."),
+                                        onChanged: (value) {
+                                          writingComment = value;
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 18,
+                                    ),
+                                    GestureDetector(
+                                      child: Text(
+                                        "게시",
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.blue),
+                                      ),
+                                      onTap: () {
+                                        if (writingComment != null) {
+                                          setState(() {
+                                            comments.add(Comment(
+                                                userNickname: widget.myNickname,
+                                                userProfileImg:
+                                                    widget.myProfileImg,
+                                                commentContent:
+                                                    writingComment));
+                                          });
+                                          commentController.clear();
+                                          FocusScope.of(context).unfocus();
+                                        }
+                                      },
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      });
+                },
               )
             ],
           ),
