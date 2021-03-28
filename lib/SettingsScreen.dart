@@ -101,7 +101,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         try {
                           var code = await UserApi.instance.logout();
 
-                          print(code.toString());
                           Navigator.push(
                             context,
                             MaterialPageRoute(

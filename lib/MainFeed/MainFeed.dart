@@ -40,6 +40,12 @@ class _MainFeedState extends State<MainFeed> {
                   userNickname: "ddd",
                   userProfileImg:
                       "https://www.ui4u.go.kr/depart/img/content/sub03/img_con03030100_01.jpg",
+                  postImgList: [
+                    "https://www.ui4u.go.kr/depart/img/content/sub03/img_con03030100_01.jpg",
+                    "https://www.ui4u.go.kr/depart/img/content/sub03/img_con03030100_01.jpg",
+                  ],
+                  postContent:
+                      "ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ",
                 )
               ],
             ),

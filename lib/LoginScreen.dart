@@ -12,7 +12,7 @@ import 'package:bloc/bloc.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
+import 'UserInfoScreen.dart';
 import 'Navigation.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -53,7 +53,7 @@ class _LoginState extends State<LoginScreen> {
       AccessTokenStore.instance.toStore(token);
       try {
         User user = await UserApi.instance.me();
-        print(user.toString());
+        print("access code: 2 " + user.connectedAt.toString());
         await prefs.setString('userNickname', user.properties["nickname"]);
         await prefs.setString(
             'user_profile_image', user.properties["profile_image"]);
@@ -71,10 +71,7 @@ class _LoginState extends State<LoginScreen> {
 
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(
-                builder: (context) => Navigation(
-                      selectedPosition: 0,
-                    )),
+            MaterialPageRoute(builder: (context) => UserInfoScreen()),
             (route) => false);
       } on KakaoAuthException catch (e) {} catch (e) {}
     } catch (e) {
@@ -156,6 +153,7 @@ class _LoginState extends State<LoginScreen> {
   _loginWithTalk() async {
     try {
       var code = await AuthCodeClient.instance.requestWithTalk();
+      print("access code: " + code);
       await _issueAccessToken(code);
     } catch (e) {
       print(e);

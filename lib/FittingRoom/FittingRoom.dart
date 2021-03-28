@@ -122,8 +122,6 @@ void _capture() async {
         byteData.buffer.asUint8List(),
         quality: 100);
 
-    print("-----------");
-
     print(result);
     _showToast("이미지가 갤러리에 저장되었습니다.");
   } else {
@@ -142,7 +140,6 @@ _requestPermission() async {
   ].request();
 
   final info1 = statuses[Permission.storage].toString();
-  print(info1);
 }
 
 void goToUrl(String url) async {
@@ -993,8 +990,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     myClosetListTotal.add(myClosetListOnepiece);
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
-    print("-----");
-    print(codiRequestList.length);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
