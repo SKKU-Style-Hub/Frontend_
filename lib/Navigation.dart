@@ -6,7 +6,6 @@ import 'package:stylehub_flutter/SettingsScreen.dart';
 import 'MainFeed/MainFeed.dart';
 import 'MyCloset/MyClosetPage.dart';
 import 'package:stylehub_flutter/common/custom_icons_icons.dart';
-import 'RequestCodi/RequestChoose.dart';
 import 'RequestCodi/RequestMain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kakao_flutter_sdk/all.dart';

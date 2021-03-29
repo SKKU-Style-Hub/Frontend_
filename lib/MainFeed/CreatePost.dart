@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as Img;
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:http/http.dart' as http;
 
@@ -89,7 +90,12 @@ class _CreatePostState extends State<CreatePost> {
               onPressed: () async {
                 List<String> postImgBase64 = [];
                 for (Asset a in images) {
-                  ByteData bytes = await a.getByteData(quality: 100);
+                  //ByteData bytes = await a.getByteData(quality: 70);
+                  ByteData bytes =
+                      await a.getThumbByteData(480, 480, quality: 70);
+                  // Img.Image i = Img.decodeImage(bytes.buffer.asInt8List());
+                  // Img.Image copied = Img.copyResize(i, width: 120);
+
                   postImgBase64
                       .add(base64.encode(Uint8List.view(bytes.buffer)));
                 }

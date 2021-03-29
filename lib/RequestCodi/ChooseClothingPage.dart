@@ -7,7 +7,6 @@ import 'package:stylehub_flutter/RequestCodi/RequestPage.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:tabbar/tabbar.dart';
-import 'RequestPage2.dart';
 
 class ChooseClothingPage extends StatefulWidget {
   @override

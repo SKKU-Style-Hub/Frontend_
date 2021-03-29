@@ -404,158 +404,158 @@ class _RequestPageState extends State<RequestPage> {
                   ),
                 ),
                 //색상----------------------------------
-                Container(
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          "#색상",
-                          style: TextStyle(
-                            color: Colors.black,
-                            //color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          //textAlign: TextAlign.left,
-                        ),
-                        margin: EdgeInsets.only(left: 20.0),
-                      ),
-                      /*Spacer(
-                  flex: 20,
-                ),*/
-                      Row(
-                          children: List.generate(10, (idx) {
-                        return Colorbutton(
-                          color_index: idx,
-                        );
-                      })),
-                      Row(
-                          children: List.generate(4, (idx) {
-                        return Colorbutton(
-                          color_index: 10 + idx,
-                        );
-                      })),
-                      // Row(
-                      //     children: List.generate(10, (idx) {
-                      //   return Colorbutton(
-                      //     color_index: 20 + idx,
-                      //   );
-                      // })),
-                      // Row(
-                      //     children: List.generate(10, (idx) {
-                      //   return Colorbutton(
-                      //     color_index: 30 + idx,
-                      //   );
-                      // })),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   height: 200,
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.baseline,
+                //     textBaseline: TextBaseline.alphabetic,
+                //     children: <Widget>[
+                // //       Container(
+                // //         child: Text(
+                // //           "#색상",
+                // //           style: TextStyle(
+                // //             color: Colors.black,
+                // //             //color: Colors.black,
+                // //             fontSize: 18,
+                // //             fontWeight: FontWeight.bold,
+                // //           ),
+                // //           //textAlign: TextAlign.left,
+                // //         ),
+                // //         margin: EdgeInsets.only(left: 20.0),
+                // //       ),
+                // //       /*Spacer(
+                // //   flex: 20,
+                // // ),*/
+                // //       Row(
+                // //           children: List.generate(10, (idx) {
+                // //         return Colorbutton(
+                // //           color_index: idx,
+                // //         );
+                // //       })),
+                // //       Row(
+                // //           children: List.generate(4, (idx) {
+                // //         return Colorbutton(
+                // //           color_index: 10 + idx,
+                // //         );
+                // //       })),
+                //       // Row(
+                //       //     children: List.generate(10, (idx) {
+                //       //   return Colorbutton(
+                //       //     color_index: 20 + idx,
+                //       //   );
+                //       // })),
+                //       // Row(
+                //       //     children: List.generate(10, (idx) {
+                //       //   return Colorbutton(
+                //       //     color_index: 30 + idx,
+                //       //   );
+                //       // })),
+                //     ],
+                //   ),
+                // ),
 
-                Container(
-                  height: 90,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Container(
-                        child: Text(
-                          "#상의",
-                          style: TextStyle(
-                            color: Colors.black,
-                            //color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          //textAlign: TextAlign.left,
-                        ),
-                        margin: EdgeInsets.only(left: 20.0),
-                      ),
-                      Spacer(flex: 1),
-                      SfSlider(
-                        /*labelFormatterCallback:
-                            (dynamic actualValue, String formattedText) {
-                          if (actualValue == 0 || actualValue == 35) {
-                            return '';
-                          } else if (actualValue == 30) {
-                            return '무제한';
-                          }
-                          return '$formattedText';
-                        },*/
-                        enableTooltip: true,
-                        min: 80.0,
-                        max: 115.0,
-                        value: top_size,
-                        showLabels: true,
-                        showTicks: true,
-                        stepSize: 5,
-                        interval: 5,
-                        showDivisors: true,
-                        activeColor: Colors.black,
-                        inactiveColor: Colors.black,
-                        onChanged: (dynamic newValue) {
-                          setState(() {
-                            top_size = newValue;
-                          });
-                        },
-                      ),
-                      Spacer(
-                        flex: 3,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 90,
-                  width: 100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Spacer(flex: 1),
-                      Container(
-                        child: Text(
-                          "#하의",
-                          style: TextStyle(
-                            color: Colors.black,
-                            //color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          //textAlign: TextAlign.left,
-                        ),
-                        margin: EdgeInsets.only(left: 20.0),
-                      ),
-                      Spacer(flex: 1),
-                      SfSlider(
-                        enableTooltip: true,
-                        min: 22.0,
-                        max: 38.0,
-                        value: pants_size,
-                        showLabels: true,
-                        showTicks: true,
-                        stepSize: 1,
-                        interval: 2,
-                        showDivisors: true,
-                        activeColor: Colors.black,
-                        inactiveColor: Colors.black,
-                        onChanged: (dynamic newValue) {
-                          setState(() {
-                            pants_size = newValue;
-                          });
-                        },
-                      ),
-                      Spacer(
-                        flex: 3,
-                      ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   height: 90,
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.baseline,
+                //     textBaseline: TextBaseline.alphabetic,
+                //     children: [
+                //       Container(
+                //         child: Text(
+                //           "#상의",
+                //           style: TextStyle(
+                //             color: Colors.black,
+                //             //color: Colors.black,
+                //             fontSize: 18,
+                //             fontWeight: FontWeight.bold,
+                //           ),
+                //           //textAlign: TextAlign.left,
+                //         ),
+                //         margin: EdgeInsets.only(left: 20.0),
+                //       ),
+                //       Spacer(flex: 1),
+                //       SfSlider(
+                //         /*labelFormatterCallback:
+                //             (dynamic actualValue, String formattedText) {
+                //           if (actualValue == 0 || actualValue == 35) {
+                //             return '';
+                //           } else if (actualValue == 30) {
+                //             return '무제한';
+                //           }
+                //           return '$formattedText';
+                //         },*/
+                //         enableTooltip: true,
+                //         min: 80.0,
+                //         max: 115.0,
+                //         value: top_size,
+                //         showLabels: true,
+                //         showTicks: true,
+                //         stepSize: 5,
+                //         interval: 5,
+                //         showDivisors: true,
+                //         activeColor: Colors.black,
+                //         inactiveColor: Colors.black,
+                //         onChanged: (dynamic newValue) {
+                //           setState(() {
+                //             top_size = newValue;
+                //           });
+                //         },
+                //       ),
+                //       Spacer(
+                //         flex: 3,
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Container(
+                //   height: 90,
+                //   width: 100,
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     crossAxisAlignment: CrossAxisAlignment.baseline,
+                //     textBaseline: TextBaseline.alphabetic,
+                //     children: [
+                //       Spacer(flex: 1),
+                //       Container(
+                //         child: Text(
+                //           "#하의",
+                //           style: TextStyle(
+                //             color: Colors.black,
+                //             //color: Colors.black,
+                //             fontSize: 18,
+                //             fontWeight: FontWeight.bold,
+                //           ),
+                //           //textAlign: TextAlign.left,
+                //         ),
+                //         margin: EdgeInsets.only(left: 20.0),
+                //       ),
+                //       Spacer(flex: 1),
+                //       SfSlider(
+                //         enableTooltip: true,
+                //         min: 22.0,
+                //         max: 38.0,
+                //         value: pants_size,
+                //         showLabels: true,
+                //         showTicks: true,
+                //         stepSize: 1,
+                //         interval: 2,
+                //         showDivisors: true,
+                //         activeColor: Colors.black,
+                //         inactiveColor: Colors.black,
+                //         onChanged: (dynamic newValue) {
+                //           setState(() {
+                //             pants_size = newValue;
+                //           });
+                //         },
+                //       ),
+                //       Spacer(
+                //         flex: 3,
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 Container(
                   height: 150,
                   child: Column(
