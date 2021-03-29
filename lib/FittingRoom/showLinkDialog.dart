@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_size_getter/file_input.dart';
 import 'package:stylehub_flutter/common/showToast.dart';
 import 'cropImg.dart';
+import 'package:stylehub_flutter/data/ProductClothing.dart';
 
 TextStyle labelTextStyle = TextStyle(
   fontSize: 15,
@@ -14,10 +15,12 @@ TextStyle labelTextStyle = TextStyle(
   color: Colors.indigo[700],
 );
 
+//상의인지 하의인지 어떤 type임을 나타내는
+int linktype = 1;
+
 String link;
 File mPhoto;
 String mPhoto64;
-
 void showLinkDialog(BuildContext context) {
   mPhoto = null;
   mPhoto64 = null;
@@ -38,6 +41,7 @@ void showLinkDialog(BuildContext context) {
 
           return AlertDialog(
             titlePadding: EdgeInsets.only(top: 20),
+            contentPadding: EdgeInsets.symmetric(horizontal: 20),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0)),
             title: GestureDetector(
@@ -66,7 +70,6 @@ void showLinkDialog(BuildContext context) {
             content: GestureDetector(
               onTap: () {
                 FocusScope.of(context).unfocus();
-                print("click!!!!!!!!!!!!!!");
               },
               child: SingleChildScrollView(
                 child: Column(
@@ -74,6 +77,9 @@ void showLinkDialog(BuildContext context) {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
+                    SizedBox(
+                      height: 20,
+                    ),
                     Text("링크", style: labelTextStyle),
                     //링크입력창
                     Container(
@@ -116,13 +122,6 @@ void showLinkDialog(BuildContext context) {
                                 child: GestureDetector(
                                   onTap: () async {
                                     FocusScope.of(context).unfocus();
-                                    //onPhoto(ImageSource.gallery);
-                                    /*Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            MyApp(selectedPhoto: mPhoto),
-                                      ));*/
                                     mPhoto64 = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -144,6 +143,47 @@ void showLinkDialog(BuildContext context) {
                         ),
                       ),
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text("분류 : ", style: labelTextStyle),
+                        DropdownButton(
+                          iconEnabledColor: Colors.indigo,
+                          value: linktype,
+                          items: [
+                            DropdownMenuItem(
+                              child: Text("상의"),
+                              value: 1,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("하의"),
+                              value: 2,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("원피스"),
+                              value: 3,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("아우터"),
+                              value: 4,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("신발"),
+                              value: 5,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("가방"),
+                              value: 6,
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              linktype = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -157,6 +197,7 @@ void showLinkDialog(BuildContext context) {
                   FocusScope.of(context).unfocus();
                   //누르면 가져오도록 하자
                   //String link, File mphoto(in cache) or Base64
+                  //type linktype(int)
                   showToast("성공적으로 가져왔습니다");
                   Navigator.pop(context);
                 },

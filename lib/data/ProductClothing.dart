@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 @dataClass
 class ProductClothing {
   int request_num;
-  String encoded_img;
+  String encoded_img; //base64
   String brand;
   String detail_url;
   String fashion_url;
