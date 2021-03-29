@@ -223,7 +223,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
 
   dispose() {
     _dragToExpandController.dispose();
-    super.dispose();
+    //super.dispose();
   }
 
   Widget deleteScreen() {
@@ -742,6 +742,9 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
               onVerticalDragEnd: (details) {
                 if (swipeDirection == "Down" && bottomSheetSize == 200) {
                   print("toggle");
+                  setState(() {
+                    contentType = 0;
+                  });
                   _dragToExpandController.toggle();
                 } else if (swipeDirection == "Up") {
                   print("up");

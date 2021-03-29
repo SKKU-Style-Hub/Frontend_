@@ -749,25 +749,34 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           children: [
             //상세 코디에서 위의 메뉴들
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(math.pi),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        contentType = 3; //코디요청의 첫 화면으로 가기, 즉 뒤로가기임.
-                      });
-                    },
-                    child: Icon(
-                      Icons.last_page_rounded,
-                      size: 20,
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.1,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(math.pi),
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          contentType = 3; //코디요청의 첫 화면으로 가기, 즉 뒤로가기임.
+                        });
+                      },
+                      child: Icon(
+                        Icons.last_page_rounded,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
-                codiMenuElement(index: 0, typeName: "AI"),
-                codiMenuElement(index: 1, typeName: "유저"),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: codiMenuElement(index: 0, typeName: "AI"),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: codiMenuElement(index: 1, typeName: "유저"),
+                ),
               ],
             ),
             //메뉴에 따른 옷 보이기
@@ -1255,17 +1264,22 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             vertical: 5,
           ),
           height: 30,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.all(Radius.circular(18)),
-            border: Border.all(width: 1, color: Colors.black),
-          ),
+          decoration: index == menuIndex
+              ? BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.all(Radius.circular(18)),
+                )
+              : BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.all(Radius.circular(18)),
+                  border: Border.all(width: 1, color: Colors.black),
+                ),
           child: Text(
             name,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: index == menuIndex ? Colors.white : Colors.black,
             ),
           )),
     );

@@ -215,7 +215,7 @@ class _StylingCardState extends State<StylingCard> {
       pageViewChildren.add(Container(
           child: Image.asset(tmpProposedCodi.proposedCodiList[i].codiImage)));
     }
-    pageViewChildren.add(Container());
+    //pageViewChildren.add(Container());
     int currentIndexPage = 0;
     final controller = PageController(initialPage: 0);
     final bottomController = PageController(initialPage: 0);
@@ -256,6 +256,17 @@ class _StylingCardState extends State<StylingCard> {
               GestureDetector(
                 onTap: () {
                   //goToCodiScreen
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        //피팅룸에 넘어갈 옷
+                        builder: (context) => CodiFittingRoom(
+                          requestClothInfo: ClothInfo(
+                            image: tmpProposedCodi.requestClothingImg,
+                            type: 1,
+                          ),
+                        ),
+                      ));
                 },
                 child: Container(
                   height: 65,
@@ -286,8 +297,8 @@ class _StylingCardState extends State<StylingCard> {
                     tmpProposedCodi.proposedCodiList.length - 1
                   ])
                     EachCodi(tmpProposedCodi.proposedCodiList[i]),
-                  goToCodiScreen(
-                      requestClothingImg: tmpProposedCodi.requestClothingImg),
+                  //goToCodiScreen(
+                  //    requestClothingImg: tmpProposedCodi.requestClothingImg),
                 ],
                 onPageChanged: (int index) {
                   setState(() {
