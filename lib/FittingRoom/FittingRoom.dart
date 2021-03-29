@@ -218,6 +218,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   ProductClothing detailClothInfo; //내옷장 말고 코디상품일 때만 띄워야함
   AllCodiClothing mulcodiCloset;
   List<dynamic> myClosetListTotal = [];
+  List<dynamic> linkClosetList = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
 
   void initState() {
     codiKey = new GlobalKey();
@@ -230,7 +231,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   dispose() {
     _dragToExpandController.dispose();
-    super.dispose();
+    //super.dispose();
   }
 
   void getCloset() async {
@@ -1057,10 +1058,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         child: GridView.count(
           crossAxisCount: 3,
           children: List.generate(
-            myClosetListTotal[myClosetIndex - 1].length,
+            linkClosetList.length,
             (idx) {
-              return clothWidget(
-                  myClothing: myClosetListTotal[myClosetIndex - 1][idx]);
+              return linkWidget(productClothing: linkClosetList[idx]);
             },
           ),
         ),
@@ -1073,14 +1073,87 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         return ListView(
           scrollDirection: Axis.horizontal,
           children: List.generate(
-            myClosetListTotal[myClosetIndex - 1].length,
+            linkClosetList.length,
             (idx) {
-              return clothWidget(
-                  myClothing: myClosetListTotal[myClosetIndex - 1][idx]);
+              return linkWidget(productClothing: linkClosetList[idx]);
             },
           ),
         );
       }),
+    );
+  }
+
+  Widget linkWidget({ProductClothing productClothing}) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          selectedClothList[categoryToProductType(productClothing.category)]
+              ["image"] = productClothing.encoded_img;
+          selectedClothList[categoryToProductType(productClothing.category)]
+              ["clothing"] = productClothing;
+          if (categoryToProductType(productClothing.category) == 1 ||
+              categoryToProductType(productClothing.category) == 2) //상의 or 하의
+          {
+            selectedClothList[3]["image"] = null;
+          } else if (categoryToProductType(productClothing.category) == 3) //원피스
+          {
+            selectedClothList[1]["image"] = null;
+            selectedClothList[2]["image"] = null;
+          }
+        });
+      },
+      onLongPress: () {
+        setState(() {
+          //옷 꾹 눌렀을 때. 상품정보 보이도록
+          //contentType = 2;
+          //detailClothInfo = clothInfo;
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
+        height: 100,
+        decoration: productClothing.encoded_img ==
+                selectedClothList[
+                    categoryToProductType(productClothing.category)]["image"]
+            ? BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                border: Border.all(color: Colors.indigo, width: 2.5))
+            : null,
+        child: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: bottomSheetSize == 200 ? 100 : 120,
+                child: productClothing.encoded_img.contains('.')
+                    ? Image.asset(productClothing.encoded_img,
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain)
+                    : Image.memory(base64Decode(productClothing.encoded_img),
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain
+                        //height: 100,
+                        //fit: BoxFit.scaleDown,
+                        ),
+              ),
+            ),
+            //선택된 옷일 때 here보이게끔
+            productClothing.encoded_img ==
+                    selectedClothList[
+                            categoryToProductType(productClothing.category)]
+                        ["image"]
+                ? Center(
+                    child: Text("    Select!",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  )
+                : Container(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1307,15 +1380,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               },
               onVerticalDragEnd: (details) {
                 if (swipeDirection == "Down" && bottomSheetSize == 200) {
-                  print("toggle");
                   _dragToExpandController.toggle();
                 } else if (swipeDirection == "Up") {
-                  print("up");
                   setState(() {
                     bottomSheetSize = 350;
                   });
                 } else if (swipeDirection == "Down") {
-                  print("down");
                   setState(() {
                     bottomSheetSize = 200;
                   });

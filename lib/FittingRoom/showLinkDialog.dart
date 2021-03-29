@@ -16,9 +16,9 @@ TextStyle labelTextStyle = TextStyle(
 );
 
 //상의인지 하의인지 어떤 type임을 나타내는
-int linktype = 1;
+String linktype = "상의";
 
-String link;
+String linkurl;
 File mPhoto;
 String mPhoto64;
 void showLinkDialog(BuildContext context) {
@@ -105,7 +105,7 @@ void showLinkDialog(BuildContext context) {
                           contentPadding: EdgeInsets.only(left: 2.0, top: 2.0),
                         ),
                         onChanged: (String str) {
-                          link = str;
+                          linkurl = str;
                         },
                       ),
                     ),
@@ -153,27 +153,27 @@ void showLinkDialog(BuildContext context) {
                           items: [
                             DropdownMenuItem(
                               child: Text("상의"),
-                              value: 1,
+                              value: "상의",
                             ),
                             DropdownMenuItem(
                               child: Text("하의"),
-                              value: 2,
+                              value: "하의",
                             ),
                             DropdownMenuItem(
                               child: Text("원피스"),
-                              value: 3,
+                              value: "원피스",
                             ),
                             DropdownMenuItem(
                               child: Text("아우터"),
-                              value: 4,
+                              value: "아우터",
                             ),
                             DropdownMenuItem(
                               child: Text("신발"),
-                              value: 5,
+                              value: "신발",
                             ),
                             DropdownMenuItem(
                               child: Text("가방"),
-                              value: 6,
+                              value: "가방",
                             ),
                           ],
                           onChanged: (value) {
@@ -196,8 +196,10 @@ void showLinkDialog(BuildContext context) {
                 onPressed: () {
                   FocusScope.of(context).unfocus();
                   //누르면 가져오도록 하자
-                  //String link, File mphoto(in cache) or Base64
-                  //type linktype(int)
+                  //String linkurl, File mphoto(in cache) or Base64
+                  //String linktype
+                  //파일 배경제거 하고
+                  //productclothing class에 저장
                   showToast("성공적으로 가져왔습니다");
                   Navigator.pop(context);
                 },
