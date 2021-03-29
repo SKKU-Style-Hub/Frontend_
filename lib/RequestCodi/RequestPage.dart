@@ -314,9 +314,6 @@ class _RequestPageState extends State<RequestPage> {
                         ),
                         margin: EdgeInsets.only(left: 20.0),
                       ),
-                      /*Spacer(
-                  flex: 20,
-                ),*/
                       Row(
                           children: List.generate(4, (idx) {
                         return Itembutton(
@@ -367,9 +364,6 @@ class _RequestPageState extends State<RequestPage> {
                         ),
                         margin: EdgeInsets.only(left: 20.0),
                       ),
-                      /*Spacer(
-                  flex: 20,
-                ),*/
                       Row(
                           children: List.generate(4, (idx) {
                         return Stylebutton(
@@ -455,7 +449,7 @@ class _RequestPageState extends State<RequestPage> {
                   ),
                 ),
 
-                Container(
+                /*Container(
                   height: 90,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -555,7 +549,7 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                     ],
                   ),
-                ),
+                ),*/
                 Container(
                   height: 150,
                   child: Column(
