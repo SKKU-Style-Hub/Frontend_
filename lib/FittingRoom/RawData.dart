@@ -4,7 +4,7 @@ import 'package:stylehub_flutter/data/AllCodiClothing.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/CodiClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
-import 'FittingRoom.dart';
+import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
 
 MyClothing basictop =
     MyClothing(clothingImgBase64: "assets/images/basictop.png", category: "탑");

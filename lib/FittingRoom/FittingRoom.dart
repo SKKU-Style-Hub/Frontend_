@@ -16,6 +16,7 @@ import 'package:stylehub_flutter/common/showToast.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/rendering.dart';
@@ -37,6 +38,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "offsetX": 113,
     "offsetY": 30,
     "width": 180,
+    "height": 200,
     "originalOffsetX": 113,
     "originalOffsetY": 30,
     "clothing": null, //MyClothing()이거나 ProductClothing()일 것
@@ -47,6 +49,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "offsetX": 113,
     "offsetY": 155,
     "width": 200,
+    "height": 230,
     "originalOffsetX": 113,
     "originalOffsetY": 155,
     "clothing": null,
@@ -57,6 +60,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "offsetX": 113,
     "offsetY": 30,
     "width": 250,
+    "height": 250,
     "originalOffsetX": 113,
     "originalOffsetY": 30,
     "clothing": null,
@@ -67,6 +71,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "offsetX": 30,
     "offsetY": 0,
     "width": 220,
+    "height": 240,
     "originalOffsetX": 30,
     "originalOffsetY": 0,
     "clothing": null,
@@ -77,6 +82,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "offsetX": 280,
     "offsetY": 280,
     "width": 80,
+    "height": 90,
     "originalOffsetX": 280,
     "originalOffsetY": 280,
     "clothing": null,
@@ -87,6 +93,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "offsetX": 280,
     "offsetY": 150,
     "width": 120,
+    "height": 150,
     "originalOffsetX": 280,
     "originalOffsetY": 150,
     "clothing": null,
@@ -100,6 +107,7 @@ List<MyClothing> myClosetListOuter = [];
 List<MyClothing> myClosetListAcc = [];
 
 List<dynamic> codiRequestList = []; //일단 보여줄 코디요청list만들어놓음
+List<dynamic> linkClosetList = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
 
 double swipeStartY;
 String swipeDirection;
@@ -118,9 +126,57 @@ void _capture() async {
     ui.Image image = await boundary.toImage();
     //final directory = (await getApplicationDocumentsDirectory()).path;
     ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData.buffer.asUint8List();
     final result =
         await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
 
+    //이미지: base64방식
+    var bs64 = base64Encode(pngBytes);
+    //각 옷의 위치
+    //상의 -> 하의 -> 원피스 -> 아우터 -> 신발 -> 가방
+    var componentsList = [];
+    for (int i = 1; i <= 6; i++) {
+      if (selectedClothList[i]["image"] != null) //이 때만 보내야함
+      {
+        double xPos =
+            selectedClothList[i]["offsetX"] + selectedClothList[i]["width"] / 2;
+        double yPos = selectedClothList[i]["offsetY"] +
+            selectedClothList[i]["height"] / 2;
+        int price = null;
+        String brandName = null, link = null;
+        if (selectedClothList[i]["clothing"] is ProductClothing) {
+          price = selectedClothList[i]["clothing"].price;
+          brandName = selectedClothList[i]["clothing"].brand;
+          link = selectedClothList[i]["clothing"].detail_url;
+        } else if (selectedClothList[i]["clothing"] is MyClothing) {
+          //price랑 link는 없음
+          brandName = selectedClothList[i]["clothing"].brandName;
+        }
+
+        componentsList.add({
+          "brand": brandName,
+          "xCoordinate": xPos,
+          "yCoordinate": yPos,
+        });
+      } //end of if
+    }
+    //요청 보내기
+    String url = "http://34.64.196.105:82/api/styling/response/create";
+    final response = http.post(url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "stylingPostID": "60615bccb1cebe0012290fdf",
+          "components": componentsList,
+          "requestorProfile": {"userNickname": "requestor", "gender": "f"},
+          "stylistProfile": {"userNickname": "stylist", "gender": "f"}
+        }));
+    //print(response.body);
+    print("--------SEND-------");
+
+    ////////////////////////////////////
     print(result);
     if (result["isSuccess"] == true)
       showToast("이미지가 갤러리에 저장되었습니다.");
@@ -218,7 +274,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   ProductClothing detailClothInfo; //내옷장 말고 코디상품일 때만 띄워야함
   AllCodiClothing mulcodiCloset;
   List<dynamic> myClosetListTotal = [];
-  List<dynamic> linkClosetList = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
 
   void initState() {
     codiKey = new GlobalKey();
