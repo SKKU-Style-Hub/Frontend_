@@ -1,10 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/components/ClothInfo.dart';
 import 'package:stylehub_flutter/data/ProposedCodi.dart';
 import 'MainFeed.dart';
 import 'CodiFittingRoom.dart';
+import 'package:flutter/material.dart';
+import 'package:stylehub_flutter/components/ClothInfo.dart';
+import 'package:stylehub_flutter/data/AllCodiClothing.dart';
+import 'package:stylehub_flutter/data/MyClothing.dart';
+import 'package:stylehub_flutter/data/CodiClothing.dart';
+import 'package:stylehub_flutter/data/ProductClothing.dart';
 
 //raw-data
+MyClothing basictop =
+    MyClothing(clothingImgBase64: "assets/images/basictop.png", category: "탑");
+MyClothing basicbottom = MyClothing(
+    clothingImgBase64: "assets/images/basicbottom.png", category: "팬츠");
+
 //기본 style.wish.buy정보
 ClothSbw codi1_swb = ClothSbw(
     buy_name: "minhee99",
@@ -178,111 +187,68 @@ AllProposedCodi allProposedCodi1 = new AllProposedCodi(
     explanation:
         '이 회색 가디건과 어울리는 코디 전체를 추천해주세요! 저는 여성스럽고 단정한 스타일을 좋아해요. 그리고 하의는 편한 밴딩으로 되어있는 스커트였으면 좋겠어요.');
 
-ClothInfo top1 = ClothInfo(
-    brandname: "프롬비기닝",
-    image: "assets/images/top1.png",
-    price: 30000,
-    clothname: "21AS Victoria Sweatshirt",
-    type: 1);
-ClothInfo top2 = ClothInfo(
-    brandname: "H&M",
-    image: "assets/images/top2.png",
-    price: 35000,
-    clothname: "21SS Unisex Tricolor Fox Patch Classic Marin",
-    type: 1);
-ClothInfo top3 = ClothInfo(
-    brandname: "H&M",
-    image: "assets/images/sample_knit.png",
-    price: 40000,
-    clothname: "21SS Unisex Tricolor Fox Patch Classic Marin",
-    type: 1);
+MyClothing top1 =
+    MyClothing(clothingImgBase64: "assets/images/top1.png", category: "탑");
+MyClothing top2 =
+    MyClothing(clothingImgBase64: "assets/images/top2.png", category: "탑");
+MyClothing top3 = MyClothing(
+    clothingImgBase64: "assets/images/sample_knit.png", category: "탑");
 
 //하의 배열 만들기
-ClothInfo bottom1 = ClothInfo(
-    brandname: "ROEM",
-    image: "assets/images/sample_pants.png",
-    price: 50000,
-    clothname: "PANT NAME1",
-    type: 2);
-ClothInfo bottom2 = ClothInfo(
-    brandname: "MUSINSA",
-    image: "assets/images/received_codi2_bottom.png",
-    price: 55000,
-    clothname: "PANT NAME2",
-    type: 2);
-ClothInfo bottom3 = ClothInfo(
-    brandname: "FOFOFO",
-    image: "assets/images/received_codi1_bottom.png",
-    price: 55000,
-    clothname: "PANT NAME3",
-    type: 2);
+MyClothing bottom1 = MyClothing(
+    clothingImgBase64: "assets/images/sample_pants.png", category: "팬츠");
+MyClothing bottom2 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi2_bottom.png",
+    category: "팬츠");
+MyClothing bottom3 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi1_bottom.png",
+    category: "팬츠");
 
 //신발 배열 만들기
-ClothInfo shoes1 = ClothInfo(
-    brandname: "SHOEEE",
-    image: "assets/images/received_codi2_shoes.png",
-    price: 70000,
-    clothname: "SHOES NAME1",
-    type: 5);
+MyClothing shoes1 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi2_shoes.png",
+    category: "신발");
 //가방
-ClothInfo bag1 = ClothInfo(
-    brandname: "SHOEEE",
-    image: "assets/images/received_codi1_bag.png",
-    price: 70000,
-    clothname: "BAG NAME1",
-    type: 6);
-ClothInfo bag2 = ClothInfo(
-    brandname: "SHOEEE",
-    image: "assets/images/received_codi2_bag.png",
-    price: 70000,
-    clothname: "BAG NAME1",
-    type: 6);
+MyClothing bag1 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi1_bag.png", category: "가방");
+MyClothing bag2 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi2_bag.png", category: "가방");
 //아우터 배열 만들기
-ClothInfo outer1 = ClothInfo(
-    brandname: "SHOEEE",
-    image: "assets/images/received_codi1_outer.png",
-    price: 100000,
-    clothname: "OUTER NAME1",
-    type: 4);
-ClothInfo outer2 = ClothInfo(
-    brandname: "SHOEEE",
-    image: "assets/images/received_codi2_outer.png",
-    price: 100000,
-    clothname: "OUTER NAME2",
-    type: 4);
+MyClothing outer1 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi1_outer.png",
+    category: "코트");
+MyClothing outer2 = MyClothing(
+    clothingImgBase64: "assets/images/received_codi2_outer.png",
+    category: "코트");
 //원피스 배열 만들기
-ClothInfo onepiece1 = ClothInfo(
-    brandname: "POPOPOP",
-    image: "assets/images/onepiece1.png",
-    price: 80000,
-    clothname: "ONEPIECE NAME1",
-    type: 3);
+MyClothing onepiece1 = MyClothing(
+    clothingImgBase64: "assets/images/onepiece1.png", category: "드레스");
 
 void putRawData() {
-  userClosetListTop = [];
-  userClosetListBottom = [];
-  userClosetListAcc = [];
-  userClosetListOuter = [];
-  userClosetListOnepiece = [];
+  myClosetListTop = [];
+  myClosetListBottom = [];
+  myClosetListAcc = [];
+  myClosetListOuter = [];
+  myClosetListOnepiece = [];
 
-  userClosetListTop.add(top1);
-  userClosetListTop.add(top2);
-  userClosetListTop.add(top3);
-  userClosetListTop.add(top1);
-  userClosetListTop.add(top1);
-  userClosetListTop.add(top1);
-  userClosetListTop.add(top1);
+  myClosetListTop.add(top1);
+  myClosetListTop.add(top2);
+  myClosetListTop.add(top3);
+  myClosetListTop.add(top1);
+  myClosetListTop.add(top1);
+  myClosetListTop.add(top1);
+  myClosetListTop.add(top1);
 
-  userClosetListBottom.add(bottom1);
-  userClosetListBottom.add(bottom2);
-  userClosetListBottom.add(bottom3);
+  myClosetListBottom.add(bottom1);
+  myClosetListBottom.add(bottom2);
+  myClosetListBottom.add(bottom3);
 
-  userClosetListAcc.add(shoes1);
-  userClosetListAcc.add(bag1);
-  userClosetListAcc.add(bag2);
+  myClosetListAcc.add(shoes1);
+  myClosetListAcc.add(bag1);
+  myClosetListAcc.add(bag2);
 
-  userClosetListOuter.add(outer1);
-  userClosetListOuter.add(outer2);
+  myClosetListOuter.add(outer1);
+  myClosetListOuter.add(outer2);
 
-  userClosetListOnepiece.add(onepiece1);
+  myClosetListOnepiece.add(onepiece1);
 }

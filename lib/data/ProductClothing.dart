@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 @dataClass
 class ProductClothing {
   int request_num;
-  String encoded_img;
+  String encoded_img; //base64
   String brand;
   String detail_url;
   String fashion_url;
@@ -12,6 +12,8 @@ class ProductClothing {
   String name;
   String price;
   String score;
+  //category
+  String category;
 
   ProductClothing(
       {this.request_num,
@@ -22,7 +24,8 @@ class ProductClothing {
       this.item_url,
       this.name,
       this.price,
-      this.score});
+      this.score,
+      this.category});
 
   Map<String, dynamic> toMap() {
     return {
@@ -33,7 +36,8 @@ class ProductClothing {
       'fashion_url': fashion_url,
       'name': name,
       'price': price,
-      'score': score
+      'score': score,
+      'category': category,
     };
   }
 }

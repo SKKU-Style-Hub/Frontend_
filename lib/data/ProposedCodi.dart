@@ -37,7 +37,7 @@ class ClothSbw {
 }
 
 class ProposedCodiElement {
-  ClothSbw clothSbw;
+  ClothSbw clothSbw; //현재는 안 씀
   double xCoordinate, yCoordinate;
   int price;
   String brandName, link;

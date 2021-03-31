@@ -4,7 +4,12 @@ import 'package:stylehub_flutter/data/AllCodiClothing.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/CodiClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
-import 'FittingRoom.dart';
+import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
+
+MyClothing basictop =
+    MyClothing(clothingImgBase64: "assets/images/basictop.png", category: "탑");
+MyClothing basicbottom = MyClothing(
+    clothingImgBase64: "assets/images/basicbottom.png", category: "팬츠");
 
 MyClothing top1 =
     MyClothing(clothingImgBase64: "assets/images/top1.png", category: "탑");
@@ -130,8 +135,9 @@ void putRawData() {
   tmpCodi2.codiClothes.add(codi2Bag);
   tmpCodi2.totalImg = "assets/request_codi/received_codi2_total.png";
 
-  tmpAllCodi.codiClothingList = [];
-  tmpAllCodi.codiClothingList.add(tmpCodi1);
-  tmpAllCodi.codiClothingList.add(tmpCodi2);
+  tmpAllCodi.codiClothingListAI = [];
+  tmpAllCodi.codiClothingListUser = [];
+  tmpAllCodi.codiClothingListUser.add(tmpCodi1);
+  tmpAllCodi.codiClothingListUser.add(tmpCodi2);
   tmpAllCodi.codiImg = "assets/request_codi/codi1.png";
 }
