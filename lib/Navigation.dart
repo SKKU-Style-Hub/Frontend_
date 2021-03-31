@@ -29,7 +29,7 @@ class _NavigationState extends State<Navigation> {
     if (kIsWeb) {
       AuthCodeClient.instance.retrieveAuthCode();
     }
-    _checkAccessToken();
+    //_checkAccessToken();
   }
 
   _checkAccessToken() async {

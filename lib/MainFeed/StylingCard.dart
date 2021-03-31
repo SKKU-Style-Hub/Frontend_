@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/MainFeed/Comment.dart';
+import 'package:stylehub_flutter/main.dart';
 import 'MainFeed.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
@@ -11,17 +12,9 @@ import 'RawData.dart';
 
 class StylingCard extends StatefulWidget {
   AllProposedCodi tmpAllCodi;
-  String myNickname;
-  String myProfileImg;
   bool isLiked;
   List<Comment> comments;
-  StylingCard(
-      {Key key,
-      this.tmpAllCodi,
-      this.myNickname,
-      this.myProfileImg,
-      this.isLiked = false,
-      this.comments})
+  StylingCard({Key key, this.tmpAllCodi, this.isLiked = false, this.comments})
       : super(key: key) {}
   _StylingCardState createState() {
     return _StylingCardState();
@@ -243,6 +236,7 @@ class _StylingCardState extends State<StylingCard> {
                   CircleAvatar(
                     radius: 25,
                     backgroundImage: NetworkImage(tmpProposedCodi.userProfile),
+                    backgroundColor: Colors.transparent,
                   ),
                   SizedBox(
                     width: 12,
@@ -393,6 +387,8 @@ class _StylingCardState extends State<StylingCard> {
                                                   backgroundImage: NetworkImage(
                                                       comments[index]
                                                           .userProfileImg),
+                                                  backgroundColor:
+                                                      Colors.transparent,
                                                 ),
                                                 SizedBox(
                                                   width: 10,
@@ -434,7 +430,8 @@ class _StylingCardState extends State<StylingCard> {
                                     CircleAvatar(
                                       radius: 18,
                                       backgroundImage:
-                                          NetworkImage(widget.myProfileImg),
+                                          NetworkImage(StyleHub.myProfileImg),
+                                      backgroundColor: Colors.transparent,
                                     ),
                                     SizedBox(
                                       width: 15,
@@ -463,9 +460,10 @@ class _StylingCardState extends State<StylingCard> {
                                         if (writingComment != null) {
                                           setState(() {
                                             comments.add(Comment(
-                                                userNickname: widget.myNickname,
+                                                userNickname:
+                                                    StyleHub.myNickname,
                                                 userProfileImg:
-                                                    widget.myProfileImg,
+                                                    StyleHub.myProfileImg,
                                                 commentContent:
                                                     writingComment));
                                           });

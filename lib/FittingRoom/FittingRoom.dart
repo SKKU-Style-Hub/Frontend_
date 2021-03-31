@@ -226,7 +226,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   dispose() {
     _dragToExpandController.dispose();
-    super.dispose();
   }
 
   void getCloset() async {

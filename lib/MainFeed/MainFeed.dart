@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'Comment.dart';
 import 'CreatePost.dart';
 import 'RawData.dart';
@@ -16,18 +17,12 @@ class MainFeed extends StatefulWidget {
 }
 
 class _MainFeedState extends State<MainFeed> {
-  String myNickname;
-  String myProfileImg;
+  static const _pageSize = 20;
   ScrollController scrollController = ScrollController();
   bool showActionButton = true;
-
-  getUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      myNickname = prefs.getString('userNickname');
-      myProfileImg = prefs.getString('userProfileImg');
-    });
-  }
+  final _pagingController = PagingController<int, Post>(
+    firstPageKey: 0,
+  );
 
   addListener() {
     scrollController.addListener(() {
@@ -46,65 +41,94 @@ class _MainFeedState extends State<MainFeed> {
     });
   }
 
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      List<Post> newPosts = [];
+      //await getPosts(pageKey, _pageSize); //Future<List<Post>>받아오기
+      final isLastPage = newPosts.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newPosts);
+      } else {
+        final nextPageKey = pageKey + newPosts.length;
+        _pagingController.appendPage(newPosts, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
+
   @override
   void initState() {
-    getUser();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     addListener();
     return Scaffold(
-      floatingActionButton: Visibility(
-        visible: showActionButton,
-        child: FloatingActionButton(
-          child: Icon(Icons.create),
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => CreatePost()));
-          },
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              controller: scrollController,
-              children: [
-                StylingCard(
-                  tmpAllCodi: allProposedCodi1,
-                  myNickname: myNickname,
-                  myProfileImg: myProfileImg,
-                  isLiked: false,
-                ),
-                UserPost(
-                  myNickname: myNickname,
-                  myProfileImg: myProfileImg,
-                  userNickname: "ddd",
-                  userProfileImg:
-                      "https://www.ui4u.go.kr/depart/img/content/sub03/img_con03030100_01.jpg",
-                  postImgList: [
-                    "https://image.ajunews.com/content/image/2021/03/05/20210305085249990180.png",
-                    "https://image.ajunews.com/content/image/2021/03/05/20210305085249990180.png",
-                  ],
-                  postContent:
-                      "ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ",
-                  comments: [
-                    Comment(
-                        userNickname: "eee",
-                        userProfileImg:
-                            "https://image.ajunews.com/content/image/2021/03/05/20210305085249990180.png",
-                        commentContent: "아이유 예쁘다")
-                  ],
-                  postTime: DateTime(2021, 3, 29, 17, 30),
-                  isLiked: false,
-                ),
-              ],
-            ),
+        floatingActionButton: Visibility(
+          visible: showActionButton,
+          child: FloatingActionButton(
+            child: Icon(Icons.create),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CreatePost()));
+            },
           ),
-        ],
-      ),
-    );
+        ),
+        body: Container()
+        // RefreshIndicator(
+        //   onRefresh: () => Future.sync(
+        //     () => _pagingController.refresh(),
+        //   ),
+        //   child: PagedListView<int, Post>.separated(
+        //     pagingController: _pagingController,
+        //     builderDelegate: PagedChildBuilderDelegate<Post>(
+        //       itemBuilder: (context, item, index) => PostItem(),
+        //     ),
+        //     separatorBuilder: (context, index) => SizedBox(
+        //       height: 10,
+        //     ),
+        //   ),
+        // )
+        );
   }
 }
+// ListView(
+// controller: scrollController,
+// children: [
+// StylingCard(
+// tmpAllCodi: allProposedCodi1,
+// isLiked: false,
+// ),
+// UserPost(
+// userNickname: "ddd",
+// userProfileImg:
+// "https://www.ui4u.go.kr/depart/img/content/sub03/img_con03030100_01.jpg",
+// postImgList: [
+// "https://image.ajunews.com/content/image/2021/03/05/20210305085249990180.png",
+// "https://image.ajunews.com/content/image/2021/03/05/20210305085249990180.png",
+// ],
+// postContent:
+// "ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ",
+// comments: [
+// Comment(
+// userNickname: "eee",
+// userProfileImg:
+// "https://image.ajunews.com/content/image/2021/03/05/20210305085249990180.png",
+// commentContent: "아이유 예쁘다")
+// ],
+// postTime: DateTime(2021, 3, 29, 17, 30),
+// isLiked: false,
+// ),
+// ],
+// ),

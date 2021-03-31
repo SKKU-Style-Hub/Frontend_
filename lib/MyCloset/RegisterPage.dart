@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_size_getter/file_input.dart';
@@ -28,6 +29,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   File mPhoto;
   String brandInput;
+  bool isClicked=false;
   void onPhoto(ImageSource source) async {
     File f = await ImagePicker.pickImage(
         source: source, maxHeight: 500, maxWidth: 450);
@@ -60,21 +62,45 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void getOmnious() async {
     final bytes = mPhoto.readAsBytesSync();
+    var tagResult;
     widget.base64Img = base64Encode(bytes);
 
-    String url = "https://api.omnious.com/tagger/v2.12/tags";
-    final response = await http.post(url,
-        headers: <String, String>{
-          "Content-Type": "application/json",
-          "x-api-key": "uWHs0KwUapQYJfBz6PnkrTx13cIE7jGMO2qAyCli",
-          "accept-language": "ko"
-        },
-        body: jsonEncode({
-          "image": {"type": "base64", "content": widget.base64Img}
-        }));
+      String url = "https://api.omnious.com/tagger/v2.12/tags";
+      final response = await http.post(url,
+          headers: <String, String>{
+            "Content-Type": "application/json",
+            "x-api-key": "uWHs0KwUapQYJfBz6PnkrTx13cIE7jGMO2qAyCli",
+            "accept-language": "ko"
+          },
+          body: jsonEncode({
+            "image": {"type": "base64", "content": widget.base64Img}
+          }));
 
-    var tagResult = jsonDecode(utf8.decode(response.bodyBytes));
-    print(tagResult.toString());
+      tagResult = jsonDecode(utf8.decode(response.bodyBytes));
+      print(tagResult.toString());
+
+      if(tagResult['status'] == 'fail'){
+        Fluttertoast.showToast(
+            msg: tagResult["error"]["message"].toString(),
+            toastLength: Toast.LENGTH_LONG,
+        );
+        setState(() {
+          isClicked = false;
+        });
+        return;
+      }
+
+      if(tagResult['data']['objects'][0]['type'] == "no detected product"){
+        Fluttertoast.showToast(
+          msg: "사진에서 옷을 찾을 수 없습니다. 다른 사진을 등록해주세요.",
+          toastLength: Toast.LENGTH_LONG,
+        );
+        setState(() {
+          isClicked = false;
+        });
+        return;
+      }
+
 
     String url2 = "http://34.64.196.105:82/api/closet/create/cloth";
     http.post(url2,
@@ -247,12 +273,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       height: 40,
                     ),
                     Center(
-                      child: RaisedButton(
+                      child: !isClicked? RaisedButton(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18.0),
                         ),
                         disabledColor: Colors.black,
                         onPressed: () {
+                          setState(() {
+                            isClicked = true;
+                          });
                           getOmnious();
                         },
                         child: Padding(
@@ -263,7 +292,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             style: kButtonTextStyle,
                           ),
                         ),
-                      ),
+                      ) : CircularProgressIndicator(),
                     ),
                     SizedBox(
                       height: 26,

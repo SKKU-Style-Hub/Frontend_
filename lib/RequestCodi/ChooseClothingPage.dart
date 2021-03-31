@@ -94,14 +94,9 @@ class _ChooseClothingPageState extends State<ChooseClothingPage> {
                         GestureDetector(
                           onTap: () {
                             print("${snapshot.data[index].id}");
-                            Navigator.push(
+                            Navigator.pop(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => RequestPage(
-                                        select_cloth: 1,
-                                        index: snapshot.data[index].id,
-                                        selectedClothing: snapshot.data[index],
-                                      )),
+                              snapshot.data[index],
                             );
                           },
                           child: Container(

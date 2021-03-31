@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:stylehub_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
@@ -13,22 +13,10 @@ import 'ChooseClothingPage.dart';
 import 'package:http/http.dart' as http;
 
 //사용자이름
-String userName = 'minjoo123';
+String userName = StyleHub.myNickname;
 
 class RequestPage extends StatefulWidget {
   String chosenBase64;
-  int index;
-  int select_cloth;
-  RequestPage({
-    Key key,
-    int index,
-    int select_cloth,
-    MyClothing selectedClothing,
-  }) : super(key: key) {
-    this.index = index;
-    this.select_cloth = select_cloth;
-    this.chosenBase64 = selectedClothing?.clothingImgBase64;
-  }
 
   @override
   _RequestPageState createState() => _RequestPageState();
@@ -38,8 +26,7 @@ class _RequestPageState extends State<RequestPage> {
   String requestcomment = "";
   SfRangeValues _costvalues = SfRangeValues(5.0, 10.0);
   double cost_userwant = 10.0;
-  double top_size = 90.0;
-  double pants_size = 28.0;
+  List<String> chosenStyle = [];
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +94,6 @@ class _RequestPageState extends State<RequestPage> {
                           fontSize: 12,
                           fontFamily: 'Noto Sans',
                         ),
-                        //textAlign: TextAlign.left,
                       ),
                       Spacer(
                         flex: 10,
@@ -191,13 +177,15 @@ class _RequestPageState extends State<RequestPage> {
                                     base64Decode(widget.chosenBase64),
                                     fit: BoxFit.fill,
                                   )),
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChooseClothingPage(),
                               ));
-                          //select_cloth = 1;
+                          setState(() {
+                            widget.chosenBase64 = result?.clothingImgBase64;
+                          });
                         },
                       ),
                       Spacer(
@@ -210,7 +198,6 @@ class _RequestPageState extends State<RequestPage> {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
-                        //textAlign: TextAlign.left,
                       ),
                       Spacer(
                         flex: 15,
@@ -563,11 +550,9 @@ class _RequestPageState extends State<RequestPage> {
                           "#요청사항 입력",
                           style: TextStyle(
                             color: Colors.black,
-                            //color: Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
-                          //textAlign: TextAlign.left,
                         ),
                         margin: EdgeInsets.only(left: 20.0),
                       ),
@@ -623,13 +608,13 @@ class _RequestPageState extends State<RequestPage> {
                         },
                         body: jsonEncode({
                           "userProfile": {
-                            "userNickname": "ddd",
-                            "userGender": "fff",
-                            "profileImg": "www"
+                            "userNickname": StyleHub.myNickname,
+                            "userGender": StyleHub.myGender,
+                            "profileImg": StyleHub.myProfileImg
                           },
                           "requestCloths": {"aaa": "ddd"},
-                          "budgetMin": 0,
-                          "budgetMax": 1000,
+                          "budgetMin": (_costvalues.start * 10000) as int,
+                          "budgetMax": (_costvalues.end * 10000) as int,
                           "requestItems": {"item": "dd"},
                           "requestStyle": ["eee", "ddd"],
                           "requestContent": "ddddd"

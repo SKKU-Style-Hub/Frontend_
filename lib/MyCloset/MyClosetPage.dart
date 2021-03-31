@@ -18,7 +18,7 @@ class MyClosetPage extends StatefulWidget {
 
 class _MyClosetPageState extends State<MyClosetPage> {
   final controller = PageController();
-
+  ScrollController scrollController = ScrollController();
   double containerHeight(String category, String length) {
     if (category == "탑" ||
         category == "블라우스" ||
@@ -127,10 +127,14 @@ class _MyClosetPageState extends State<MyClosetPage> {
       future: list,
       initialData: [],
       builder: (context, snapshot) {
+        if (scrollController.hasClients) {
+          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+        }
         return snapshot.hasData
             ? ListView.builder(
                 reverse: true,
                 shrinkWrap: true,
+                controller: scrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -177,6 +181,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
     //ProductClothingDatabase.clearProduct();
     //MyClothingDatabase.deleteClothing(4);
     //MyClothingDatabase.clearCloset();
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

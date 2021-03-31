@@ -12,6 +12,7 @@ import 'package:bloc/bloc.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:stylehub_flutter/main.dart';
 import 'UserInfoScreen.dart';
 import 'Navigation.dart';
 
@@ -23,7 +24,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginScreen> {
-  Gen.Gender selectedGender = null;
   @override
   void initState() {
     super.initState();
@@ -51,24 +51,14 @@ class _LoginState extends State<LoginScreen> {
       var token = await AuthApi.instance.issueAccessToken(authCode);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       AccessTokenStore.instance.toStore(token);
-
       try {
         User user = await UserApi.instance.me();
         print("access code: 2 " + user.connectedAt.toString());
         await prefs.setString('userNickname', user.properties["nickname"]);
         await prefs.setString(
             'userProfileImg', user.properties["profile_image"]);
-
-        String url = "http://34.64.196.105:82/api/auth/signup";
-        http.post(url,
-            headers: {
-              'Content-type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: jsonEncode({
-              "userNickName": user.properties["nickname"].toString(),
-              "gender": selectedGender.toString()
-            }));
+        StyleHub.myNickname = user.properties["nickname"];
+        StyleHub.myProfileImg = user.properties["profile_image"];
 
         Navigator.pushAndRemoveUntil(
             context,
@@ -95,31 +85,31 @@ class _LoginState extends State<LoginScreen> {
           Center(
             child: Image.asset(
               "assets/images/SPLASH_image.png",
-              height: 450,
+              height: 500,
             ),
           ),
-          Center(
-              child: GenderPickerWithImage(
-            showOtherGender: false,
-            verticalAlignedText: true,
-            selectedGender: null,
-            selectedGenderTextStyle: TextStyle(
-                color: Colors.yellowAccent, fontWeight: FontWeight.bold),
-            unSelectedGenderTextStyle:
-                TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
-            onChanged: (Gen.Gender gender) {
-              selectedGender = gender;
-            },
-            equallyAligned: true,
-            animationDuration: Duration(milliseconds: 300),
-            isCircular: true,
-            // default : true,
-            opacityOfGradient: 0.4,
-            padding: const EdgeInsets.only(left: 55),
-            size: 90, //default : 40
-          )),
+          // Center(
+          //     child: GenderPickerWithImage(
+          //   showOtherGender: false,
+          //   verticalAlignedText: true,
+          //   selectedGender: null,
+          //   selectedGenderTextStyle: TextStyle(
+          //       color: Colors.yellowAccent, fontWeight: FontWeight.bold),
+          //   unSelectedGenderTextStyle:
+          //       TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+          //   onChanged: (Gen.Gender gender) {
+          //     selectedGender = gender;
+          //   },
+          //   equallyAligned: true,
+          //   animationDuration: Duration(milliseconds: 300),
+          //   isCircular: true,
+          //   // default : true,
+          //   opacityOfGradient: 0.4,
+          //   padding: const EdgeInsets.only(left: 55),
+          //   size: 90, //default : 40
+          // )),
           SizedBox(
-            height: 50,
+            height: 100,
           ),
           Center(
             child: GestureDetector(
@@ -127,13 +117,10 @@ class _LoginState extends State<LoginScreen> {
                 "images/kakao_login_btn.png",
                 width: 350,
               ),
-              onTap: () {
-                if (selectedGender != null) {
-                  _isKakaoTalkInstalled ? _loginWithTalk() : _loginWithKakao();
-                } else {
-                  Fluttertoast.showToast(
-                      msg: "성별을 선택해주세요.", toastLength: Toast.LENGTH_SHORT);
-                }
+              onTap: () async {
+                //var token = await AccessTokenStore.instance.fromStore();
+                //print("accessToken: " + token.);
+                _isKakaoTalkInstalled ? _loginWithTalk() : _loginWithKakao();
               },
             ),
           ),
@@ -154,7 +141,7 @@ class _LoginState extends State<LoginScreen> {
   _loginWithTalk() async {
     try {
       var code = await AuthCodeClient.instance.requestWithTalk();
-      print("access code: " + code);
+      print("accessCode: " + code);
       await _issueAccessToken(code);
     } catch (e) {
       print(e);

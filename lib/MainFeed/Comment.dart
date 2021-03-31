@@ -1,11 +1,9 @@
 class Comment {
-  Comment({userNickname, userProfileImg, commentContent}) {
-    this.userNickname = userNickname;
-    this.userProfileImg = userProfileImg;
-    this.commentContent = commentContent;
-  }
+  Comment({this.userNickname, this.userProfileImg, this.commentContent});
 
   String userNickname;
   String userProfileImg;
   String commentContent;
 }
+
+class Post {}

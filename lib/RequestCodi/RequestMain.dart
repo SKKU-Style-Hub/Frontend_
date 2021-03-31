@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import '../Navigation.dart';
 import 'RequestPage.dart';
+import 'package:http/http.dart' as http;
 
 class RequestMain extends StatefulWidget {
   @override
@@ -9,6 +12,26 @@ class RequestMain extends StatefulWidget {
 }
 
 class _RequestMainState extends State<RequestMain> {
+  getRequestList() async {
+    String url = "http://34.64.196.105:82/api/styling/request/list/my";
+    var response = await http.post(url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "userProfile": {
+            "userNickname": "ddd",
+          },
+        }));
+    print(response.body);
+  }
+
+  @override
+  void initState() {
+    getRequestList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

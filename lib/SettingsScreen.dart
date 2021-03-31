@@ -99,15 +99,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       leading: Icon(Icons.exit_to_app),
                       onPressed: (context) async {
                         try {
-                          var code = await UserApi.instance.logout();
+                          await UserApi.instance.logout();
+                          await AccessTokenStore.instance.clear();
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()),
-                          );
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
+                              (route) => false);
                         } catch (e) {
                           print(e);
+                          // Navigator.pushAndRemoveUntil(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => LoginScreen()),
+                          //     (route) => false);
                         }
                       },
                     )

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
+import 'package:stylehub_flutter/main.dart';
 import 'Comment.dart';
 
 class UserPost extends StatefulWidget {
-  String myNickname;
-  String myProfileImg;
   String userNickname;
   String userProfileImg;
   List<String> postImgList;
@@ -16,9 +15,7 @@ class UserPost extends StatefulWidget {
   bool isLiked;
   String myComment;
   UserPost(
-      {String myNickname,
-      String myProfileImg,
-      String userNickname,
+      {String userNickname,
       String userProfileImg,
       List<String> postImgList,
       String postContent,
@@ -26,8 +23,6 @@ class UserPost extends StatefulWidget {
       DateTime postTime,
       bool isLiked,
       String myComment}) {
-    this.myNickname = myNickname;
-    this.myProfileImg = myProfileImg;
     this.userNickname = userNickname;
     this.userProfileImg = userProfileImg;
     this.postImgList = postImgList;
@@ -92,6 +87,7 @@ class _UserPostState extends State<UserPost> {
               CircleAvatar(
                 radius: 25,
                 backgroundImage: NetworkImage(widget.userProfileImg),
+                backgroundColor: Colors.transparent,
               ),
               SizedBox(
                 width: 12,
@@ -214,6 +210,8 @@ class _UserPostState extends State<UserPost> {
                                                   backgroundImage: NetworkImage(
                                                       comments[index]
                                                           .userProfileImg),
+                                                  backgroundColor:
+                                                      Colors.transparent,
                                                 ),
                                                 SizedBox(
                                                   width: 10,
@@ -255,7 +253,8 @@ class _UserPostState extends State<UserPost> {
                                     CircleAvatar(
                                       radius: 18,
                                       backgroundImage:
-                                          NetworkImage(widget.myProfileImg),
+                                          NetworkImage(StyleHub.myProfileImg),
+                                      backgroundColor: Colors.transparent,
                                     ),
                                     SizedBox(
                                       width: 15,
@@ -284,9 +283,10 @@ class _UserPostState extends State<UserPost> {
                                         if (writingComment != null) {
                                           setState(() {
                                             comments.add(Comment(
-                                                userNickname: widget.myNickname,
+                                                userNickname:
+                                                    StyleHub.myNickname,
                                                 userProfileImg:
-                                                    widget.myProfileImg,
+                                                    StyleHub.myProfileImg,
                                                 commentContent:
                                                     writingComment));
                                           });
@@ -335,7 +335,7 @@ class _UserPostState extends State<UserPost> {
                         width: 15,
                       ),
                       Text(
-                        widget.myNickname,
+                        StyleHub.myNickname,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
@@ -357,7 +357,8 @@ class _UserPostState extends State<UserPost> {
               ),
               CircleAvatar(
                 radius: 18,
-                backgroundImage: NetworkImage(widget.myProfileImg),
+                backgroundImage: NetworkImage(StyleHub.myProfileImg),
+                backgroundColor: Colors.transparent,
               ),
               SizedBox(
                 width: 10,
@@ -385,8 +386,8 @@ class _UserPostState extends State<UserPost> {
                     setState(() {
                       myComment = writingComment;
                       comments.add(Comment(
-                          userNickname: widget.myNickname,
-                          userProfileImg: widget.myProfileImg,
+                          userNickname: StyleHub.myNickname,
+                          userProfileImg: StyleHub.myProfileImg,
                           commentContent: writingComment));
                     });
                     commentController.clear();

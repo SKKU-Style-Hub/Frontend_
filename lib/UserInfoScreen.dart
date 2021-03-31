@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:number_selection/number_selection.dart';
+import 'package:stylehub_flutter/main.dart';
 import 'Navigation.dart';
+import 'package:http/http.dart' as http;
 
 class UserInfoScreen extends StatefulWidget {
   @override
@@ -13,21 +17,11 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   Gen.Gender selectedGender = null;
-  String kakaoNickname = "";
   String selectedNickname;
-  bool isButtonDisabled = true;
-
-  getNickname() async {
-    User user = await UserApi.instance.me();
-    //setState(() {
-    kakaoNickname = user.properties["nickname"];
-    selectedNickname = kakaoNickname;
-    //});
-  }
+  int selectedAge = 20;
 
   @override
   Widget build(BuildContext context) {
-    getNickname();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -67,18 +61,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 Container(
                   width: 150,
                   child: TextField(
-                    decoration: InputDecoration(hintText: kakaoNickname),
+                    decoration: InputDecoration(hintText: StyleHub.myNickname),
                     onChanged: (value) {
                       selectedNickname = value;
-                      if (value != "") {
-                        setState(() {
-                          isButtonDisabled = false;
-                        });
-                      } else {
-                        setState(() {
-                          isButtonDisabled = true;
-                        });
-                      }
                     },
                   ),
                 ),
@@ -90,14 +75,25 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.grey[400])),
                   onPressed: () {
-                    if (!isButtonDisabled) {}
+                    String url = "http://34.64.196.105:82/api/auth/signup";
+                    http.post(url,
+                        headers: {
+                          'Content-type': 'application/json',
+                          'Accept': 'application/json',
+                        },
+                        body: jsonEncode({
+                          "userProfile": {
+                            "userName": selectedNickname,
+                            "gender": selectedGender.toString(),
+                            "password": "ee",
+                            "age": 23
+                          },
+                        }));
                   },
-                  child: isButtonDisabled
-                      ? Text("중복 확인")
-                      : Text(
-                          "중복 확인",
-                          style: TextStyle(color: Colors.black),
-                        ),
+                  child: Text(
+                    "중복 확인",
+                    style: TextStyle(color: Colors.black),
+                  ),
                 )
               ],
             ),
@@ -154,7 +150,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 maxValue: 50,
                 direction: Axis.horizontal,
                 withSpring: false,
-                onChanged: (int value) => print("value: $value"),
+                onChanged: (int value) {
+                  selectedAge = value;
+                },
               ),
             ),
           ),
