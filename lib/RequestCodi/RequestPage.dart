@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:stylehub_flutter/data/ProductClothing.dart';
+import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
 import 'package:stylehub_flutter/main.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/data/MyClothing.dart';
-import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../components/Colorbutton.dart';
 import '../components/Stylebutton.dart';
@@ -11,22 +11,81 @@ import '../components/Budgetline.dart';
 import 'AfterRequest.dart';
 import 'ChooseClothingPage.dart';
 import 'package:http/http.dart' as http;
+import '../MyCloset/MyClosetPage.dart';
+import 'dart:io' as Io;
+import 'package:path_provider/path_provider.dart';
 
 //사용자이름
 String userName = StyleHub.myNickname;
 
 class RequestPage extends StatefulWidget {
   String chosenBase64;
+  int chosenId;
+  String chosenType;
 
   @override
   _RequestPageState createState() => _RequestPageState();
 }
 
 class _RequestPageState extends State<RequestPage> {
-  String requestcomment = "";
+  String requestContent = "";
   SfRangeValues _costvalues = SfRangeValues(5.0, 10.0);
   double cost_userwant = 10.0;
   List<String> chosenStyle = [];
+  List<String> chosenItem = [];
+
+  void getStyling(
+      int request_num, String clothBase64, String request_category) async {
+    String sex = StyleHub.myGender == 'Gender.Female' ? 'WOMEN' : 'MEN';
+    String url = "http://115.145.212.100:51122/post";
+    Map<String, String> headers = {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+    };
+    Map<String, dynamic> data = {
+      'top_k': 20,
+      'sex': sex,
+      'category': request_category,
+      'image': clothBase64
+    };
+    http.Response response = await http
+        .post(url, headers: headers, body: jsonEncode(data))
+        .timeout(Duration(seconds: 180));
+    var result = json.decode(response.body);
+    for (int i = 0; i < 15; i++) {
+      String dir = (await getApplicationDocumentsDirectory()).path;
+      var file = Io.File('${dir}/' + 'recommend_${request_num}_${i}.png');
+      file.writeAsBytesSync(
+          base64.decode(result['Deep']['predictions_info'][i]['encoded_img']));
+      ProductClothingDatabase.insertProduct(ProductClothing(
+          request_num: request_num,
+          img_path: file.path,
+          encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
+          brand: result['Deep']['predictions_info'][i]['brand'],
+          detail_url: result['Deep']['predictions_info'][i]['detail_url'],
+          fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
+          item_url: result['Deep']['predictions_info'][i]['item_url'],
+          name: result['Deep']['predictions_info'][i]['name'],
+          price: result['Deep']['predictions_info'][i]['price'],
+          score: result['Deep']['predictions_info'][i]['score'],
+          category: result['Deep']['predictions_info'][i]['category']));
+
+      int total = await ProductClothingDatabase.totalProductNum();
+      print(total);
+      // ProductClothingDatabase.insertProduct(ProductClothing(
+      //   request_num: 100,
+      //   encoded_img: result['DeepGraph']['topk'][i]['encoded_img'],
+      //   brand: result['DeepGraph']['topk'][i]['brand'],
+      //   detail_url: result['DeepGraph']['topk'][i]['detail_url'],
+      //   fashion_url: result['DeepGraph']['topk'][i]['fashion_url'],
+      //   item_url: result['DeepGraph']['topk'][i]['item_url'],
+      //   name: result['DeepGraph']['topk'][i]['name'],
+      //   price: result['DeepGraph']['topk'][i]['price'].toString(),
+      // ));
+      // int total = await ProductClothingDatabase.totalProductNum();
+      // print(total);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +242,11 @@ class _RequestPageState extends State<RequestPage> {
                               MaterialPageRoute(
                                 builder: (context) => ChooseClothingPage(),
                               ));
+                          print(result.id);
                           setState(() {
                             widget.chosenBase64 = result?.clothingImgBase64;
+                            widget.chosenId = result?.id;
+                            widget.chosenType = result?.category;
                           });
                         },
                       ),
@@ -280,7 +342,6 @@ class _RequestPageState extends State<RequestPage> {
                 ),
                 //아이템---------------------------------
                 Container(
-                  //margin: EdgeInsets.only(left: 20.0),
                   alignment: Alignment.centerLeft,
                   height: 230,
                   child: Column(
@@ -568,7 +629,7 @@ class _RequestPageState extends State<RequestPage> {
                           ),
                           onChanged: (String str) {
                             setState(() {
-                              requestcomment = str;
+                              requestContent = str;
                             });
                           },
                         ),
@@ -599,6 +660,17 @@ class _RequestPageState extends State<RequestPage> {
                     ),
                   ),
                   onTap: () {
+                    for (int i = 0; i < 16; i++) {
+                      if (item_click[i] == 1) {
+                        chosenItem.add(item_list[i]);
+                      }
+                    }
+                    for (int i = 0; i < 19; i++) {
+                      if (style_click[i] == 1) {
+                        chosenStyle.add(style_list[i]);
+                      }
+                    }
+
                     String url =
                         "http://34.64.196.105:82/api/styling/request/create";
                     http.post(url,
@@ -612,13 +684,17 @@ class _RequestPageState extends State<RequestPage> {
                             "userGender": StyleHub.myGender,
                             "profileImg": StyleHub.myProfileImg
                           },
-                          "requestCloths": {"aaa": "ddd"},
-                          "budgetMin": (_costvalues.start * 10000) as int,
-                          "budgetMax": (_costvalues.end * 10000) as int,
-                          "requestItems": {"item": "dd"},
-                          "requestStyle": ["eee", "ddd"],
-                          "requestContent": "ddddd"
+                          "requestClothings": [widget.chosenBase64],
+                          "budgetMin": (_costvalues.start.round() * 10000),
+                          "budgetMax": (_costvalues.end.round() * 10000),
+                          "requestItems": chosenItem,
+                          "requestStyle": chosenStyle,
+                          "requestContent": requestContent
                         }));
+                    if (getType(widget.chosenType) != '기타') {
+                      getStyling(widget.chosenId, widget.chosenBase64,
+                          getType(widget.chosenType));
+                    }
 
                     //다음 페이지 이동
                     Navigator.push(

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gender_picker/source/gender_picker.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
 import 'package:kakao_flutter_sdk/all.dart';
@@ -9,6 +10,7 @@ import 'package:number_selection/number_selection.dart';
 import 'package:stylehub_flutter/main.dart';
 import 'Navigation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserInfoScreen extends StatefulWidget {
   @override
@@ -17,8 +19,16 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   Gen.Gender selectedGender = null;
-  String selectedNickname;
+  String selectedNickname = StyleHub.myNickname;
   int selectedAge = 20;
+
+  storeToPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userNickname', selectedNickname);
+    await prefs.setString('userGender', selectedGender.toString());
+    StyleHub.myNickname = selectedNickname;
+    StyleHub.myGender = selectedGender.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,13 +178,21 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 primary: Colors.black,
               ),
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Navigation(
-                              selectedPosition: 0,
-                            )),
-                    (route) => false);
+                if (selectedGender != null) {
+                  storeToPrefs();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Navigation(
+                                selectedPosition: 0,
+                              )),
+                      (route) => false);
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "성별은 필수 입력 값입니다.",
+                    toastLength: Toast.LENGTH_SHORT,
+                  );
+                }
               },
               child: Padding(
                 padding:

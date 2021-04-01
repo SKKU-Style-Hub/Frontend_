@@ -109,11 +109,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               (route) => false);
                         } catch (e) {
                           print(e);
-                          // Navigator.pushAndRemoveUntil(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => LoginScreen()),
-                          //     (route) => false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
+                              (route) => false);
                         }
                       },
                     )

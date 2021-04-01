@@ -43,8 +43,8 @@ class _MainFeedState extends State<MainFeed> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      List<Post> newPosts = [];
-      //await getPosts(pageKey, _pageSize); //Future<List<Post>>받아오기
+      List<Post> newPosts =
+          await getPosts(pageKey, _pageSize); //Future<List<Post>>받아오기
       final isLastPage = newPosts.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newPosts);
@@ -85,22 +85,20 @@ class _MainFeedState extends State<MainFeed> {
             },
           ),
         ),
-        body: Container()
-        // RefreshIndicator(
-        //   onRefresh: () => Future.sync(
-        //     () => _pagingController.refresh(),
-        //   ),
-        //   child: PagedListView<int, Post>.separated(
-        //     pagingController: _pagingController,
-        //     builderDelegate: PagedChildBuilderDelegate<Post>(
-        //       itemBuilder: (context, item, index) => PostItem(),
-        //     ),
-        //     separatorBuilder: (context, index) => SizedBox(
-        //       height: 10,
-        //     ),
-        //   ),
-        // )
-        );
+        body: RefreshIndicator(
+          onRefresh: () => Future.sync(
+            () => _pagingController.refresh(),
+          ),
+          child: PagedListView<int, Post>.separated(
+            pagingController: _pagingController,
+            builderDelegate: PagedChildBuilderDelegate<Post>(
+              itemBuilder: (context, item, index) => PostItem(),
+            ),
+            separatorBuilder: (context, index) => SizedBox(
+              height: 10,
+            ),
+          ),
+        ));
   }
 }
 // ListView(

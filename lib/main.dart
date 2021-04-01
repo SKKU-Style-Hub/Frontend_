@@ -13,7 +13,7 @@ void main() async {
 class StyleHub extends StatefulWidget {
   static String myNickname;
   static String myProfileImg;
-  static String myGender = "Female";
+  static String myGender;
   @override
   _StyleHubState createState() => _StyleHubState();
 }
@@ -33,7 +33,6 @@ class _StyleHubState extends State<StyleHub> {
   _checkAccessToken() async {
     var token = await AccessTokenStore.instance.fromStore();
     if (token.refreshToken == null) {
-      print("token null");
       setState(() {
         isLoggedIn = false;
       });
@@ -41,7 +40,6 @@ class _StyleHubState extends State<StyleHub> {
       setState(() {
         isLoggedIn = true;
       });
-      print("token not null");
     }
   }
 

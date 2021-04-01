@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,7 +52,7 @@ class _LoginState extends State<LoginScreen> {
       AccessTokenStore.instance.toStore(token);
       try {
         User user = await UserApi.instance.me();
-        print("access code: 2 " + user.connectedAt.toString());
+        print("userId: " + user.id.toString());
         await prefs.setString('userNickname', user.properties["nickname"]);
         await prefs.setString(
             'userProfileImg', user.properties["profile_image"]);

@@ -9,10 +9,10 @@ class ProductClothingDatabase {
   static Future<Database> makeDatabase() async {
     WidgetsFlutterBinding.ensureInitialized();
     final Future<Database> database = openDatabase(
-      join(await getDatabasesPath(), 'productclothing_database.db'),
+      join(await getDatabasesPath(), 'productclothing_database4.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE ProductTable(request_num INTEGER, encoded_img TEXT, brand TEXT, detail_url TEXT, fashion_url TEXT, item_url TEXT, name TEXT, price TEXT, score TEXT)",
+          "CREATE TABLE ProductTable(request_num INTEGER, encoded_img TEXT, img_path TEXT, brand TEXT, detail_url TEXT, fashion_url TEXT, item_url TEXT, name TEXT, price TEXT, score TEXT, category TEXT)",
         );
       },
       version: db_version,
@@ -48,6 +48,7 @@ class ProductClothingDatabase {
     return List.generate(maps.length, (i) {
       return ProductClothing(
           request_num: maps[i]['request_num'],
+          img_path: maps[i]['img_path'],
           encoded_img: maps[i]['encoded_img'],
           brand: maps[i]['brand'],
           detail_url: maps[i]['detail_url'],
@@ -55,7 +56,8 @@ class ProductClothingDatabase {
           item_url: maps[i]['item_url'],
           name: maps[i]['name'],
           price: maps[i]['price'],
-          score: maps[i]['score']);
+          score: maps[i]['score'],
+          category: maps[i]['category']);
     });
   }
 

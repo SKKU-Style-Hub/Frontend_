@@ -16,6 +16,7 @@ import '../Navigation.dart';
 import 'package:image/image.dart' as Img;
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:stylehub_flutter/main.dart';
 
 class RegisterPage extends StatefulWidget {
   static bool registered = false;
@@ -109,8 +110,9 @@ class _RegisterPageState extends State<RegisterPage> {
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          "userProfile": {"userName": "dddd", "gender": "eee"},
-          "clothing": tagResult
+          "userProfile": {"userNickname": StyleHub.myNickname, "gender": StyleHub.myGender},
+          "tagResult": tagResult,
+          "clothingImage": widget.base64Img//배경제거 후 링크
         }));
 
 

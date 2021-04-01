@@ -16,16 +16,26 @@ class MyClosetPage extends StatefulWidget {
   _MyClosetPageState createState() => _MyClosetPageState();
 }
 
+String getType(String category) {
+  if (category == "탑" ||
+      category == "블라우스" ||
+      category == "캐주얼상의" ||
+      category == "니트웨어" ||
+      category == "셔츠" ||
+      category == "베스트") {
+    return '상의';
+  }
+  if (category == "청바지" || category == " 팬츠" || category == "스커트") {
+    return '하의';
+  }
+  return '기타';
+}
+
 class _MyClosetPageState extends State<MyClosetPage> {
   final controller = PageController();
   ScrollController scrollController = ScrollController();
   double containerHeight(String category, String length) {
-    if (category == "탑" ||
-        category == "블라우스" ||
-        category == "캐주얼상의" ||
-        category == "니트웨어" ||
-        category == "셔츠" ||
-        category == "베스트") {
+    if (getType(category) == '상의') {
       switch (length) {
         case '롱':
           return 230;
@@ -37,12 +47,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
         // 마저 끝내기
       }
     }
-    if (category == "코트" ||
-        category == "재킷" ||
-        category == "점퍼" ||
-        category == "패딩" ||
-        category == "드레스" ||
-        category == "점프수트") {
+    if (getType(category) == '기타') {
       switch (length) {
         case '롱':
           return 300;
@@ -59,7 +64,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
           return 170;
       }
     }
-    if (category == "청바지" || category == " 팬츠" || category == "스커트") {
+    if (getType(category) == '하의') {
       switch (length) {
         case '긴':
         case '롱':
@@ -91,34 +96,35 @@ class _MyClosetPageState extends State<MyClosetPage> {
     http.Response response = await http
         .post(url, headers: headers, body: jsonEncode(data))
         .timeout(Duration(seconds: 180));
-    //print(response.body);
+    print("request made");
     var result = json.decode(response.body);
-    //print(result['Deep']['predictions_info'].length);
     for (int i = 0; i < 15; i++) {
-      // ProductClothingDatabase.insertProduct(ProductClothing(
-      //     request_num: 23,
-      //     encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
-      //     brand: result['Deep']['predictions_info'][i]['brand'],
-      //     detail_url: result['Deep']['predictions_info'][i]['detail_url'],
-      //     fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
-      //     item_url: result['Deep']['predictions_info'][i]['item_url'],
-      //     name: result['Deep']['predictions_info'][i]['name'],
-      //     price: result['Deep']['predictions_info'][i]['price'],
-      //     score: result['Deep']['predictions_info'][i]['score']));
-      // int total = await ProductClothingDatabase.totalProductNum();
-      // print(total);
       ProductClothingDatabase.insertProduct(ProductClothing(
-        request_num: 100,
-        encoded_img: result['DeepGraph']['topk'][i]['encoded_img'],
-        brand: result['DeepGraph']['topk'][i]['brand'],
-        detail_url: result['DeepGraph']['topk'][i]['detail_url'],
-        fashion_url: result['DeepGraph']['topk'][i]['fashion_url'],
-        item_url: result['DeepGraph']['topk'][i]['item_url'],
-        name: result['DeepGraph']['topk'][i]['name'],
-        price: result['DeepGraph']['topk'][i]['price'].toString(),
-      ));
+          request_num: 23,
+          encoded_img: result['Deep']['predictions_info'][i]['encoded_img'],
+          brand: result['Deep']['predictions_info'][i]['brand'],
+          detail_url: result['Deep']['predictions_info'][i]['detail_url'],
+          fashion_url: result['Deep']['predictions_info'][i]['fashion_url'],
+          item_url: result['Deep']['predictions_info'][i]['item_url'],
+          name: result['Deep']['predictions_info'][i]['name'],
+          price: result['Deep']['predictions_info'][i]['price'],
+          score: result['Deep']['predictions_info'][i]['score'],
+          category: result['Deep']['predictions_info'][i]['category']));
+
       int total = await ProductClothingDatabase.totalProductNum();
       print(total);
+      // ProductClothingDatabase.insertProduct(ProductClothing(
+      //   request_num: 100,
+      //   encoded_img: result['DeepGraph']['topk'][i]['encoded_img'],
+      //   brand: result['DeepGraph']['topk'][i]['brand'],
+      //   detail_url: result['DeepGraph']['topk'][i]['detail_url'],
+      //   fashion_url: result['DeepGraph']['topk'][i]['fashion_url'],
+      //   item_url: result['DeepGraph']['topk'][i]['item_url'],
+      //   name: result['DeepGraph']['topk'][i]['name'],
+      //   price: result['DeepGraph']['topk'][i]['price'].toString(),
+      // ));
+      // int total = await ProductClothingDatabase.totalProductNum();
+      // print(total);
     }
   }
 
@@ -159,12 +165,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                               child: Image.file(
                                 File(snapshot.data[index].clothingImgPath),
                                 fit: BoxFit.fill,
-                              )
-                              // Image.memory(
-                              //   base64Decode(
-                              //       snapshot.data[index].clothingImgBase64),
-                              //fit: BoxFit.fill,
-                              ),
+                              )),
                         ),
                       ]);
                 },
