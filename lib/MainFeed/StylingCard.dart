@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/MainFeed/Comment.dart';
+import 'package:stylehub_flutter/MainFeed/MainFeedComponents.dart';
 import 'package:stylehub_flutter/main.dart';
 import 'MainFeed.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

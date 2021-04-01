@@ -1,17 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:stylehub_flutter/main.dart';
-import 'Comment.dart';
+//import 'MainFeedComponents.dart';
+import 'GeneratedComponents.dart';
 
 class UserPost extends StatefulWidget {
   String userNickname;
   String userProfileImg;
   List<String> postImgList;
   String postContent;
-  List<Comment> comments;
-  DateTime postTime;
+  List<Comments> comments;
+  String postTime;
   bool isLiked;
   String myComment;
   UserPost(
@@ -19,8 +22,8 @@ class UserPost extends StatefulWidget {
       String userProfileImg,
       List<String> postImgList,
       String postContent,
-      List<Comment> comments,
-      DateTime postTime,
+      List<Comments> comments,
+      String postTime,
       bool isLiked,
       String myComment}) {
     this.userNickname = userNickname;
@@ -41,11 +44,11 @@ class _UserPostState extends State<UserPost> {
   final controller = PageController(initialPage: 0);
   bool isLiked = false;
   String myComment;
-  List<Comment> comments;
+  List<Comments> comments;
   getImages() {
     List<Widget> posts = [];
     for (String url in widget.postImgList) {
-      posts.add(Container(child: Image.network(url)));
+      posts.add(Container(child: Image.memory(base64Decode(url))));
     }
     return posts;
   }
@@ -60,12 +63,26 @@ class _UserPostState extends State<UserPost> {
     } else {
       comments = widget.comments;
     }
+    if (widget.userProfileImg == null) {
+      widget.userProfileImg =
+          "https://user-images.githubusercontent.com/65387279/113335492-fc5c0f80-935f-11eb-8580-827b24162791.png";
+    }
+    if (widget.userNickname == null) {
+      widget.userNickname = "jihye";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final commentController = TextEditingController();
     String writingComment = "";
+    if (widget.userProfileImg == null) {
+      widget.userProfileImg =
+          "https://user-images.githubusercontent.com/65387279/113335492-fc5c0f80-935f-11eb-8580-827b24162791.png";
+    }
+    if (widget.userNickname == null) {
+      widget.userNickname = "jihye";
+    }
     return Card(
       margin: EdgeInsets.all(20),
       shape: RoundedRectangleBorder(
@@ -117,11 +134,13 @@ class _UserPostState extends State<UserPost> {
             ),
           ),
           Center(
-            child: SmoothPageIndicator(
-              controller: controller,
-              count: widget.postImgList.length,
-              effect: SlideEffect(dotHeight: 12, dotWidth: 12),
-            ),
+            child: widget.postImgList.length > 1
+                ? SmoothPageIndicator(
+                    controller: controller,
+                    count: widget.postImgList.length,
+                    effect: SlideEffect(dotHeight: 12, dotWidth: 12),
+                  )
+                : Container(),
           ),
           Row(
             children: [
@@ -209,7 +228,8 @@ class _UserPostState extends State<UserPost> {
                                                   radius: 22,
                                                   backgroundImage: NetworkImage(
                                                       comments[index]
-                                                          .userProfileImg),
+                                                          .userProfile
+                                                          .profileImage),
                                                   backgroundColor:
                                                       Colors.transparent,
                                                 ),
@@ -222,6 +242,7 @@ class _UserPostState extends State<UserPost> {
                                                   children: [
                                                     Text(
                                                       comments[index]
+                                                          .userProfile
                                                           .userNickname,
                                                       style: TextStyle(
                                                           fontWeight:
@@ -282,11 +303,12 @@ class _UserPostState extends State<UserPost> {
                                       onTap: () {
                                         if (writingComment != null) {
                                           setState(() {
-                                            comments.add(Comment(
-                                                userNickname:
-                                                    StyleHub.myNickname,
-                                                userProfileImg:
-                                                    StyleHub.myProfileImg,
+                                            comments.add(Comments(
+                                                userProfile: UserProfile(
+                                                    userNickname:
+                                                        StyleHub.myNickname,
+                                                    profileImage:
+                                                        StyleHub.myProfileImg),
                                                 commentContent:
                                                     writingComment));
                                           });
@@ -308,12 +330,10 @@ class _UserPostState extends State<UserPost> {
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Center(
-              child: Text(
-                widget.postContent,
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 16),
-              ),
+            child: Text(
+              widget.postContent,
+              textAlign: TextAlign.left,
+              style: TextStyle(fontSize: 16),
             ),
           ),
           SizedBox(
@@ -321,7 +341,7 @@ class _UserPostState extends State<UserPost> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 15),
-            child: Text("${widget.postTime.month}월 ${widget.postTime.day}일"),
+            child: Text("${widget.postTime.substring(0, 10)}"),
           ),
           SizedBox(
             height: 7,
@@ -385,9 +405,10 @@ class _UserPostState extends State<UserPost> {
                   if (writingComment != null) {
                     setState(() {
                       myComment = writingComment;
-                      comments.add(Comment(
-                          userNickname: StyleHub.myNickname,
-                          userProfileImg: StyleHub.myProfileImg,
+                      comments.add(Comments(
+                          userProfile: UserProfile(
+                              userNickname: StyleHub.myNickname,
+                              profileImage: StyleHub.myProfileImg),
                           commentContent: writingComment));
                     });
                     commentController.clear();

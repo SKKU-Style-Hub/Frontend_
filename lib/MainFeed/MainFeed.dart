@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'Comment.dart';
+import 'GeneratedComponents.dart';
 import 'CreatePost.dart';
-import 'RawData.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'PostItem.dart';
 import 'StylingCard.dart';
 import 'UserPost.dart';
 
@@ -41,10 +42,29 @@ class _MainFeedState extends State<MainFeed> {
     });
   }
 
+  Future<List<Post>> getPosts(int offset, int limit) async {
+    String url = "http://34.64.196.105:82/api/mainfeed/list/read";
+    List<Post> posts = [];
+    var response = await http.post(url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({"lastFeedId": offset, "limit": limit}));
+    //print(response.body);
+    var results = jsonDecode(response.body);
+    for (var result in results) {
+      Post tmp = Post.fromJson(result);
+      posts.add(tmp);
+      print(posts.length);
+    }
+    return posts;
+  }
+
   Future<void> _fetchPage(int pageKey) async {
     try {
-      List<Post> newPosts =
-          await getPosts(pageKey, _pageSize); //Future<List<Post>>받아오기
+      List<Post> newPosts = await getPosts(pageKey, _pageSize);
+      //Future<List<Post>>받아오기
       final isLastPage = newPosts.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newPosts);
@@ -92,7 +112,9 @@ class _MainFeedState extends State<MainFeed> {
           child: PagedListView<int, Post>.separated(
             pagingController: _pagingController,
             builderDelegate: PagedChildBuilderDelegate<Post>(
-              itemBuilder: (context, item, index) => PostItem(),
+              itemBuilder: (context, item, index) => PostItem(
+                post: item,
+              ),
             ),
             separatorBuilder: (context, index) => SizedBox(
               height: 10,

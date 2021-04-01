@@ -94,9 +94,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                         body: jsonEncode({
                           "userProfile": {
                             "userName": selectedNickname,
+                            "profileImage": StyleHub.myProfileImg,
                             "gender": selectedGender.toString(),
                             "password": "ee",
-                            "age": 23
+                            "age": selectedAge
                           },
                         }));
                   },

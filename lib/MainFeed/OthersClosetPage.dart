@@ -6,12 +6,12 @@ import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:tabbar/tabbar.dart';
 
-class ChooseClothingPage extends StatefulWidget {
+class OthersClosetPage extends StatefulWidget {
   @override
-  _ChooseClothingPageState createState() => _ChooseClothingPageState();
+  _OthersClosetPageState createState() => _OthersClosetPageState();
 }
 
-class _ChooseClothingPageState extends State<ChooseClothingPage> {
+class _OthersClosetPageState extends State<OthersClosetPage> {
   final controller = PageController();
   ScrollController scrollController = ScrollController();
 

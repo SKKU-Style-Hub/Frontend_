@@ -1,10 +1,11 @@
 import 'dart:convert';
-
+import '../MainFeed/GeneratedComponents.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import '../Navigation.dart';
 import 'RequestPage.dart';
 import 'package:http/http.dart' as http;
+import 'package:stylehub_flutter/main.dart';
 
 class RequestMain extends StatefulWidget {
   @override
@@ -12,7 +13,10 @@ class RequestMain extends StatefulWidget {
 }
 
 class _RequestMainState extends State<RequestMain> {
+  List<StylingRequest> requests;
   getRequestList() async {
+    print("getRequestList");
+    List<StylingRequest> requests = [];
     String url = "http://34.64.196.105:82/api/styling/request/list/my";
     var response = await http.post(url,
         headers: {
@@ -21,15 +25,24 @@ class _RequestMainState extends State<RequestMain> {
         },
         body: jsonEncode({
           "userProfile": {
-            "userNickname": "ddd",
+            "userNickname": StyleHub.myNickname,
           },
         }));
-    print(response.body);
+    print("requestBody " + response.body.toString());
+    var results = jsonDecode(response.body);
+    for (var result in results) {
+      print(result);
+      StylingRequest tmp = StylingRequest.fromJson(result);
+      requests.add(tmp);
+    }
+    return requests;
   }
 
   @override
   void initState() {
-    getRequestList();
+    setState(() {
+      requests = getRequestList();
+    });
   }
 
   @override
@@ -52,39 +65,20 @@ class _RequestMainState extends State<RequestMain> {
           ),
           //here~~~
           Expanded(
-            child: ListView(
-              children: [
-                MyCodiRequests(
-                  explanation: "이 블라우스 아래에 무엇을\n입어야 할까요 ㅠㅠ 도와주세요",
-                  year: 2020,
-                  month: 12,
-                  day: 27,
-                  answer_num: 2,
-                  heart_num: 7,
-                  imagepath: "assets/request_codi/codi3.png",
-                  index: 1,
-                ),
-                MyCodiRequests(
-                  explanation: "이런 색 와이드 팬츠에 어울리는\n상의 추천해주세요!!",
-                  year: 2020,
-                  month: 11,
-                  day: 3,
-                  answer_num: 1,
-                  heart_num: 5,
-                  imagepath: "assets/request_codi/codi2.png",
-                  index: 2,
-                ),
-                MyCodiRequests(
-                  explanation: "어떤 바지가 잘 어울릴까요??",
-                  year: 2020,
-                  month: 11,
-                  day: 3,
-                  answer_num: 1,
-                  heart_num: 10,
-                  imagepath: "assets/request_codi/codi1.png",
-                  index: 3,
-                ),
-              ],
+            child: ListView.builder(
+              itemCount: requests.length,
+              itemBuilder: (BuildContext context, int index) {
+                return MyCodiRequests(
+                    explanation: requests[index].requestContent,
+                    year: int.parse(requests[index].createdAt.substring(0, 3)),
+                    month: int.parse(requests[index].createdAt.substring(5, 6)),
+                    day: int.parse(requests[index].createdAt.substring(8, 9)),
+                    answer_num: 0,
+                    heart_num: 0,
+                    imagepath:
+                        requests[index].requestClothings[0].clothingImage,
+                    index: index);
+              },
             ),
           ),
           Center(

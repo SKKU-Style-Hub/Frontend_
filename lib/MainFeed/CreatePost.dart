@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
+import 'package:stylehub_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as Img;
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -104,7 +104,10 @@ class _CreatePostState extends State<CreatePost> {
                       'Accept': 'application/json',
                     },
                     body: jsonEncode({
-                      "userProfile": {"userName": "dddd", "gender": "eee"},
+                      "userProfile": {
+                        "userNickname": StyleHub.myNickname,
+                        "gender": StyleHub.myGender
+                      },
                       "postImage": postImgBase64,
                       "postContent": postContent.toString()
                     }));

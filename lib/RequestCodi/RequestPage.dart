@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:stylehub_flutter/MainFeed/GeneratedComponents.dart';
+import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
 import 'package:stylehub_flutter/main.dart';
@@ -22,6 +24,7 @@ class RequestPage extends StatefulWidget {
   String chosenBase64;
   int chosenId;
   String chosenType;
+  MyClothing chosenClothing;
 
   @override
   _RequestPageState createState() => _RequestPageState();
@@ -33,6 +36,7 @@ class _RequestPageState extends State<RequestPage> {
   double cost_userwant = 10.0;
   List<String> chosenStyle = [];
   List<String> chosenItem = [];
+  RequestClothings chosenClothing;
 
   void getStyling(
       int request_num, String clothBase64, String request_category) async {
@@ -247,6 +251,7 @@ class _RequestPageState extends State<RequestPage> {
                             widget.chosenBase64 = result?.clothingImgBase64;
                             widget.chosenId = result?.id;
                             widget.chosenType = result?.category;
+                            widget.chosenClothing = result;
                           });
                         },
                       ),
@@ -670,6 +675,11 @@ class _RequestPageState extends State<RequestPage> {
                         chosenStyle.add(style_list[i]);
                       }
                     }
+                    chosenClothing = RequestClothings(
+                        clothingId: widget.chosenClothing.id,
+                        userProfile:
+                            UserProfile(userNickname: StyleHub.myNickname),
+                        clothingImage: widget.chosenBase64);
 
                     String url =
                         "http://34.64.196.105:82/api/styling/request/create";
@@ -684,7 +694,7 @@ class _RequestPageState extends State<RequestPage> {
                             "userGender": StyleHub.myGender,
                             "profileImg": StyleHub.myProfileImg
                           },
-                          "requestClothings": [widget.chosenBase64],
+                          "requestClothings": [chosenClothing.toJson()],
                           "budgetMin": (_costvalues.start.round() * 10000),
                           "budgetMax": (_costvalues.end.round() * 10000),
                           "requestItems": chosenItem,
