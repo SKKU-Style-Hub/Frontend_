@@ -53,8 +53,11 @@ class _MainFeedState extends State<MainFeed> {
         body: jsonEncode({"lastFeedId": offset, "limit": limit}));
     //print(response.body);
     var results = jsonDecode(response.body);
+    print(results.length());
     for (var result in results) {
+      print(result);
       Post tmp = Post.fromJson(result);
+      //print(tmp);
       posts.add(tmp);
       print(posts.length);
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/MainFeed/MainFeedComponents.dart';
+//import 'package:stylehub_flutter/MainFeed/MainFeedComponents.dart';
+import 'package:stylehub_flutter/data/CategoryType.dart';
 import 'package:stylehub_flutter/main.dart';
 import 'MainFeed.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -9,12 +10,14 @@ import 'package:stylehub_flutter/MainFeed/CodiFittingRoom.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
 import 'package:stylehub_flutter/data/ProposedCodi.dart';
 import 'RawData.dart';
+import 'GeneratedComponents.dart';
 
+//여기 인자를 바꾸고 아래로 넘어가자
 class StylingCard extends StatefulWidget {
-  AllProposedCodi tmpAllCodi;
+  Post post;
   bool isLiked;
   List<Comment> comments;
-  StylingCard({Key key, this.tmpAllCodi, this.isLiked = false, this.comments})
+  StylingCard({Key key, this.post, this.isLiked = false, this.comments})
       : super(key: key) {}
   _StylingCardState createState() {
     return _StylingCardState();
@@ -36,11 +39,11 @@ class _StylingCardState extends State<StylingCard> {
     }
   }
 
-  Widget EachInfoButton(ProposedCodi codiTotal, int index) {
+  Widget EachInfoButton(StylingResult stylingResult, int index) {
     return Positioned(
       //위치 정보를 넣어야 함
-      top: codiTotal.clothList[index].yCoordinate,
-      left: codiTotal.clothList[index].xCoordinate,
+      top: stylingResult.components[index].ycordinate,
+      left: stylingResult.components[index].xcordinate,
       child: Container(
         width: 100,
         child: Column(
@@ -50,7 +53,7 @@ class _StylingCardState extends State<StylingCard> {
             //말풍선
             Builder(
               builder: (BuildContext context) {
-                if (codiTotal.codiClick.clickint[index] == 1) {
+                if (stylingResult.codiClick == index) {
                   return InkWell(
                       onTap: () {},
                       child: SpeechBubble(
@@ -61,7 +64,7 @@ class _StylingCardState extends State<StylingCard> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Text(
-                              codiTotal.clothList[index].brandName,
+                              stylingResult.components[index].brand,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12.0,
@@ -69,7 +72,8 @@ class _StylingCardState extends State<StylingCard> {
                               ),
                             ),
                             Text(
-                              codiTotal.clothList[index].price.toString(),
+                              //원래 가격인데 가격이 없어서 색깔로 넣음
+                              stylingResult.components[index].color,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12.0,
@@ -90,7 +94,7 @@ class _StylingCardState extends State<StylingCard> {
             InkWell(
               onTap: () {
                 setState(() {
-                  codiTotal.codiClick.FocusOnThis(index);
+                  stylingResult.codiClick = index;
                   //swb 변경 부분
                   //codi1_swb = codiTotal.clothList[index].clothSbw;
                 });
@@ -98,7 +102,7 @@ class _StylingCardState extends State<StylingCard> {
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.white, width: 2),
-                  color: codiTotal.codiClick.clickint[index] == 0
+                  color: stylingResult.codiClick != index
                       ? notClickedColor
                       : clickedColor,
                   shape: BoxShape.circle,
@@ -115,64 +119,24 @@ class _StylingCardState extends State<StylingCard> {
     );
   }
 
-  Widget EachCodi(ProposedCodi codiTotal) {
+  Widget EachCodi(StylingResult stylingResult) {
     return Container(
       child: Stack(
         children: [
           Positioned(
-              child: Image.asset(
-            codiTotal.codiImage,
+              child: Image.network(
+            stylingResult.stylingImage,
             fit: BoxFit.cover,
             width: 500,
           )),
-          //1.상의
-          Builder(builder: (BuildContext context) {
-            if (codiTotal.clothList[1] != null) {
-              return EachInfoButton(codiTotal, 1);
-            } else {
-              return Container();
-            }
-          }),
-          //2.하의
-          Builder(builder: (BuildContext context) {
-            if (codiTotal.clothList[2] != null) {
-              return EachInfoButton(codiTotal, 2);
-            } else {
-              return Container();
-            }
-          }),
-          //3.원피스
-          Builder(builder: (BuildContext context) {
-            if (codiTotal.clothList[3] != null) {
-              return EachInfoButton(codiTotal, 3);
-            } else {
-              return Container();
-            }
-          }),
-          //4.아우터
-          Builder(builder: (BuildContext context) {
-            if (codiTotal.clothList[4] != null) {
-              return EachInfoButton(codiTotal, 4);
-            } else {
-              return Container();
-            }
-          }),
-          //5.신발
-          Builder(builder: (BuildContext context) {
-            if (codiTotal.clothList[5] != null) {
-              return EachInfoButton(codiTotal, 5);
-            } else {
-              return Container();
-            }
-          }),
-          //6.가방
-          Builder(builder: (BuildContext context) {
-            if (codiTotal.clothList[6] != null) {
-              return EachInfoButton(codiTotal, 6);
-            } else {
-              return Container();
-            }
-          }),
+          for (var i in [0, stylingResult.components.length - 1])
+            Builder(builder: (BuildContext context) {
+              if (stylingResult.components[i] != null) {
+                return EachInfoButton(stylingResult, i);
+              } else {
+                return Container();
+              }
+            }),
         ],
       ),
     );
@@ -199,14 +163,15 @@ class _StylingCardState extends State<StylingCard> {
     );
   }
 
-  Card StylingCardWidget(AllProposedCodi tmpProposedCodi) {
+  Card StylingCardWidget(Post post) {
     List<Widget> pageViewChildren = [];
 
-    pageViewChildren
-        .add(Container(child: Image.asset(tmpProposedCodi.requestClothingImg)));
-    for (int i = 0; i < tmpProposedCodi.proposedCodiList.length; i++) {
+    pageViewChildren.add(Container(
+        child: Image.network(
+            post.content.stylingRequest.requestClothings[0].clothingImage)));
+    for (int i = 0; i < post.content.stylingResult.length; i++) {
       pageViewChildren.add(Container(
-          child: Image.asset(tmpProposedCodi.proposedCodiList[i].codiImage)));
+          child: Image.network(post.content.stylingResult[i].stylingImage)));
     }
     //pageViewChildren.add(Container());
     int currentIndexPage = 0;
@@ -235,14 +200,15 @@ class _StylingCardState extends State<StylingCard> {
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage(tmpProposedCodi.userProfile),
+                    backgroundImage:
+                        NetworkImage(post.userProfile.profileImage),
                     backgroundColor: Colors.transparent,
                   ),
                   SizedBox(
                     width: 12,
                   ),
                   Text(
-                    tmpProposedCodi.userId,
+                    post.userProfile.userNickname,
                     style: kHashtagTextStyle,
                   )
                 ],
@@ -254,11 +220,15 @@ class _StylingCardState extends State<StylingCard> {
                       context,
                       MaterialPageRoute(
                         //피팅룸에 넘어갈 옷
+                        //여기 좀 더 수정 많이 해서 넘기자!!!!!
                         builder: (context) => CodiFittingRoom(
                           requestClothInfo: ClothInfo(
-                            image: tmpProposedCodi.requestClothingImg,
-                            type: 1,
+                            image: post.content.stylingRequest
+                                .requestClothings[0].clothingImage,
+                            type: categoryToType(post.content.stylingRequest
+                                .requestClothings[0].tagResult.category),
                           ),
+                          stylingRequest: post.content.stylingRequest,
                         ),
                       ));
                 },
@@ -285,12 +255,11 @@ class _StylingCardState extends State<StylingCard> {
                 children: [
                   //첫번째 페이지
                   Container(
-                      child: Image.asset(tmpProposedCodi.requestClothingImg)),
-                  for (var i in [
-                    0,
-                    tmpProposedCodi.proposedCodiList.length - 1
-                  ])
-                    EachCodi(tmpProposedCodi.proposedCodiList[i]),
+                      //요청한 옷 사진
+                      child: Image.network(post.content.stylingRequest
+                          .requestClothings[0].clothingImage)),
+                  for (var i in [0, post.content.stylingResult.length - 1])
+                    EachCodi(post.content.stylingResult[i]),
                   //goToCodiScreen(
                   //    requestClothingImg: tmpProposedCodi.requestClothingImg),
                 ],
@@ -495,13 +464,13 @@ class _StylingCardState extends State<StylingCard> {
             ],
           ),
           Text(
-            '${tmpProposedCodi.userId}님의 요청',
+            '${post.userProfile.userNickname}님의 요청',
             style: kHashtagTextStyle,
           ),
           Container(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             child: Text(
-              tmpProposedCodi.explanation.toString(),
+              post.content.stylingRequest.requestContent,
               textAlign: TextAlign.left,
               style: TextStyle(fontSize: 16),
             ),
@@ -547,6 +516,6 @@ class _StylingCardState extends State<StylingCard> {
   }
 
   Widget build(BuildContext context) {
-    return StylingCardWidget(widget.tmpAllCodi);
+    return StylingCardWidget(widget.post);
   }
 }
