@@ -432,19 +432,26 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                     border: Border.all(color: Colors.indigo, width: 2)),*/
                   padding: EdgeInsets.all(5),
                   child: detailClothInfo.encoded_img != null
-                      ? detailClothInfo.encoded_img.contains(".")
-                          ? Image.asset(
+                      ? detailClothInfo.encoded_img.contains("https")
+                          ? Image.network(
                               detailClothInfo.encoded_img,
                               width: 120,
                               height: 120,
                               fit: BoxFit.contain,
                             )
-                          : Image.memory(
-                              base64Decode(detailClothInfo.encoded_img),
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.contain,
-                            )
+                          : detailClothInfo.encoded_img.contains(".")
+                              ? Image.asset(
+                                  detailClothInfo.encoded_img,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain,
+                                )
+                              : Image.memory(
+                                  base64Decode(detailClothInfo.encoded_img),
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain,
+                                )
                       : Container(),
                 ),
                 Column(
@@ -568,16 +575,23 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: myClothing.clothingImgBase64.contains('.')
-                    ? Image.asset(myClothing.clothingImgBase64,
+                child: myClothing.clothingImgBase64.contains('https')
+                    ? Image.network(myClothing.clothingImgBase64,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(myClothing.clothingImgBase64),
+                    : myClothing.clothingImgBase64.contains('assets/')
+                        ? Image.asset(myClothing.clothingImgBase64,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.file(File(myClothing.clothingImgPath),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain),
+                /*Image.memory(base64Decode(myClothing.clothingImgBase64),
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain
                         //height: 100,
                         //fit: BoxFit.scaleDown,
-                        ),
+                        ),*/
               ),
             ),
             //선택된 옷일 때 here보이게끔
@@ -709,12 +723,10 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           allCodiClosetIndex = allCodiIndex;
           codiClosetIndex = eachCodiIndex;
           //옷 바뀌게 하자
-          for (int i = 0; i < 7; i++) {
-            if (productClothing.category != null) {
-              selectedClothList[i]["image"] = productClothing.encoded_img;
-              selectedClothList[i]["clothing"] = productClothing;
-            }
-          }
+          selectedClothList[categoryToProductType(productClothing.category)]
+              ["image"] = productClothing.encoded_img;
+          selectedClothList[categoryToProductType(productClothing.category)]
+              ["clothing"] = productClothing;
         });
       },
       child: Container(
@@ -733,16 +745,21 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: productClothing.encoded_img.contains('.')
-                    ? Image.asset(productClothing.encoded_img,
+                child: productClothing.encoded_img.contains('https')
+                    ? Image.network(productClothing.encoded_img,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(productClothing.encoded_img),
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
+                    : productClothing.encoded_img.contains('.')
+                        ? Image.asset(productClothing.encoded_img,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.memory(
+                            base64Decode(productClothing.encoded_img),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain
+                            //height: 100,
+                            //fit: BoxFit.scaleDown,
+                            ),
               ),
             ),
             //선택된 코디일때 select뜨도록
@@ -800,16 +817,20 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: codiClothing.totalImg.contains('.')
-                    ? Image.asset(codiClothing.totalImg,
+                child: codiClothing.totalImg.contains('https')
+                    ? Image.network(codiClothing.totalImg,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(codiClothing.totalImg),
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
+                    : codiClothing.totalImg.contains('.')
+                        ? Image.asset(codiClothing.totalImg,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.memory(base64Decode(codiClothing.totalImg),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain
+                            //height: 100,
+                            //fit: BoxFit.scaleDown,
+                            ),
               ),
             ),
             //선택된 코디일때 select뜨도록
@@ -1007,16 +1028,20 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: allCodiClothing.codiImg.contains('.')
-                    ? Image.asset(allCodiClothing.codiImg,
+                child: allCodiClothing.codiImg.contains('https')
+                    ? Image.network(allCodiClothing.codiImg,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(allCodiClothing.codiImg),
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
+                    : allCodiClothing.codiImg.contains('.')
+                        ? Image.asset(allCodiClothing.codiImg,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.memory(base64Decode(allCodiClothing.codiImg),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain
+                            //height: 100,
+                            //fit: BoxFit.scaleDown,
+                            ),
               ),
             ),
             //선택된 코디일때 select뜨도록
@@ -1262,16 +1287,21 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: productClothing.encoded_img.contains('.')
-                    ? Image.asset(productClothing.encoded_img,
+                child: productClothing.encoded_img.contains('https')
+                    ? Image.network(productClothing.encoded_img,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(productClothing.encoded_img),
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
+                    : productClothing.encoded_img.contains('assets/')
+                        ? Image.asset(productClothing.encoded_img,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.memory(
+                            base64Decode(productClothing.encoded_img),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain
+                            //height: 100,
+                            //fit: BoxFit.scaleDown,
+                            ),
               ),
             ),
             //선택된 옷일 때 here보이게끔
@@ -1321,33 +1351,45 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               child: Draggable(
                 child: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
-                  child: selectedClothList[type]["image"].contains('.')
-                      ? Image.asset(selectedClothList[type]["image"],
+                  child: selectedClothList[type]["image"].contains('https')
+                      ? Image.network(selectedClothList[type]["image"],
                           width: selectedClothList[type]["width"].toDouble(),
                           fit: BoxFit.fitWidth)
-                      : Image.memory(
-                          base64Decode(selectedClothList[type]["image"]),
-                          width: selectedClothList[type]["width"].toDouble(),
-                          fit: BoxFit.fitWidth
-                          //fit: BoxFit.contain
-                          //height: 100,
-                          //fit: BoxFit.scaleDown,
-                          ),
+                      : selectedClothList[type]["image"].contains('assets/')
+                          ? Image.asset(selectedClothList[type]["image"],
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth)
+                          : Image.memory(
+                              base64Decode(selectedClothList[type]["image"]),
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth
+                              //fit: BoxFit.contain
+                              //height: 100,
+                              //fit: BoxFit.scaleDown,
+                              ),
                 ),
                 feedback: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
-                  child: selectedClothList[type]["image"].contains('.')
-                      ? Image.asset(selectedClothList[type]["image"],
+                  child: selectedClothList[type]["image"].contains('https')
+                      ? Image.network(selectedClothList[type]["image"],
                           width: selectedClothList[type]["width"].toDouble(),
                           fit: BoxFit.fitWidth)
-                      : Image.memory(
-                          base64Decode(selectedClothList[type]["image"]),
-                          width: selectedClothList[type]["width"].toDouble(),
-                          fit: BoxFit.fitWidth
-                          //fit: BoxFit.contain
-                          //height: 100,
-                          //fit: BoxFit.scaleDown,
-                          ),
+                      : selectedClothList[type]["image"].contains('assets/')
+                          ? Image.asset(selectedClothList[type]["image"],
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth)
+                          : Image.memory(
+                              base64Decode(selectedClothList[type]["image"]),
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth
+                              //fit: BoxFit.contain
+                              //height: 100,
+                              //fit: BoxFit.scaleDown,
+                              ),
                 ),
                 childWhenDragging: Container(),
                 onDragEnd: (DraggableDetails details) {

@@ -124,7 +124,7 @@ class _RegisterPageState extends State<RegisterPage> {
     await MyClothingDatabase.insertClothing(MyClothing(
         id: closet_index,
         clothingImgPath: widget.backRemovePath,
-        clothingImgBase64: widget.base64Img, //배경 제거 안됨
+        clothingImgBase64: widget.base64Img,
         category: tagResult['data']['objects'][0]['tags'][0]['category']
             ['name'],
         color: tagResult['data']['objects'][0]['tags'][0]['colors'][0]['name'],
@@ -153,6 +153,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ? tagResult['data']['objects'][0]['tags'][0]['shape']['name']
             : null,
         brandName: brandInput));
+    final closet = await MyClothingDatabase.getMyCloset();
+    print(closet.length);
 
     setState(() {
       RegisterPage.registered = true;
