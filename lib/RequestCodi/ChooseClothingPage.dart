@@ -111,9 +111,9 @@ class _ChooseClothingPageState extends State<ChooseClothingPage> {
                             );
                           },
                           child: Container(
-                              height: containerHeight(
-                                  snapshot.data[index].category,
-                                  snapshot.data[index].length),
+                              // height: containerHeight(
+                              //     snapshot.data[index].category,
+                              //     snapshot.data[index].length),
                               width: 150,
                               padding: EdgeInsets.only(top: 15),
                               margin: EdgeInsets.symmetric(horizontal: 10),

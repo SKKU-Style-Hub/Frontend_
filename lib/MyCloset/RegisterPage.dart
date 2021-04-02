@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
     File f = await ImagePicker.pickImage(
         source: source, maxHeight: 500, maxWidth: 450);
     imgPath = f.path;
-
+    final int closet_index = await MyClothingDatabase.totalClothingNum();
     String fileName = f.path.split('/').last;
     FormData formData = FormData.fromMap({
       "file": await MultipartFile.fromFile(f.path,
@@ -55,9 +55,8 @@ class _RegisterPageState extends State<RegisterPage> {
       response2 = await http.get(response.data);
     }
 
-    final int closet_index = await MyClothingDatabase.totalClothingNum();
     String dir = (await getApplicationDocumentsDirectory()).path;
-    final file = File('${dir}/' + 'closet_${closet_index}.png');
+    final file = File('${dir}/' + 'closet1_${closet_index}.png');
     file.writeAsBytesSync(response2.bodyBytes);
     List<int> imageBytes = file.readAsBytesSync();
     setState(() {
@@ -81,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
           "accept-language": "ko"
         },
         body: jsonEncode({
-          "image": {"type": "base64", "content": widget.base64Img}
+          "image": {"type": "url", "content": widget.backRemoveUrl}
         }));
 
     tagResult = jsonDecode(utf8.decode(response.bodyBytes));
@@ -128,6 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
     await MyClothingDatabase.insertClothing(MyClothing(
         id: closet_index,
         clothingImgPath: widget.backRemovePath,
+        clothingImgUrl: widget.backRemoveUrl,
         clothingImgBase64: widget.base64Img, //배경 제거 안됨
         category: tagResult['data']['objects'][0]['tags'][0]['category']
             ['name'],
@@ -353,7 +353,7 @@ Card beforeCard() {
 }
 
 Card afterCard(String imgUrl) {
-  print(imgUrl);
+  print("imgUrl " + imgUrl);
   return Card(
     elevation: 5,
     child: Container(
