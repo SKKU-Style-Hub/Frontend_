@@ -66,22 +66,23 @@ class _StylebuttonState extends State<Stylebutton> {
   }
 
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 10.0, top: 10.0),
-      decoration: BoxDecoration(
-        color: widget.background_color,
-        borderRadius: BorderRadius.all(Radius.circular(100)),
-        border: Border.all(width: 1, color: Colors.black),
+    return InkWell(
+      onTap: () {
+        clickitem();
+      },
+      child: Container(
+        margin: EdgeInsets.only(left: 10.0, top: 10.0),
+        decoration: BoxDecoration(
+          color: widget.background_color,
+          borderRadius: BorderRadius.all(Radius.circular(100)),
+          border: Border.all(width: 1, color: Colors.black),
+        ),
+        width: widget.width,
+        height: 30,
+        alignment: Alignment.center,
+        child: Text(widget.style,
+            style: TextStyle(fontSize: 15, color: widget.text_color)),
       ),
-      width: widget.width,
-      height: 30,
-      alignment: Alignment.center,
-      child: InkWell(
-          child: Text(widget.style,
-              style: TextStyle(fontSize: 15, color: widget.text_color)),
-          onTap: () {
-            clickitem();
-          }),
     );
   }
 }

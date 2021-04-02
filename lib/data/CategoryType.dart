@@ -8,22 +8,27 @@ int categoryToType(String category) {
       category == "블라우스" ||
       category == "니트웨어" ||
       category == "셔츠" ||
-      category == "베스트") {
+      category == "베스트" ||
+      category == "상의") {
     return 1;
   }
   //하의
-  if (category == "청바지" || category == "팬츠" || category == "스커트") {
+  if (category == "청바지" ||
+      category == "팬츠" ||
+      category == "스커트" ||
+      category == "하의") {
     return 2;
   }
   //원피스
-  if (category == "드레스" || category == "점프수트") {
+  if (category == "드레스" || category == "점프수트" || category == "원피스") {
     return 3;
   }
   //아우터
   if (category == "코트" ||
       category == "재킷" ||
       category == "점퍼" ||
-      category == "패딩") {
+      category == "패딩" ||
+      category == "아우터") {
     return 4;
   }
   //신발

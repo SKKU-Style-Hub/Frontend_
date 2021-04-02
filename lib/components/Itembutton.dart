@@ -62,7 +62,11 @@ class _ItembuttonState extends State<Itembutton> {
   }
 
   Widget build(BuildContext context) {
-    return Container(
+    return InkWell(
+      onTap: () {
+            clickitem();
+          },
+          child: Container(
       margin: EdgeInsets.only(left: 10.0, top: 10.0),
       decoration: BoxDecoration(
         color: widget.background_color,
@@ -72,12 +76,9 @@ class _ItembuttonState extends State<Itembutton> {
       width: widget.width,
       height: 30,
       alignment: Alignment.center,
-      child: InkWell(
-          child: Text(widget.item,
+      child: Text(widget.item,
               style: TextStyle(fontSize: 15, color: widget.text_color)),
-          onTap: () {
-            clickitem();
-          }),
+    )
     );
   }
 }
