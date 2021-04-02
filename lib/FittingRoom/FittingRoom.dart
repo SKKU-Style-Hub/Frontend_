@@ -291,9 +291,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   void getCloset() async {
     //rawdata
     putRawData();
-    codiRequestList = [];
+    /*codiRequestList = [];
     codiRequestList.add(tmpAllCodi);
-    mulcodiCloset = tmpAllCodi;
+    mulcodiCloset = tmpAllCodi;*/
     //localDB
     myClosetListTop = await MyClothingDatabase.getTop();
     myClosetListBottom = await MyClothingDatabase.getBottom();
@@ -323,9 +323,13 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   void getProduct() async {
     //나중에 코디넣을 때 다시 확인하자
-    //codi1_ai = await ProductClothingDatabase.getRecoResult(21);
-    //codi2_ai = await ProductClothingDatabase.getRecoResult(22);
-    //codi3_ai = await ProductClothingDatabase.getRecoResult(23);
+    //product clothing배열
+    tmpAllCodi.codiClothingListAI =
+        await ProductClothingDatabase.getRecoResult(0);
+    tmpAllCodi.codiClothingListAI = [codi2Top];
+    codiRequestList = [];
+    codiRequestList.add(tmpAllCodi);
+    mulcodiCloset = tmpAllCodi;
   }
 
   String convert(String filePath) {
@@ -692,6 +696,72 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         ));
   }
 
+  //코디요청 AI 관련 위젯들
+  Widget AIcodiWidget(
+      {ProductClothing productClothing,
+      int allCodiIndex,
+      int eachCodiIndex}) //몇번째 total코디 index인지
+  {
+    return InkWell(
+      onTap: () {
+        //select표시
+        setState(() {
+          allCodiClosetIndex = allCodiIndex;
+          codiClosetIndex = eachCodiIndex;
+          //옷 바뀌게 하자
+          for (int i = 0; i < 7; i++) {
+            if (productClothing.category != null) {
+              selectedClothList[i]["image"] = productClothing.encoded_img;
+              selectedClothList[i]["clothing"] = productClothing;
+            }
+          }
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
+        height: 100,
+        decoration: allCodiClosetIndex == allCodiIndex &&
+                eachCodiIndex == codiClosetIndex
+            ? BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                border: Border.all(color: Colors.indigo, width: 2.5))
+            : null,
+        child: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                width: bottomSheetSize == 200 ? 100 : 120,
+                child: productClothing.encoded_img.contains('.')
+                    ? Image.asset(productClothing.encoded_img,
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain)
+                    : Image.memory(base64Decode(productClothing.encoded_img),
+                        width: bottomSheetSize == 200 ? 100 : 120,
+                        fit: BoxFit.contain
+                        //height: 100,
+                        //fit: BoxFit.scaleDown,
+                        ),
+              ),
+            ),
+            //선택된 코디일때 select뜨도록
+            allCodiClosetIndex == allCodiIndex &&
+                    eachCodiIndex == codiClosetIndex
+                ? Center(
+                    child: Text("    Select!",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  )
+                : Container(),
+          ],
+        ),
+      ),
+    );
+  }
+
   //코디요청 관련 위젯들
   Widget codiWidget(
       {CodiClothing codiClothing,
@@ -858,13 +928,15 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                   //안의 요소들
                   allCodiClothing.codiClothingListAI.length,
                   (idx) {
-                    return codiWidget(
-                        codiClothing: allCodiClothing.codiClothingListAI[idx],
+                    return AIcodiWidget(
+                        productClothing:
+                            allCodiClothing.codiClothingListAI[idx],
                         allCodiIndex: allCodiIndex,
                         eachCodiIndex: idx);
                   },
                 )
               : List.generate(
+                  //1이면 유저추천
                   //안의 요소들
                   allCodiClothing.codiClothingListUser.length,
                   (idx) {
@@ -887,8 +959,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               ? List.generate(
                   allCodiClothing.codiClothingListAI.length,
                   (idx) {
-                    return codiWidget(
-                        codiClothing: allCodiClothing.codiClothingListAI[idx],
+                    return AIcodiWidget(
+                        productClothing:
+                            allCodiClothing.codiClothingListAI[idx],
                         allCodiIndex: allCodiIndex,
                         eachCodiIndex: idx);
                   },

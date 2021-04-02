@@ -50,34 +50,44 @@ MyClothing onepiece1 = MyClothing(
 
 ProductClothing codi1Top = ProductClothing(
   encoded_img: "assets/request_codi/received_codi1_top.png",
+  category: "상의",
 );
 ProductClothing codi1Bottom = ProductClothing(
   encoded_img: "assets/request_codi/received_codi1_bottom.png",
+  category: "하의",
 );
 ProductClothing codi1Outer = ProductClothing(
   encoded_img: "assets/request_codi/received_codi1_outer.png",
+  category: "아우터",
 );
 ProductClothing codi1Bag = ProductClothing(
   encoded_img: "assets/request_codi/received_codi1_bag.png",
+  category: "가방",
 );
 ProductClothing codi1Shoes = ProductClothing(
   encoded_img: "assets/request_codi/received_codi1_shoes.png",
+  category: "신발",
 );
 
 ProductClothing codi2Top = ProductClothing(
   encoded_img: "assets/request_codi/received_codi2_top.png",
+  category: "상의",
 );
 ProductClothing codi2Bottom = ProductClothing(
   encoded_img: "assets/request_codi/received_codi2_bottom.png",
+  category: "하의",
 );
 ProductClothing codi2Outer = ProductClothing(
   encoded_img: "assets/request_codi/received_codi2_outer.png",
+  category: "아우터",
 );
 ProductClothing codi2Bag = ProductClothing(
   encoded_img: "assets/request_codi/received_codi2_bag.png",
+  category: "가방",
 );
 ProductClothing codi2Shoes = ProductClothing(
   encoded_img: "assets/request_codi/received_codi2_shoes.png",
+  category: "신발",
 );
 
 CodiClothing tmpCodi1 = CodiClothing();

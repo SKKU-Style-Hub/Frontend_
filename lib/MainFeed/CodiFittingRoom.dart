@@ -28,6 +28,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:stylehub_flutter/data/CategoryType.dart';
 import 'package:speech_bubble/speech_bubble.dart';
+import 'NormalItem.dart';
+import 'NormalText.dart';
 
 //화면에 선택된 옷과 위치
 ////모든 순서는 1:top, 2:bottom, 3: onepiece, 4:outer, 5:shoes, 6:bag
@@ -161,7 +163,7 @@ void _capture() async {
       } //end of if
     }
     //요청 보내기
-    String url = "http://34.64.196.105:82/api/styling/response/create";
+    /*String url = "http://34.64.196.105:82/api/styling/response/create";
     final response = http.post(url,
         headers: {
           'Content-type': 'application/json',
@@ -174,7 +176,7 @@ void _capture() async {
           "stylistProfile": {"userNickname": "stylist", "gender": "f"}
         }));
     //print(response.body);
-    print("--------SEND-------");
+    print("--------SEND-------");*/
 
     ////////////////////////////////////
     print(result);
@@ -211,7 +213,10 @@ void goToUrl(String url) async {
 class CodiFittingRoom extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
-  CodiFittingRoom({Key key, this.requestClothInfo}) : super(key: key);
+  List<String> styleList, itemList;
+  CodiFittingRoom(
+      {Key key, this.requestClothInfo, this.styleList, this.itemList})
+      : super(key: key);
   @override
   _CodiFittingRoomState createState() => _CodiFittingRoomState();
 }
@@ -260,8 +265,9 @@ class _CodiFittingRoomState extends State<CodiFittingRoom> {
         ],
       ),
       body: CodiFittingRoomMain(
-        requestClothInfo: widget.requestClothInfo,
-      ),
+          requestClothInfo: widget.requestClothInfo,
+          styleList: widget.styleList,
+          itemList: widget.itemList),
     );
   }
 }
@@ -269,7 +275,10 @@ class _CodiFittingRoomState extends State<CodiFittingRoom> {
 class CodiFittingRoomMain extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
-  CodiFittingRoomMain({Key key, this.requestClothInfo}) : super(key: key);
+  List<String> styleList, itemList;
+  CodiFittingRoomMain(
+      {Key key, this.requestClothInfo, this.styleList, this.itemList})
+      : super(key: key);
   @override
   _CodiFittingRoomMainState createState() => _CodiFittingRoomMainState();
 }
@@ -293,11 +302,12 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
   void initState() {
     codiKey = new GlobalKey();
     _dragToExpandController = DragToExpandController();
-    getCloset();
-    getProduct();
+    //getCloset();
+    //getProduct();
     super.initState();
     _requestPermission();
-    if (widget.requestClothInfo.image != null) {
+    if (widget.requestClothInfo != null &&
+        widget.requestClothInfo.image != null) {
       selectedClothList[widget.requestClothInfo.type]["image"] =
           widget.requestClothInfo.image;
     }
@@ -308,15 +318,51 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     //super.dispose();
   }
 
-  void getCloset() async {
-    //rawdata
-    putRawData();
-    //localDB
-    myClosetListTop = await MyClothingDatabase.getTop();
-    myClosetListBottom = await MyClothingDatabase.getBottom();
-    myClosetListOnepiece = await MyClothingDatabase.getOnePiece();
-    myClosetListOuter = await MyClothingDatabase.getOuter();
-
+  /* void getCloset() async {
+    //남의 옷장 가져오기
+    //nickname "spark" 수정하기
+    String url = "http://34.64.196.105:82/api/closet/read/others";
+    final response = await http.post(url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "othersProfile": {"userNickname": "spark"},
+        }));
+    print("----------------------");
+    print(response.body);
+    print("---------------------");
+    var result = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
+    //순회하며 각자의 type에 맞는 closet에 넣어주기
+    for (int i = 0; i < result["clothingArray"].length; i++) {
+      var thisCloth = result["clothingArray"][i];
+      String category = "상의"; //기본이 상의라고 생각
+      if (thisCloth["tagResult"]["category"] != null) {
+        category = thisCloth["tagResult"]["category"];
+      }
+      MyClothing thisClothing = MyClothing(
+        id: thisCloth["clothingId"],
+        clothingImgBase64: thisCloth["clothingImage"],
+        brandName: thisCloth["tagResult"]["brandName"],
+      );
+      if (categoryToType(category) == 1) //상의
+      {
+        myClosetListTop.add(thisClothing);
+      } else if (categoryToType(category) == 2) //하의
+      {
+        myClosetListBottom.add(thisClothing);
+      } else if (categoryToType(category) == 3) //원피스
+      {
+        myClosetListOnepiece.add(thisClothing);
+      } else if (categoryToType(category) == 4) //아우터
+      {
+        myClosetListOuter.add(thisClothing);
+      } else if (categoryToType(category) >= 5) //신발 or 가방
+      {
+        myClosetListAcc.add(thisClothing);
+      }
+    }
     if (myClosetListTop.isNotEmpty) {
       selectedClothList[1]["image"] = myClosetListTop[0].clothingImgBase64;
     }
@@ -325,8 +371,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     }
     myClosetListTop.insert(0, basictop);
     myClosetListBottom.insert(0, basicbottom);
-    //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
-  }
+  }*/
 
   Future<File> getImageFileFromAssets(String path) async {
     final byteData = await rootBundle.load('assets/$path');
@@ -339,10 +384,8 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
   }
 
   void getProduct() async {
-    //나중에 코디넣을 때 다시 확인하자
+    //나중에 코디넣을 때 다시 확인하자//각 옷에 대한 딥러닝결과 가져오는 것
     //codi1_ai = await ProductClothingDatabase.getRecoResult(21);
-    //codi2_ai = await ProductClothingDatabase.getRecoResult(22);
-    //codi3_ai = await ProductClothingDatabase.getRecoResult(23);
   }
 
   String convert(String filePath) {
@@ -445,19 +488,28 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
                     border: Border.all(color: Colors.indigo, width: 2)),*/
                   padding: EdgeInsets.all(5),
                   child: detailClothInfo.encoded_img != null
-                      ? detailClothInfo.encoded_img.contains(".")
-                          ? Image.asset(
+                      ? detailClothInfo.encoded_img.contains("https")
+                          ? Image.network(
                               detailClothInfo.encoded_img,
                               width: 120,
                               height: 120,
                               fit: BoxFit.contain,
                             )
-                          : Image.memory(
-                              base64Decode(detailClothInfo.encoded_img),
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.contain,
-                            )
+                          : detailClothInfo.encoded_img.contains(".")
+                              ? Image.asset(
+                                  detailClothInfo.encoded_img,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain,
+                                )
+                              : Image.memory(
+                                  base64Decode(detailClothInfo.encoded_img),
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain
+                                  //height: 100,
+                                  //fit: BoxFit.scaleDown,
+                                  )
                       : Container(),
                 ),
                 Column(
@@ -581,16 +633,21 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: myClothing.clothingImgBase64.contains('.')
-                    ? Image.asset(myClothing.clothingImgBase64,
+                child: myClothing.clothingImgBase64.contains("https")
+                    ? Image.network(myClothing.clothingImgBase64,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(myClothing.clothingImgBase64),
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
+                    : myClothing.clothingImgBase64.contains(".")
+                        ? Image.asset(myClothing.clothingImgBase64,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.memory(
+                            base64Decode(myClothing.clothingImgBase64),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain
+                            //height: 100,
+                            //fit: BoxFit.scaleDown,
+                            ),
               ),
             ),
             //선택된 옷일 때 here보이게끔
@@ -773,16 +830,21 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: productClothing.encoded_img.contains('.')
-                    ? Image.asset(productClothing.encoded_img,
+                child: productClothing.encoded_img.contains("https")
+                    ? Image.network(productClothing.encoded_img,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : Image.memory(base64Decode(productClothing.encoded_img),
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain
-                        //height: 100,
-                        //fit: BoxFit.scaleDown,
-                        ),
+                    : productClothing.encoded_img.contains(".")
+                        ? Image.asset(productClothing.encoded_img,
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain)
+                        : Image.memory(
+                            base64Decode(productClothing.encoded_img),
+                            width: bottomSheetSize == 200 ? 100 : 120,
+                            fit: BoxFit.contain
+                            //height: 100,
+                            //fit: BoxFit.scaleDown,
+                            ),
               ),
             ),
             //선택된 옷일 때 here보이게끔
@@ -869,33 +931,45 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
               child: Draggable(
                 child: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
-                  child: selectedClothList[type]["image"].contains('.')
-                      ? Image.asset(selectedClothList[type]["image"],
+                  child: selectedClothList[type]["image"].contains("https")
+                      ? Image.network(selectedClothList[type]["image"],
                           width: selectedClothList[type]["width"].toDouble(),
                           fit: BoxFit.fitWidth)
-                      : Image.memory(
-                          base64Decode(selectedClothList[type]["image"]),
-                          width: selectedClothList[type]["width"].toDouble(),
-                          fit: BoxFit.fitWidth
-                          //fit: BoxFit.contain
-                          //height: 100,
-                          //fit: BoxFit.scaleDown,
-                          ),
+                      : selectedClothList[type]["image"].contains(".")
+                          ? Image.asset(selectedClothList[type]["image"],
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth)
+                          : Image.memory(
+                              base64Decode(selectedClothList[type]["image"]),
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth
+                              //fit: BoxFit.contain
+                              //height: 100,
+                              //fit: BoxFit.scaleDown,
+                              ),
                 ),
                 feedback: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
-                  child: selectedClothList[type]["image"].contains('.')
-                      ? Image.asset(selectedClothList[type]["image"],
+                  child: selectedClothList[type]["image"].contains("https")
+                      ? Image.network(selectedClothList[type]["image"],
                           width: selectedClothList[type]["width"].toDouble(),
                           fit: BoxFit.fitWidth)
-                      : Image.memory(
-                          base64Decode(selectedClothList[type]["image"]),
-                          width: selectedClothList[type]["width"].toDouble(),
-                          fit: BoxFit.fitWidth
-                          //fit: BoxFit.contain
-                          //height: 100,
-                          //fit: BoxFit.scaleDown,
-                          ),
+                      : selectedClothList[type]["image"].contains(".")
+                          ? Image.asset(selectedClothList[type]["image"],
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth)
+                          : Image.memory(
+                              base64Decode(selectedClothList[type]["image"]),
+                              width:
+                                  selectedClothList[type]["width"].toDouble(),
+                              fit: BoxFit.fitWidth
+                              //fit: BoxFit.contain
+                              //height: 100,
+                              //fit: BoxFit.scaleDown,
+                              ),
                 ),
                 childWhenDragging: Container(),
                 onDragEnd: (DraggableDetails details) {
@@ -1023,6 +1097,8 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     myClosetListTotal.add(myClosetListOnepiece);
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
+    widget.styleList = ["a", "b", "aa", "ccc", "dddd", "eeeee"];
+    widget.itemList = ["안녕", "하세요", "룰루", "랄라라", "하하하하", "룰룰루루루"];
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -1038,10 +1114,10 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
                   Positioned(
                     child: Image.asset('assets/images/background_ui.png'),
                   ),
-                  //상의
-                  draggableWidget(type: 1),
                   //하의
                   draggableWidget(type: 2),
+                  //상의
+                  draggableWidget(type: 1),
                   //원피스
                   draggableWidget(type: 3),
                   //아우터
@@ -1054,9 +1130,51 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
               ),
             ),
           ),
+          //요청자의 item list 띄우기
+          Positioned(
+            top: 15,
+            left: 5,
+            //child: Expanded(
+            child: Row(
+              children: [
+                Text("ITEM: ", style: normalTS),
+                Container(
+                  width: 150,
+                  height: 25,
+                  child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: List.generate(widget.itemList.length, (idx) {
+                        return normalItem(str: widget.itemList[idx]);
+                      })),
+                ),
+              ],
+            ),
+            //),
+          ),
+          //요청자의 style list 띄우기
+          Positioned(
+            top: 15,
+            left: MediaQuery.of(context).size.width / 2,
+            //child: Expanded(
+            child: Row(
+              children: [
+                Text("STYLE: ", style: normalTS),
+                Container(
+                  width: 150,
+                  height: 25,
+                  child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: List.generate(widget.styleList.length, (idx) {
+                        return normalItem(str: widget.styleList[idx]);
+                      })),
+                ),
+              ],
+            ),
+            //),
+          ),
           //요청자의 요청 아이콘 요청정보 띄우기
           Positioned(
-            top: 25,
+            top: 40,
             right: 10,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
