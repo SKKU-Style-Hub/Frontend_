@@ -13,8 +13,8 @@ class RequestMain extends StatefulWidget {
 }
 
 class _RequestMainState extends State<RequestMain> {
-  List<StylingRequest> requests;
-  getRequestList() async {
+  List<StylingRequest> requests = [];
+  void getRequestList() async {
     print("getRequestList");
     List<StylingRequest> requests = [];
     String url = "http://34.64.196.105:82/api/styling/request/list/my";
@@ -35,13 +35,13 @@ class _RequestMainState extends State<RequestMain> {
       StylingRequest tmp = StylingRequest.fromJson(result);
       requests.add(tmp);
     }
-    return requests;
+    //return requests;
   }
 
   @override
   void initState() {
     setState(() {
-      requests = getRequestList();
+      getRequestList();
     });
   }
 
@@ -65,21 +65,33 @@ class _RequestMainState extends State<RequestMain> {
           ),
           //here~~~
           Expanded(
-            child: ListView.builder(
-              itemCount: requests.length,
-              itemBuilder: (BuildContext context, int index) {
-                return MyCodiRequests(
-                    explanation: requests[index].requestContent,
-                    year: int.parse(requests[index].createdAt.substring(0, 3)),
-                    month: int.parse(requests[index].createdAt.substring(5, 6)),
-                    day: int.parse(requests[index].createdAt.substring(8, 9)),
-                    answer_num: 0,
-                    heart_num: 0,
-                    imagepath:
-                        requests[index].requestClothings[0].clothingImage,
-                    index: index);
-              },
-            ),
+            child: requests.length != 0
+                ? ListView.builder(
+                    itemCount: requests.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return MyCodiRequests(
+                          explanation: requests[index].requestContent,
+                          year: int.parse(
+                              requests[index].createdAt.substring(0, 3)),
+                          month: int.parse(
+                              requests[index].createdAt.substring(5, 6)),
+                          day: int.parse(
+                              requests[index].createdAt.substring(8, 9)),
+                          answer_num: 0,
+                          heart_num: 0,
+                          imagepath:
+                              requests[index].requestClothings[0].clothingImage,
+                          index: index);
+                    },
+                  )
+                : Center(
+                    child: Text(
+                    "작성한 코디 요청이 없습니다.",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.grey),
+                  )),
           ),
           Center(
             child: RaisedButton(

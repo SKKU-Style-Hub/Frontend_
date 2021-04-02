@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stylehub_flutter/Constants.dart';
@@ -15,30 +15,36 @@ class _ChooseClothingPageState extends State<ChooseClothingPage> {
   final controller = PageController();
   ScrollController scrollController = ScrollController();
 
-  double containerHeight(String category, String length) {
+  String getType(String category) {
     if (category == "탑" ||
         category == "블라우스" ||
         category == "캐주얼상의" ||
         category == "니트웨어" ||
         category == "셔츠" ||
         category == "베스트") {
+      return '상의';
+    }
+    if (category == "청바지" || category == "팬츠" || category == "스커트") {
+      return '하의';
+    }
+    return '기타';
+  }
+
+  double containerHeight(String category, String length) {
+    //print(category + length);
+    if (getType(category) == '상의') {
       switch (length) {
         case '롱':
-          return 220;
+          return 230;
           break;
         case '노멀':
-          return 170;
+          return 190;
         case '크롭':
-          return 130;
+          return 170;
         // 마저 끝내기
       }
     }
-    if (category == "코트" ||
-        category == "재킷" ||
-        category == "점퍼" ||
-        category == "패딩" ||
-        category == "드레스" ||
-        category == "점프수트") {
+    if (getType(category) == '기타') {
       switch (length) {
         case '롱':
           return 300;
@@ -55,14 +61,15 @@ class _ChooseClothingPageState extends State<ChooseClothingPage> {
           return 170;
       }
     }
-    if (category == "청바지" || category == " 팬츠" || category == "스커트") {
+    if (getType(category) == '하의') {
       switch (length) {
         case '긴':
-          return 240;
+        case '롱':
+          return 320;
         case '크롭':
           return 220;
         case '니렝스':
-          return 200;
+          return 150;
         case '숏':
         case '미니':
           return 140;
@@ -110,9 +117,8 @@ class _ChooseClothingPageState extends State<ChooseClothingPage> {
                               width: 150,
                               padding: EdgeInsets.only(top: 15),
                               margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Image.memory(
-                                base64Decode(
-                                    snapshot.data[index].clothingImgBase64),
+                              child: Image.file(
+                                File(snapshot.data[index].clothingImgPath),
                                 fit: BoxFit.fill,
                               )),
                         ),

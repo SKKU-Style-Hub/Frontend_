@@ -236,8 +236,9 @@ class _RequestPageState extends State<RequestPage> {
                                           ))
                                     ],
                                   )
-                                : Image.memory(
-                                    base64Decode(widget.chosenBase64),
+                                : Image.file(
+                                    Io.File(
+                                        widget.chosenClothing.clothingImgPath),
                                     fit: BoxFit.fill,
                                   )),
                         onTap: () async {

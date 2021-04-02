@@ -49,18 +49,22 @@ class _RegisterPageState extends State<RegisterPage> {
 
     print(response.data);
 
-    final response2 = await http.get(response.data);
+    var response2 = await http.get(response.data);
+    while (response2.statusCode == 404) {
+      print("retry");
+      response2 = await http.get(response.data);
+    }
 
     final int closet_index = await MyClothingDatabase.totalClothingNum();
     String dir = (await getApplicationDocumentsDirectory()).path;
     final file = File('${dir}/' + 'closet_${closet_index}.png');
-
     file.writeAsBytesSync(response2.bodyBytes);
-
+    List<int> imageBytes = file.readAsBytesSync();
     setState(() {
       mPhoto = f;
       widget.backRemovePath = file.path;
       widget.backRemoveUrl = response.data.toString();
+      widget.base64Img = base64Encode(imageBytes);
     });
   }
 
@@ -73,7 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final response = await http.post(url,
         headers: <String, String>{
           "Content-Type": "application/json",
-          "x-api-key": "uWHs0KwUapQYJfBz6PnkrTx13cIE7jGMO2qAyCli",
+          "x-api-key": "7ED65zaQXknFLAKifx0YoBdWc8m23PTwblJyZRN4",
           "accept-language": "ko"
         },
         body: jsonEncode({

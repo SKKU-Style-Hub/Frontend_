@@ -156,6 +156,7 @@ class Content {
       this.updatedAt});
 
   Content.fromJson(Map<String, dynamic> json) {
+    print(json['createdAt']);
     if (json['stylingResult'] != null) {
       stylingResult = new List<StylingResult>();
       json['stylingResult'].forEach((v) {

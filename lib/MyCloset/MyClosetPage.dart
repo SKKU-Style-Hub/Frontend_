@@ -25,7 +25,7 @@ String getType(String category) {
       category == "베스트") {
     return '상의';
   }
-  if (category == "청바지" || category == " 팬츠" || category == "스커트") {
+  if (category == "청바지" || category == "팬츠" || category == "스커트") {
     return '하의';
   }
   return '기타';
@@ -33,8 +33,13 @@ String getType(String category) {
 
 class _MyClosetPageState extends State<MyClosetPage> {
   final controller = PageController();
-  ScrollController scrollController = ScrollController();
+  ScrollController scrollController1 = ScrollController();
+  ScrollController scrollController2 = ScrollController();
+  ScrollController scrollController3 = ScrollController();
+  ScrollController scrollController4 = ScrollController();
+  ScrollController scrollController5 = ScrollController();
   double containerHeight(String category, String length) {
+    //print(category + length);
     if (getType(category) == '상의') {
       switch (length) {
         case '롱':
@@ -68,11 +73,11 @@ class _MyClosetPageState extends State<MyClosetPage> {
       switch (length) {
         case '긴':
         case '롱':
-          return 270;
+          return 320;
         case '크롭':
           return 220;
         case '니렝스':
-          return 200;
+          return 150;
         case '숏':
         case '미니':
           return 140;
@@ -128,7 +133,8 @@ class _MyClosetPageState extends State<MyClosetPage> {
     }
   }
 
-  Widget buildRow(Future<List<MyClothing>> list) {
+  Widget buildRow(
+      Future<List<MyClothing>> list, ScrollController scrollController) {
     return FutureBuilder<List>(
       future: list,
       initialData: [],
@@ -236,8 +242,8 @@ class _MyClosetPageState extends State<MyClosetPage> {
                           Container(
                               height: 250,
                               padding: EdgeInsets.only(top: 15),
-                              child:
-                                  buildRow(MyClothingDatabase.getMyCloset())),
+                              child: buildRow(MyClothingDatabase.getMyCloset(),
+                                  scrollController1)),
                         ],
                       ),
                       Expanded(
@@ -290,9 +296,10 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 200,
+                            height: 250,
                             padding: EdgeInsets.only(top: 15),
-                            child: buildRow(MyClothingDatabase.getTop()),
+                            child: buildRow(
+                                MyClothingDatabase.getTop(), scrollController2),
                           ),
                         ],
                       ),
@@ -348,9 +355,10 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 200,
+                            height: 250,
                             padding: EdgeInsets.only(top: 15),
-                            child: buildRow(MyClothingDatabase.getBottom()),
+                            child: buildRow(MyClothingDatabase.getBottom(),
+                                scrollController3),
                           ),
                         ],
                       ),
@@ -405,9 +413,10 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 200,
+                            height: 250,
                             padding: EdgeInsets.only(top: 15),
-                            child: buildRow(MyClothingDatabase.getOnePiece()),
+                            child: buildRow(MyClothingDatabase.getOnePiece(),
+                                scrollController4),
                           ),
                         ],
                       ),
@@ -462,9 +471,10 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 200,
+                            height: 250,
                             padding: EdgeInsets.only(top: 15),
-                            child: buildRow(MyClothingDatabase.getOuter()),
+                            child: buildRow(MyClothingDatabase.getOuter(),
+                                scrollController5),
                           ),
                         ],
                       ),
