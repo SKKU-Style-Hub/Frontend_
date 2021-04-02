@@ -156,6 +156,7 @@ class Content {
       this.updatedAt});
 
   Content.fromJson(Map<String, dynamic> json) {
+    print(json['createdAt']);
     if (json['stylingResult'] != null) {
       stylingResult = new List<StylingResult>();
       json['stylingResult'].forEach((v) {
@@ -318,6 +319,8 @@ class StylingRequest {
   List<String> requestStyle;
   int stylingRequestId;
   int resultCounter;
+  int likeCounter;
+  int commentCounter;
   String sId;
   UserProfile userProfile;
   int budgetMin;
@@ -332,6 +335,8 @@ class StylingRequest {
       this.requestStyle,
       this.stylingRequestId,
       this.resultCounter,
+      this.likeCounter,
+      this.commentCounter,
       this.sId,
       this.userProfile,
       this.budgetMin,
@@ -352,6 +357,8 @@ class StylingRequest {
     requestStyle = json['requestStyle'].cast<String>();
     stylingRequestId = json['stylingRequestId'];
     resultCounter = json['resultCounter'];
+    likeCounter = json["likeCounter"];
+    commentCounter = json["commentCounter"];
     sId = json['_id'];
     userProfile = json['userProfile'] != null
         ? new UserProfile.fromJson(json['userProfile'])

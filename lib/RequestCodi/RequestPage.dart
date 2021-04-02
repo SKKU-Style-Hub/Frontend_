@@ -236,8 +236,9 @@ class _RequestPageState extends State<RequestPage> {
                                           ))
                                     ],
                                   )
-                                : Image.memory(
-                                    base64Decode(widget.chosenBase64),
+                                : Image.file(
+                                    Io.File(
+                                        widget.chosenClothing.clothingImgPath),
                                     fit: BoxFit.fill,
                                   )),
                         onTap: () async {
@@ -679,7 +680,7 @@ class _RequestPageState extends State<RequestPage> {
                         clothingId: widget.chosenClothing.id,
                         userProfile:
                             UserProfile(userNickname: StyleHub.myNickname),
-                        clothingImage: widget.chosenBase64);
+                        clothingImage: widget.chosenClothing.clothingImgUrl);
 
                     String url =
                         "http://34.64.196.105:82/api/styling/request/create";

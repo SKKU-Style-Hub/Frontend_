@@ -6,6 +6,7 @@ import '../Navigation.dart';
 import 'RequestPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:stylehub_flutter/main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class RequestMain extends StatefulWidget {
   @override
@@ -13,36 +14,35 @@ class RequestMain extends StatefulWidget {
 }
 
 class _RequestMainState extends State<RequestMain> {
-  List<StylingRequest> requests;
-  getRequestList() async {
-    print("getRequestList");
-    List<StylingRequest> requests = [];
+  List<StylingRequest> requests = [];
+  void getRequestList() async {
     String url = "http://34.64.196.105:82/api/styling/request/list/my";
     var response = await http.post(url,
         headers: {
           'Content-type': 'application/json',
           'Accept': 'application/json',
+          'Charset': 'utf-8'
         },
         body: jsonEncode({
           "userProfile": {
             "userNickname": StyleHub.myNickname,
           },
         }));
-    print("requestBody " + response.body.toString());
+    //print(response.body);
     var results = jsonDecode(response.body);
+    //List<dynamic> list = jsonDecode(utf8.decode(response.bodyBytes));
     for (var result in results) {
-      print(result);
+      //print(result);
       StylingRequest tmp = StylingRequest.fromJson(result);
-      requests.add(tmp);
+      setState(() {
+        requests.add(tmp);
+      });
     }
-    return requests;
   }
 
   @override
   void initState() {
-    setState(() {
-      requests = getRequestList();
-    });
+    getRequestList();
   }
 
   @override
@@ -65,21 +65,33 @@ class _RequestMainState extends State<RequestMain> {
           ),
           //here~~~
           Expanded(
-            child: ListView.builder(
-              itemCount: requests.length,
-              itemBuilder: (BuildContext context, int index) {
-                return MyCodiRequests(
-                    explanation: requests[index].requestContent,
-                    year: int.parse(requests[index].createdAt.substring(0, 3)),
-                    month: int.parse(requests[index].createdAt.substring(5, 6)),
-                    day: int.parse(requests[index].createdAt.substring(8, 9)),
-                    answer_num: 0,
-                    heart_num: 0,
-                    imagepath:
-                        requests[index].requestClothings[0].clothingImage,
-                    index: index);
-              },
-            ),
+            child: requests.length != 0
+                ? ListView.builder(
+                    itemCount: requests.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return MyCodiRequests(
+                          explanation: requests[index].requestContent,
+                          year: int.parse(
+                              requests[index].createdAt.substring(0, 4)),
+                          month: int.parse(
+                              requests[index].createdAt.substring(5, 7)),
+                          day: int.parse(
+                              requests[index].createdAt.substring(8, 10)),
+                          answer_num: requests[index].resultCounter,
+                          heart_num: requests[index].likeCounter,
+                          imagepath:
+                              requests[index].requestClothings[0].clothingImage,
+                          index: index);
+                    },
+                  )
+                : Center(
+                    child: Text(
+                    "작성한 코디 요청이 없습니다.",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.grey),
+                  )),
           ),
           Center(
             child: RaisedButton(
@@ -166,9 +178,11 @@ class _RequestMainState extends State<RequestMain> {
                   child: SizedBox(
                     height: 105,
                     width: 105,
-                    child: Image.asset(
-                      imagepath,
-                      fit: BoxFit.contain,
+                    child: CachedNetworkImage(
+                      imageUrl: imagepath,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                 ),
@@ -259,7 +273,7 @@ class EachCodiRequests extends StatefulWidget {
     this.answer_num,
     this.heart_num,
     this.imagepath,
-  }) : super(key: key) {}
+  }) : super(key: key);
   _EachCodiRequestsState createState() {
     return _EachCodiRequestsState();
   }
@@ -301,9 +315,11 @@ class _EachCodiRequestsState extends State<EachCodiRequests> {
                   child: SizedBox(
                     height: 105,
                     width: 105,
-                    child: Image.asset(
-                      widget.imagepath,
-                      fit: BoxFit.cover,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.imagepath,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                 ),

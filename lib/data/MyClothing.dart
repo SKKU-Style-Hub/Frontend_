@@ -8,6 +8,7 @@ import 'package:stylehub_flutter/MyCloset/TagResult/TagResult.dart';
 class MyClothing {
   int id;
   String clothingImgPath;
+  String clothingImgUrl;
   String clothingImgBase64;
   String category;
   String color;
@@ -26,6 +27,7 @@ class MyClothing {
   MyClothing(
       {this.id,
       this.clothingImgPath,
+      this.clothingImgUrl,
       this.clothingImgBase64,
       this.category,
       this.color,
@@ -45,6 +47,7 @@ class MyClothing {
     return {
       'id': id,
       'clothingImgPath': clothingImgPath,
+      'clothingImgUrl': clothingImgUrl,
       'clothingImgBase64': clothingImgBase64,
       'category': category,
       'color': color,

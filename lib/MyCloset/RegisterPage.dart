@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
     File f = await ImagePicker.pickImage(
         source: source, maxHeight: 500, maxWidth: 450);
     imgPath = f.path;
-
+    final int closet_index = await MyClothingDatabase.totalClothingNum();
     String fileName = f.path.split('/').last;
     FormData formData = FormData.fromMap({
       "file": await MultipartFile.fromFile(f.path,
@@ -49,18 +49,21 @@ class _RegisterPageState extends State<RegisterPage> {
 
     print(response.data);
 
-    final response2 = await http.get(response.data);
+    var response2 = await http.get(response.data);
+    while (response2.statusCode == 404) {
+      print("retry");
+      response2 = await http.get(response.data);
+    }
 
-    final int closet_index = await MyClothingDatabase.totalClothingNum();
     String dir = (await getApplicationDocumentsDirectory()).path;
-    final file = File('${dir}/' + 'closet_${closet_index}.png');
-
+    final file = File('${dir}/' + 'closet1_${closet_index}.png');
     file.writeAsBytesSync(response2.bodyBytes);
-
+    List<int> imageBytes = file.readAsBytesSync();
     setState(() {
       mPhoto = f;
       widget.backRemovePath = file.path;
       widget.backRemoveUrl = response.data.toString();
+      widget.base64Img = base64Encode(imageBytes);
     });
   }
 
@@ -73,11 +76,11 @@ class _RegisterPageState extends State<RegisterPage> {
     final response = await http.post(url,
         headers: <String, String>{
           "Content-Type": "application/json",
-          "x-api-key": "uWHs0KwUapQYJfBz6PnkrTx13cIE7jGMO2qAyCli",
+          "x-api-key": "7ED65zaQXknFLAKifx0YoBdWc8m23PTwblJyZRN4",
           "accept-language": "ko"
         },
         body: jsonEncode({
-          "image": {"type": "base64", "content": widget.base64Img}
+          "image": {"type": "url", "content": widget.backRemoveUrl}
         }));
 
     tagResult = jsonDecode(utf8.decode(response.bodyBytes));
@@ -124,7 +127,8 @@ class _RegisterPageState extends State<RegisterPage> {
     await MyClothingDatabase.insertClothing(MyClothing(
         id: closet_index,
         clothingImgPath: widget.backRemovePath,
-        clothingImgBase64: widget.base64Img,
+        clothingImgUrl: widget.backRemoveUrl,
+        clothingImgBase64: widget.base64Img, //배경 제거 안됨
         category: tagResult['data']['objects'][0]['tags'][0]['category']
             ['name'],
         color: tagResult['data']['objects'][0]['tags'][0]['colors'][0]['name'],
@@ -351,7 +355,7 @@ Card beforeCard() {
 }
 
 Card afterCard(String imgUrl) {
-  print(imgUrl);
+  print("imgUrl " + imgUrl);
   return Card(
     elevation: 5,
     child: Container(
