@@ -157,6 +157,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ? tagResult['data']['objects'][0]['tags'][0]['shape']['name']
             : null,
         brandName: brandInput));
+    final closet = await MyClothingDatabase.getMyCloset();
+    print(closet.length);
 
     setState(() {
       RegisterPage.registered = true;

@@ -30,6 +30,7 @@ import 'package:stylehub_flutter/data/CategoryType.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'NormalItem.dart';
 import 'NormalText.dart';
+import 'GeneratedComponents.dart';
 
 //화면에 선택된 옷과 위치
 ////모든 순서는 1:top, 2:bottom, 3: onepiece, 4:outer, 5:shoes, 6:bag
@@ -163,7 +164,7 @@ void _capture() async {
       } //end of if
     }
     //요청 보내기
-    /*String url = "http://34.64.196.105:82/api/styling/response/create";
+    String url = "http://34.64.196.105:82/api/styling/response/create";
     final response = http.post(url,
         headers: {
           'Content-type': 'application/json',
@@ -175,11 +176,6 @@ void _capture() async {
           "requestorProfile": {"userNickname": "requestor", "gender": "f"},
           "stylistProfile": {"userNickname": "stylist", "gender": "f"}
         }));
-    //print(response.body);
-    print("--------SEND-------");*/
-
-    ////////////////////////////////////
-    print(result);
     if (result["isSuccess"] == true)
       showToast("이미지가 갤러리에 저장되었습니다.");
     else
@@ -213,9 +209,8 @@ void goToUrl(String url) async {
 class CodiFittingRoom extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
-  List<String> styleList, itemList;
-  CodiFittingRoom(
-      {Key key, this.requestClothInfo, this.styleList, this.itemList})
+  StylingRequest stylingRequest;
+  CodiFittingRoom({Key key, this.requestClothInfo, this.stylingRequest})
       : super(key: key);
   @override
   _CodiFittingRoomState createState() => _CodiFittingRoomState();
@@ -265,9 +260,9 @@ class _CodiFittingRoomState extends State<CodiFittingRoom> {
         ],
       ),
       body: CodiFittingRoomMain(
-          requestClothInfo: widget.requestClothInfo,
-          styleList: widget.styleList,
-          itemList: widget.itemList),
+        requestClothInfo: widget.requestClothInfo,
+        stylingRequest: widget.stylingRequest,
+      ),
     );
   }
 }
@@ -275,9 +270,8 @@ class _CodiFittingRoomState extends State<CodiFittingRoom> {
 class CodiFittingRoomMain extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
-  List<String> styleList, itemList;
-  CodiFittingRoomMain(
-      {Key key, this.requestClothInfo, this.styleList, this.itemList})
+  StylingRequest stylingRequest;
+  CodiFittingRoomMain({Key key, this.requestClothInfo, this.stylingRequest})
       : super(key: key);
   @override
   _CodiFittingRoomMainState createState() => _CodiFittingRoomMainState();
@@ -318,9 +312,8 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     //super.dispose();
   }
 
-  /* void getCloset() async {
+  void getCloset() async {
     //남의 옷장 가져오기
-    //nickname "spark" 수정하기
     String url = "http://34.64.196.105:82/api/closet/read/others";
     final response = await http.post(url,
         headers: {
@@ -328,7 +321,9 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          "othersProfile": {"userNickname": "spark"},
+          "othersProfile": {
+            "userNickname": widget.stylingRequest.userProfile.userNickname
+          },
         }));
     print("----------------------");
     print(response.body);
@@ -371,7 +366,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     }
     myClosetListTop.insert(0, basictop);
     myClosetListBottom.insert(0, basicbottom);
-  }*/
+  }
 
   Future<File> getImageFileFromAssets(String path) async {
     final byteData = await rootBundle.load('assets/$path');
@@ -1097,8 +1092,6 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     myClosetListTotal.add(myClosetListOnepiece);
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
-    widget.styleList = ["a", "b", "aa", "ccc", "dddd", "eeeee"];
-    widget.itemList = ["안녕", "하세요", "룰루", "랄라라", "하하하하", "룰룰루루루"];
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -1143,8 +1136,10 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
                   height: 25,
                   child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: List.generate(widget.itemList.length, (idx) {
-                        return normalItem(str: widget.itemList[idx]);
+                      children: List.generate(
+                          widget.stylingRequest.requestItems.length, (idx) {
+                        return normalItem(
+                            str: widget.stylingRequest.requestItems[idx]);
                       })),
                 ),
               ],
@@ -1164,8 +1159,10 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
                   height: 25,
                   child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: List.generate(widget.styleList.length, (idx) {
-                        return normalItem(str: widget.styleList[idx]);
+                      children: List.generate(
+                          widget.stylingRequest.requestStyle.length, (idx) {
+                        return normalItem(
+                            str: widget.stylingRequest.requestStyle[idx]);
                       })),
                 ),
               ],

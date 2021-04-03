@@ -216,17 +216,21 @@ class StylingResult {
   String stylingPostId;
   String createdAt;
   String updatedAt;
+  int codiClick; //어떤 버튼을 클릭했는지 저장
 
-  StylingResult(
-      {this.components,
-      this.stylingResponseId,
-      this.sId,
-      this.stylingImage,
-      this.requestorProfile,
-      this.stylistProfile,
-      this.stylingPostId,
-      this.createdAt,
-      this.updatedAt});
+  StylingResult({
+    this.components,
+    this.stylingResponseId,
+    this.sId,
+    this.stylingImage,
+    this.requestorProfile,
+    this.stylistProfile,
+    this.stylingPostId,
+    this.createdAt,
+    this.updatedAt,
+  }) {
+    codiClick = 0; //0으로 초기화
+  }
 
   StylingResult.fromJson(Map<String, dynamic> json) {
     if (json['components'] != null) {
@@ -273,8 +277,8 @@ class StylingResult {
 class Components {
   String brand;
   String color;
-  int xcordinate;
-  int ycordinate;
+  double xcordinate;
+  double ycordinate;
 
   Components({this.brand, this.color, this.xcordinate, this.ycordinate});
 
@@ -447,18 +451,34 @@ class RequestClothings {
 class TagResult {
   int price;
   String brandName;
+  String category;
 
-  TagResult({this.price, this.brandName});
+  TagResult({this.price, this.brandName, this.category});
 
   TagResult.fromJson(Map<String, dynamic> json) {
     price = json['price'];
     brandName = json['brandName'];
+    category = json["category"];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['price'] = this.price;
     data['brandName'] = this.brandName;
+    data['category'] = this.category;
     return data;
   }
+}
+
+class Comment {
+  Comment({this.userNickname, this.userProfileImg, this.commentContent});
+
+  String userNickname;
+  String userProfileImg;
+  String commentContent;
+}
+
+class Like {
+  Like({this.userProfile});
+  UserProfile userProfile;
 }
