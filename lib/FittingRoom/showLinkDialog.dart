@@ -223,8 +223,8 @@ void showLinkDialog(BuildContext context) {
                       await LinkClothingDatabase.totalProductNum();
                   await LinkClothingDatabase.insertProduct(ProductClothing(
                       request_num: closet_index + 1,
-                      img_path: "ss", //imagepath,
-                      encoded_img: "dd", //encodedimage,
+                      img_path: response.data, //imagepath,
+                      encoded_img: null, //encodedimage,
                       brand: null,
                       detail_url: linkurl,
                       fashion_url: null,
