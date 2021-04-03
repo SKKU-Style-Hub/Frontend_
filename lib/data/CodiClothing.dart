@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 @dataClass
 class CodiClothing {
   List<dynamic> codiClothes; //codi한 옷들이 배열로 들어옴
-  String totalImg;
+  String totalImg;//
 
   CodiClothing({this.codiClothes, this.totalImg});
 

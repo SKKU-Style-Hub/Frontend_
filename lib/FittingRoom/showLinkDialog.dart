@@ -8,6 +8,12 @@ import 'package:image_size_getter/file_input.dart';
 import 'package:stylehub_flutter/common/showToast.dart';
 import 'cropImg.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
+import 'package:stylehub_flutter/data/LinkClothingDatabase.dart';
+import 'package:image/image.dart' as Img;
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:stylehub_flutter/main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 TextStyle labelTextStyle = TextStyle(
   fontSize: 15,
@@ -193,13 +199,41 @@ void showLinkDialog(BuildContext context) {
                 child: new Text("옷 가져오기",
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.indigo)),
-                onPressed: () {
+                onPressed: () async {
                   FocusScope.of(context).unfocus();
-                  //누르면 가져오도록 하자
                   //String linkurl, File mphoto(in cache) or Base64
                   //String linktype
                   //파일 배경제거 하고
                   //productclothing class에 저장
+                  //'/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg'
+                  String fileName = mPhoto.path.split('/').last;
+                  FormData formData = FormData.fromMap({
+                    "file": await MultipartFile.fromFile(
+                        '/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg',
+                        filename: 'someImageFile.jpg',
+                        contentType: MediaType("image", "jpg")),
+                    "submit": "upload",
+                    "userNickname": StyleHub.myNickname
+                  });
+                  var response = await Dio().post(
+                      "http://34.64.196.105:82/api/back/removal/remove",
+                      data: formData);
+                  print(response);
+                  final int closet_index =
+                      await LinkClothingDatabase.totalProductNum();
+                  await LinkClothingDatabase.insertProduct(ProductClothing(
+                      request_num: closet_index + 1,
+                      img_path: "ss", //imagepath,
+                      encoded_img: "dd", //encodedimage,
+                      brand: null,
+                      detail_url: linkurl,
+                      fashion_url: null,
+                      item_url: null,
+                      name: null,
+                      price: null,
+                      score: null,
+                      category: linktype));
+
                   showToast("성공적으로 가져왔습니다");
                   Navigator.pop(context);
                 },
@@ -241,6 +275,7 @@ Card beforeCard() {
 }
 
 Card afterCard(File imgFile, String decode64) {
+  mPhoto = imgFile;
   return Card(
     elevation: 5,
     child: Center(

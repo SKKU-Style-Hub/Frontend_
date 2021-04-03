@@ -138,7 +138,7 @@ class _RequestPageState extends State<RequestPage> {
                         flex: 10,
                       ),
                       Text(
-                        "${userName} 님의\n코디 요청서",
+                        "${StyleHub.myNickname} 님의\n코디 요청서",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 18,

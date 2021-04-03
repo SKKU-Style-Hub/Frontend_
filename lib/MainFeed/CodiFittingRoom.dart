@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
+import 'package:stylehub_flutter/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:drag_to_expand/drag_to_expand.dart';
 import 'package:path_provider/path_provider.dart';
@@ -116,11 +117,12 @@ double swipeStartY;
 String swipeDirection;
 double bottomSheetSize = 200;
 var codiKey;
+StylingRequest _stylingRequest;
 
 void _capture() async {
+  //요청 옷 보냄
   var renderObject = codiKey.currentContext.findRenderObject();
   if (renderObject.debugNeedsPaint) {
-    print("Waiting for boundary to be painted.");
     await Future.delayed(const Duration(milliseconds: 20));
     return _capture();
   }
@@ -155,15 +157,16 @@ void _capture() async {
           //price랑 link는 없음
           brandName = selectedClothList[i]["clothing"].brandName;
         }
-
         componentsList.add({
           "brand": brandName,
-          "xCoordinate": xPos,
-          "yCoordinate": yPos,
+          "xcordinate": xPos,
+          "ycordinate": yPos,
+          "clothingImage": selectedClothList[i]["image"],
+          "tagResult": {"category": typeToCategory(i)}
         });
       } //end of if
     }
-    //요청 보내기
+    //코디결과 보내기
     String url = "http://34.64.196.105:82/api/styling/response/create";
     final response = http.post(url,
         headers: {
@@ -171,11 +174,18 @@ void _capture() async {
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          "stylingPostID": "60615bccb1cebe0012290fdf",
+          "stylingPostId": 1,
           "components": componentsList,
-          "requestorProfile": {"userNickname": "requestor", "gender": "f"},
-          "stylistProfile": {"userNickname": "stylist", "gender": "f"}
+          "requestorProfile": {
+            "userNickname": _stylingRequest.userProfile.userNickname,
+            "gender": _stylingRequest.userProfile.gender
+          },
+          "stylistProfile": {
+            "userNickname": StyleHub.myNickname,
+            "gender": StyleHub.myGender
+          }
         }));
+
     if (result["isSuccess"] == true)
       showToast("이미지가 갤러리에 저장되었습니다.");
     else
@@ -325,9 +335,6 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
             "userNickname": widget.stylingRequest.userProfile.userNickname
           },
         }));
-    print("----------------------");
-    print(response.body);
-    print("---------------------");
     var result = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
     //순회하며 각자의 type에 맞는 closet에 넣어주기
     for (int i = 0; i < result["clothingArray"].length; i++) {
