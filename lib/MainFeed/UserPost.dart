@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:stylehub_flutter/main.dart';
-//import 'MainFeedComponents.dart';
 import 'GeneratedComponents.dart';
 
 class UserPost extends StatefulWidget {
@@ -48,7 +44,12 @@ class _UserPostState extends State<UserPost> {
   getImages() {
     List<Widget> posts = [];
     for (String url in widget.postImgList) {
-      posts.add(Container(child: Image.memory(base64Decode(url))));
+      posts.add(Container(
+        child: Image.network(
+          url,
+          fit: BoxFit.fitHeight,
+        ),
+      ));
     }
     return posts;
   }
@@ -124,7 +125,7 @@ class _UserPostState extends State<UserPost> {
               },
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 15),
-                width: 300,
+                width: 350,
                 height: 300,
                 child: PageView(
                   controller: controller,

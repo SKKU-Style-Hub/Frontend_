@@ -170,7 +170,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                               margin: EdgeInsets.symmetric(horizontal: 10),
                               child: Image.file(
                                 File(snapshot.data[index].clothingImgPath),
-                                fit: BoxFit.fill,
+                                fit: BoxFit.fitWidth,
                               )),
                         ),
                       ]);
@@ -240,7 +240,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                              height: 250,
+                              height: 300,
                               padding: EdgeInsets.only(top: 15),
                               child: buildRow(MyClothingDatabase.getMyCloset(),
                                   scrollController1)),
@@ -296,7 +296,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 250,
+                            height: 300,
                             padding: EdgeInsets.only(top: 15),
                             child: buildRow(
                                 MyClothingDatabase.getTop(), scrollController2),
@@ -355,7 +355,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 250,
+                            height: 300,
                             padding: EdgeInsets.only(top: 15),
                             child: buildRow(MyClothingDatabase.getBottom(),
                                 scrollController3),
@@ -413,7 +413,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 250,
+                            height: 300,
                             padding: EdgeInsets.only(top: 15),
                             child: buildRow(MyClothingDatabase.getOnePiece(),
                                 scrollController4),
@@ -471,7 +471,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                         children: <Widget>[
                           Image.asset('assets/hanger.png'),
                           Container(
-                            height: 250,
+                            height: 300,
                             padding: EdgeInsets.only(top: 15),
                             child: buildRow(MyClothingDatabase.getOuter(),
                                 scrollController5),

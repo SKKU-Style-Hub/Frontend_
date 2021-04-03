@@ -156,7 +156,6 @@ class Content {
       this.updatedAt});
 
   Content.fromJson(Map<String, dynamic> json) {
-    print(json['createdAt']);
     if (json['stylingResult'] != null) {
       stylingResult = new List<StylingResult>();
       json['stylingResult'].forEach((v) {
@@ -167,7 +166,13 @@ class Content {
     stylingRequest = json['stylingRequest'] != null
         ? new StylingRequest.fromJson(json['stylingRequest'])
         : null;
-    postImage = json['postImage'].cast<String>();
+    if (json['postImage'] != null) {
+      postImage = new List<String>();
+      json['postImage'].forEach((v) {
+        postImage.add(v);
+      });
+    }
+    //postImage = json['postImage'].cast<String>();
     generalPostId = json['generalPostId'];
     sId = json['_id'];
     userProfile = json['userProfile'] != null

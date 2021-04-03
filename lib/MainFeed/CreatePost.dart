@@ -16,6 +16,7 @@ class CreatePost extends StatefulWidget {
 class _CreatePostState extends State<CreatePost> {
   List<Asset> images = <Asset>[];
   String postContent = "";
+  final contentController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -90,11 +91,12 @@ class _CreatePostState extends State<CreatePost> {
               onPressed: () async {
                 List<String> postImgBase64 = [];
                 for (Asset a in images) {
-                  ByteData bytes =
-                      await a.getThumbByteData(480, 480, quality: 70);
+                  ByteData bytes = await a.getThumbByteData(
+                      480, (480 * (a.originalHeight / a.originalWidth)).round(),
+                      quality: 80);
 
-                  postImgBase64
-                      .add(base64.encode(Uint8List.view(bytes.buffer)));
+                  postImgBase64.add(
+                      ";base64," + base64.encode(Uint8List.view(bytes.buffer)));
                 }
 
                 String url = "http://34.64.196.105:82/api/post/general/create";
@@ -106,11 +108,13 @@ class _CreatePostState extends State<CreatePost> {
                     body: jsonEncode({
                       "userProfile": {
                         "userNickname": StyleHub.myNickname,
+                        "profileImage": StyleHub.myProfileImg,
                         "gender": StyleHub.myGender
                       },
                       "postImage": postImgBase64,
                       "postContent": postContent.toString()
                     }));
+                contentController.clear();
                 Navigator.pop(context);
               },
               child: Text(
@@ -128,7 +132,7 @@ class _CreatePostState extends State<CreatePost> {
             height: 200,
             padding: EdgeInsets.all(15),
             child: TextField(
-              //focusNode: NoKeyboardEditableTextFocusNode(),
+              controller: contentController,
               expands: true,
               minLines: null,
               maxLines: null,

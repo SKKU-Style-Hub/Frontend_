@@ -6,8 +6,7 @@ import 'CreatePost.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'PostItem.dart';
-import 'StylingCard.dart';
-import 'UserPost.dart';
+import 'dart:developer';
 
 Color notClickedColor = Colors.grey[800]; //선택하지 않은 버튼의 색깔
 Color clickedColor = Colors.indigo; //선택된 색깔
@@ -53,11 +52,10 @@ class _MainFeedState extends State<MainFeed> {
         body: jsonEncode({"lastFeedId": offset, "limit": limit}));
     //print(response.body);
     var results = jsonDecode(response.body);
-    print(results.toString());
     for (var result in results) {
-      //print(result);
+      print(result['content']['postImage']);
       Post tmp = Post.fromJson(result);
-      print(tmp);
+      print(tmp.contentType);
       posts.add(tmp);
       print(posts.length);
     }

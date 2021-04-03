@@ -23,6 +23,8 @@ class _PostItemState extends State<PostItem> {
             postTime: widget.post.createdAt,
             isLiked: false,
           )
-        : Container();
+        : Container(
+            child: Text(widget.post.userProfile.userNickname),
+          );
   }
 }
