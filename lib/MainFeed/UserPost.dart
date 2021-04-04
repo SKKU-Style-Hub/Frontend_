@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class UserPost extends StatefulWidget {
-  String sid;
+  int feedId;
   String userNickname;
   String userProfileImg;
   List<String> postImgList;
@@ -17,7 +17,7 @@ class UserPost extends StatefulWidget {
   bool isLiked;
   String myComment;
   UserPost(
-      {String sid,
+      {int feedId,
       String userNickname,
       String userProfileImg,
       List<String> postImgList,
@@ -26,7 +26,7 @@ class UserPost extends StatefulWidget {
       String postTime,
       bool isLiked,
       String myComment}) {
-    this.sid = sid;
+    this.feedId = feedId;
     this.userNickname = userNickname;
     this.userProfileImg = userProfileImg;
     this.postImgList = postImgList;
@@ -222,50 +222,57 @@ class _UserPostState extends State<UserPost> {
                                         itemCount: comments.length,
                                         itemBuilder:
                                             (BuildContext context, int index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: Row(
-                                              children: [
-                                                SizedBox(
-                                                  width: 15,
-                                                ),
-                                                CircleAvatar(
-                                                  radius: 22,
-                                                  backgroundImage: NetworkImage(
-                                                      comments[index]
-                                                          .userProfile
-                                                          .profileImage),
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      comments[index]
-                                                          .userProfile
-                                                          .userNickname,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 16),
-                                                    ),
-                                                    Text(
-                                                      comments[index]
-                                                          .commentContent,
-                                                      style: TextStyle(
-                                                          fontSize: 16),
-                                                    )
-                                                  ],
+                                          return comments[index]
+                                                      .commentContent !=
+                                                  null
+                                              ? Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 5),
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 15,
+                                                      ),
+                                                      CircleAvatar(
+                                                        radius: 22,
+                                                        backgroundImage:
+                                                            NetworkImage(comments[
+                                                                    index]
+                                                                .userProfile
+                                                                .profileImage),
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            comments[index]
+                                                                .userProfile
+                                                                .userNickname,
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16),
+                                                          ),
+                                                          Text(
+                                                            comments[index]
+                                                                .commentContent,
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          )
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
                                                 )
-                                              ],
-                                            ),
-                                          );
+                                              : Container();
                                         },
                                       ),
                                     ),
@@ -328,7 +335,7 @@ class _UserPostState extends State<UserPost> {
                                                 'Charset': 'utf-8'
                                               },
                                               body: jsonEncode({
-                                                "feedId": widget.sid,
+                                                "feedId": widget.feedId,
                                                 "userProfile": {
                                                   "userNickname":
                                                       StyleHub.myNickname,
@@ -444,7 +451,7 @@ class _UserPostState extends State<UserPost> {
                           'Charset': 'utf-8'
                         },
                         body: jsonEncode({
-                          "feedId": widget.sid,
+                          "feedId": widget.feedId,
                           "userProfile": {
                             "userNickname": StyleHub.myNickname,
                             "profileImg": StyleHub.myProfileImg,

@@ -15,7 +15,7 @@ class _PostItemState extends State<PostItem> {
   Widget build(BuildContext context) {
     return widget.post.contentType == 'general'
         ? UserPost(
-            sid: widget.post.sId,
+            feedId: widget.post.feedId,
             userNickname: widget.post.userProfile.userNickname,
             userProfileImg: widget.post.userProfile.profileImage,
             postImgList: widget.post.content.postImage,
