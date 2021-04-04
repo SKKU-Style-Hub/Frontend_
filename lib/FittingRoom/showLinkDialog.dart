@@ -45,6 +45,38 @@ void showLinkDialog(BuildContext context) {
             });
           }
 
+          Future _askOption() async {
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return SimpleDialog(
+                  title: Text(
+                    "옷 이미지 업로드 경로",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  children: [
+                    SimpleDialogOption(
+                      child: Text(
+                        "카메라로 촬영하기",
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onPhoto(ImageSource.camera);
+                      },
+                    ),
+                    SimpleDialogOption(
+                      child: Text("앨범에서 가져오기"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onPhoto(ImageSource.gallery);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+
           return AlertDialog(
             titlePadding: EdgeInsets.only(top: 20),
             contentPadding: EdgeInsets.symmetric(horizontal: 20),
@@ -127,7 +159,8 @@ void showLinkDialog(BuildContext context) {
                                 padding: const EdgeInsets.all(20),
                                 child: GestureDetector(
                                   onTap: () async {
-                                    FocusScope.of(context).unfocus();
+                                    _askOption();
+                                    /*FocusScope.of(context).unfocus();
                                     mPhoto64 = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -137,9 +170,9 @@ void showLinkDialog(BuildContext context) {
                                     setState(() {
                                       mPhoto = screenshotFile;
                                     });
-                                    print("mPhoto_file: $mPhoto");
+                                    print("mPhoto_file: $mPhoto");*/
                                   },
-                                  child: mPhoto64 == null
+                                  child: mPhoto == null
                                       ? beforeCard()
                                       : afterCard(mPhoto, mPhoto64),
                                 ),
@@ -207,14 +240,15 @@ void showLinkDialog(BuildContext context) {
                   //productclothing class에 저장
                   //'/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg'
                   String fileName = mPhoto.path.split('/').last;
+                  print(mPhoto.path);
                   FormData formData = FormData.fromMap({
-                    "file": await MultipartFile.fromFile(
-                        '/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg',
-                        filename: 'someImageFile.jpg',
+                    "file": await MultipartFile.fromFile(mPhoto.path,
+                        filename: fileName,
                         contentType: MediaType("image", "jpg")),
                     "submit": "upload",
                     "userNickname": StyleHub.myNickname
                   });
+                  print("here");
                   var response = await Dio().post(
                       "http://34.64.196.105:82/api/back/removal/remove",
                       data: formData);
@@ -223,7 +257,7 @@ void showLinkDialog(BuildContext context) {
                   await LinkClothingDatabase.insertProduct(ProductClothing(
                       request_num: closet_index,
                       img_path: response.data, //imagepath,
-                      encoded_img: response.data, //encodedimage,
+                      encoded_img: response.data.toString(), //encodedimage,
                       brand: null,
                       detail_url: linkurl,
                       fashion_url: null,
@@ -232,8 +266,8 @@ void showLinkDialog(BuildContext context) {
                       price: null,
                       score: null,
                       category: linktype));
+                  linkClosetList = await LinkClothingDatabase.getLinkCloset();
                   showToast("성공적으로 가져왔습니다");
-                  await getLinkCloset();
                   Navigator.pop(context);
                 },
               ),
@@ -274,7 +308,6 @@ Card beforeCard() {
 }
 
 Card afterCard(File imgFile, String decode64) {
-  mPhoto = imgFile;
   return Card(
     elevation: 5,
     child: Center(

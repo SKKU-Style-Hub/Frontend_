@@ -113,7 +113,7 @@ List<MyClothing> myClosetListOuter = [];
 List<MyClothing> myClosetListAcc = [];
 
 List<dynamic> codiRequestList = []; //일단 보여줄 코디요청list만들어놓음
-List<dynamic> linkClosetList = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
+List<dynamic> linkClosetList_codi = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
 
 double swipeStartY;
 String swipeDirection;
@@ -219,7 +219,7 @@ void goToUrl(String url) async {
 }
 
 void getLinkCloset() async {
-  linkClosetList = await LinkClothingDatabase.getLinkCloset();
+  linkClosetList_codi = await LinkClothingDatabase.getLinkCloset();
 }
 
 class CodiFittingRoom extends StatefulWidget {
@@ -316,7 +316,6 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
   ProductClothing detailClothInfo; //내옷장 말고 코디상품일 때만 띄워야함
   AllCodiClothing mulcodiCloset;
   List<dynamic> myClosetListTotal = [];
-  List<dynamic> linkClosetList = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
 
   void initState() {
     codiKey = new GlobalKey();
@@ -888,6 +887,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
     {
       return deleteScreen();
     }
+    getLinkCloset();
     if (bottomSheetSize == 350) {
       return Container(
         color: Colors.transparent,
@@ -895,9 +895,9 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
         child: GridView.count(
           crossAxisCount: 3,
           children: List.generate(
-            linkClosetList.length,
+            linkClosetList_codi.length,
             (idx) {
-              return linkWidget(productClothing: linkClosetList[idx]);
+              return linkWidget(productClothing: linkClosetList_codi[idx]);
             },
           ),
         ),
@@ -910,9 +910,9 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
         return ListView(
           scrollDirection: Axis.horizontal,
           children: List.generate(
-            linkClosetList.length,
+            linkClosetList_codi.length,
             (idx) {
-              return linkWidget(productClothing: linkClosetList[idx]);
+              return linkWidget(productClothing: linkClosetList_codi[idx]);
             },
           ),
         );

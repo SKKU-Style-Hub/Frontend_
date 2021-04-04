@@ -258,8 +258,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           "userProfile": {"userNickname": StyleHub.myNickname},
         }));
     var results = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
-    print("-----response-------");
-    print(results.toString());
     for (var result in results) {
       Content tmp = Content.fromJson(result);
       print(tmp);
@@ -1185,6 +1183,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             InkWell(
               onTap: () async {
                 showLinkDialog(context);
+                getLinkCloset();
               },
               child: Icon(Icons.cloud_upload_rounded, size: 25),
             ),
@@ -1504,6 +1503,10 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     myClosetListTotal.add(myClosetListOnepiece);
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
+    print("===============clothingId================");
+    for (int i = 0; i < codiRequestList.length; i++) {
+      print(codiRequestList[i].stylingRequest.requestClothings[0].clothingId);
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
