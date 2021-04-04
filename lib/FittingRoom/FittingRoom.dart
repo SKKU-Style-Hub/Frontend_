@@ -263,7 +263,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          "userProfile": {"userNickname": "JJH_wisdom"},
+          "userProfile": {"userNickname": StyleHub.myNickname},
           "contentType": "styling"
         }));
     var results = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
