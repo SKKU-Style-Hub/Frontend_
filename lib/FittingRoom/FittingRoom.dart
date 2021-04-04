@@ -46,6 +46,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 113,
     "originalOffsetY": 30,
     "clothing": null, //MyClothing()이거나 ProductClothing()일 것
+    "isAI": 0,
   },
   //하의
   {
@@ -57,6 +58,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 113,
     "originalOffsetY": 155,
     "clothing": null,
+    "isAI": 0,
   },
   //원피스
   {
@@ -68,6 +70,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 113,
     "originalOffsetY": 30,
     "clothing": null,
+    "isAI": 0,
   },
   //아우터
   {
@@ -79,6 +82,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 30,
     "originalOffsetY": 0,
     "clothing": null,
+    "isAI": 0,
   },
   //신발
   {
@@ -90,6 +94,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 280,
     "originalOffsetY": 280,
     "clothing": null,
+    "isAI": 0,
   },
   //가방
   {
@@ -101,6 +106,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 280,
     "originalOffsetY": 150,
     "clothing": null,
+    "isAI": 0,
   },
 ];
 
@@ -229,6 +235,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   ProductClothing detailClothInfo; //내옷장 말고 코디상품일 때만 띄워야함
   Content mulcodiCloset;
   List<dynamic> myClosetListTotal = [];
+  dynamic listAI;
 
   void initState() {
     codiKey = new GlobalKey();
@@ -260,14 +267,18 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           "contentType": "styling"
         }));
     var results = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
-    log("=======result========");
-    log(results.toString());
-    log("========end==========");
+    //log("=======result========");
+    //log(results.toString());
+    //log("========end==========");
     for (var result in results) {
       //print(result.content);
       Content tmp = Post.fromJson(result).content;
-      log(tmp.toString());
+      // log(tmp.toString());
       codiRequestList.add(tmp);
+    }
+    int k = await ProductClothingDatabase.totalProductNum();
+    if (k > 0) {
+      getAIProduct(0);
     }
   }
 
@@ -302,8 +313,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   void getProduct() async {
     //product clothing배열
-    tmpAllCodi.codiClothingListAI =
-        await ProductClothingDatabase.getRecoResult(0);
+    //tmpAllCodi.codiClothingListAI =
+    //    await ProductClothingDatabase.getRecoResult(0);
     //tmpAllCodi.codiClothingListAI = [codi2Top];
     codiRequestList.add(tmpAllCodi);
     //mulcodiCloset = tmpAllCodi;
@@ -514,6 +525,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
       onTap: () {
         //클릭시에 위에 옷 바뀌도록
         setState(() {
+          selectedClothList[categoryToType(myClothing.category)]["AI"] = 0;
           selectedClothList[categoryToType(myClothing.category)]["image"] =
               myClothing.clothingImgPath;
           selectedClothList[categoryToType(myClothing.category)]["clothing"] =
@@ -702,6 +714,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           codiClosetIndex = eachCodiIndex;
           //옷 바뀌게 하자
           selectedClothList[categoryToProductType(productClothing.category)]
+              ["AI"] = 1;
+          selectedClothList[categoryToProductType(productClothing.category)]
               ["image"] = productClothing.encoded_img;
           selectedClothList[categoryToProductType(productClothing.category)]
               ["clothing"] = productClothing;
@@ -771,6 +785,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           codiClosetIndex = eachCodiIndex;
           //옷 바뀌게 하자
           for (int i = 0; i < stylingResult.components.length; i++) {
+            selectedClothList[i]["AI"] = 0;
             selectedClothList[i]["image"] =
                 stylingResult.components[i].clothingImage;
             selectedClothList[i]["clothing"] =
@@ -907,8 +922,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           ],
         ));
   }
-
-  dynamic listAI;
 
   void getAIProduct(int index) async {
     //특정옷에 대한 AI결과 가져오는
@@ -1246,6 +1259,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
       onTap: () {
         setState(() {
           selectedClothList[categoryToProductType(productClothing.category)]
+              ["AI"] = 0;
+          selectedClothList[categoryToProductType(productClothing.category)]
               ["image"] = productClothing.encoded_img;
           selectedClothList[categoryToProductType(productClothing.category)]
               ["clothing"] = productClothing;
@@ -1359,14 +1374,23 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                               width:
                                   selectedClothList[type]["width"].toDouble(),
                               fit: BoxFit.fitWidth)
-                          : Image.file(File(selectedClothList[type]["image"]),
-                              width:
-                                  selectedClothList[type]["width"].toDouble(),
-                              fit: BoxFit.fitWidth
-                              //fit: BoxFit.contain
-                              //height: 100,
-                              //fit: BoxFit.scaleDown,
-                              ),
+                          : selectedClothList[type]["AI"] == 0
+                              ? Image.file(
+                                  File(selectedClothList[type]["image"]),
+                                  width: selectedClothList[type]["width"]
+                                      .toDouble(),
+                                  fit: BoxFit.fitWidth
+                                  //fit: BoxFit.contain
+                                  //height: 100,
+                                  //fit: BoxFit.scaleDown,
+                                  )
+                              : Image.memory(
+                                  base64Decode(
+                                      selectedClothList[type]["image"]),
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain,
+                                ),
                 ),
                 feedback: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
@@ -1379,14 +1403,23 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                               width:
                                   selectedClothList[type]["width"].toDouble(),
                               fit: BoxFit.fitWidth)
-                          : Image.file(File(selectedClothList[type]["image"]),
-                              width:
-                                  selectedClothList[type]["width"].toDouble(),
-                              fit: BoxFit.fitWidth
-                              //fit: BoxFit.contain
-                              //height: 100,
-                              //fit: BoxFit.scaleDown,
-                              ),
+                          : selectedClothList[type]["AI"] == 0
+                              ? Image.file(
+                                  File(selectedClothList[type]["image"]),
+                                  width: selectedClothList[type]["width"]
+                                      .toDouble(),
+                                  fit: BoxFit.fitWidth
+                                  //fit: BoxFit.contain
+                                  //height: 100,
+                                  //fit: BoxFit.scaleDown,
+                                  )
+                              : Image.memory(
+                                  base64Decode(
+                                      selectedClothList[type]["image"]),
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.contain,
+                                ),
                 ),
                 childWhenDragging: Container(),
                 onDragEnd: (DraggableDetails details) {
@@ -1514,13 +1547,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     myClosetListTotal.add(myClosetListOnepiece);
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
-    print("===============clothingId================");
-    print(codiRequestList.length);
-    /*for (int i = 0; i < codiRequestList.length; i++) {
-      print(codiRequestList[i].stylingRequest.requestClothings[0].clothingId);
-      print(codiRequestList[i]);
-    }*/
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
