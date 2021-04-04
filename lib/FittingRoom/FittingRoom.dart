@@ -241,7 +241,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   }
 
   //코디요청서 가져오는 항목  (두번째 탭)
-  Future<List<Content>> getPosts() async {
+  Future<void> getPosts() async {
     String url = "http://34.64.196.105:82/api/post/styling/read/list/my";
     var response = await http.post(url,
         headers: {
@@ -294,7 +294,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     //product clothing배열
     tmpAllCodi.codiClothingListAI =
         await ProductClothingDatabase.getRecoResult(0);
-    tmpAllCodi.codiClothingListAI = [codi2Top];
+    //tmpAllCodi.codiClothingListAI = [codi2Top];
     codiRequestList.add(tmpAllCodi);
     //mulcodiCloset = tmpAllCodi;
   }
@@ -897,11 +897,10 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         ));
   }
 
-  dynamic getAIProduct(int index) async {
+  Future<List<ProductClothing>> getAIProduct(int index) async {
     //특정옷에 대한 AI결과 가져오는
     //product clothing배열
-    var list = await ProductClothingDatabase.getRecoResult(index);
-    return list;
+    return await ProductClothingDatabase.getRecoResult(index);
   }
 
   Widget mulCodiContent({Content content, int allCodiIndex}) {
@@ -909,7 +908,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     {
       return deleteScreen();
     }
-    var listAI =
+    dynamic listAI =
         getAIProduct(content.stylingRequest.requestClothings[0].clothingId);
     if (bottomSheetSize == 350) {
       return Container(
@@ -1339,8 +1338,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                               width:
                                   selectedClothList[type]["width"].toDouble(),
                               fit: BoxFit.fitWidth)
-                          : Image.memory(
-                              base64Decode(selectedClothList[type]["image"]),
+                          : Image.file(File(selectedClothList[type]["image"]),
                               width:
                                   selectedClothList[type]["width"].toDouble(),
                               fit: BoxFit.fitWidth
@@ -1360,8 +1358,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                               width:
                                   selectedClothList[type]["width"].toDouble(),
                               fit: BoxFit.fitWidth)
-                          : Image.memory(
-                              base64Decode(selectedClothList[type]["image"]),
+                          : Image.file(File(selectedClothList[type]["image"]),
                               width:
                                   selectedClothList[type]["width"].toDouble(),
                               fit: BoxFit.fitWidth

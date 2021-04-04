@@ -142,28 +142,6 @@ class _StylingCardState extends State<StylingCard> {
     );
   }
 
-  Widget goToCodiScreen({String requestClothingImg}) {
-    return Container(
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                //피팅룸에 넘어갈 옷
-                builder: (context) => CodiFittingRoom(
-                  requestClothInfo: ClothInfo(
-                    image: requestClothingImg,
-                    type: 1,
-                  ),
-                  stylingRequest: widget.post.content.stylingRequest,
-                ),
-              ));
-        },
-        child: Center(child: Text("나도 코디하러가기")),
-      ),
-    );
-  }
-
   Card StylingCardWidget(Post post) {
     List<Widget> pageViewChildren = [];
 
@@ -225,8 +203,16 @@ class _StylingCardState extends State<StylingCard> {
                           requestClothInfo: ClothInfo(
                             image: post.content.stylingRequest
                                 .requestClothings[0].clothingImage,
-                            type: categoryToType(post.content.stylingRequest
-                                .requestClothings[0].tagResult.category),
+                            type: categoryToType(post
+                                        .content
+                                        .stylingRequest
+                                        .requestClothings[0]
+                                        .tagResult
+                                        .category ==
+                                    null
+                                ? 1
+                                : post.content.stylingRequest
+                                    .requestClothings[0].tagResult.category),
                           ),
                           stylingRequest: post.content.stylingRequest,
                         ),
