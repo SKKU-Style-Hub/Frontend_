@@ -542,7 +542,11 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
         height: 100,
         decoration: myClothing.clothingImgPath ==
-                selectedClothList[categoryToType(myClothing.category)]["image"]
+                    selectedClothList[categoryToType(myClothing.category)]
+                        ["image"] ||
+                myClothing.clothingImgBase64 ==
+                    selectedClothList[categoryToType(myClothing.category)]
+                        ["image"]
             ? BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -574,8 +578,11 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             ),
             //선택된 옷일 때 here보이게끔
             myClothing.clothingImgPath ==
-                    selectedClothList[categoryToType(myClothing.category)]
-                        ["image"]
+                        selectedClothList[categoryToType(myClothing.category)]
+                            ["image"] ||
+                    myClothing.clothingImgBase64 ==
+                        selectedClothList[categoryToType(myClothing.category)]
+                            ["image"]
                 ? Center(
                     child: Text("    Select!",
                         style: TextStyle(

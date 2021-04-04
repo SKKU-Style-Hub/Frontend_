@@ -7,9 +7,9 @@ import 'package:stylehub_flutter/data/ProductClothing.dart';
 import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
 
 MyClothing basictop =
-    MyClothing(clothingImgBase64: "assets/images/basictop.png", category: "탑");
+    MyClothing(clothingImgPath: "assets/images/basictop.png", category: "탑");
 MyClothing basicbottom = MyClothing(
-    clothingImgBase64: "assets/images/basicbottom.png", category: "팬츠");
+    clothingImgPath: "assets/images/basicbottom.png", category: "팬츠");
 
 MyClothing top1 =
     MyClothing(clothingImgBase64: "assets/images/top1.png", category: "탑");
