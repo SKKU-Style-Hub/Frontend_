@@ -351,6 +351,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
             "userNickname": widget.stylingRequest.userProfile.userNickname
           },
         }));
+    print(response.body);
     var result = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
     //순회하며 각자의 type에 맞는 closet에 넣어주기
     for (int i = 0; i < result["clothingArray"].length; i++) {
