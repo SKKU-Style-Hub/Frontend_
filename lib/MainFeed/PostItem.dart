@@ -15,6 +15,7 @@ class _PostItemState extends State<PostItem> {
   Widget build(BuildContext context) {
     return widget.post.contentType == 'general'
         ? UserPost(
+            sid: widget.post.sId,
             userNickname: widget.post.userProfile.userNickname,
             userProfileImg: widget.post.userProfile.profileImage,
             postImgList: widget.post.content.postImage,
@@ -23,8 +24,9 @@ class _PostItemState extends State<PostItem> {
             postTime: widget.post.createdAt,
             isLiked: false,
           )
-        : Container(
-            child: Text(widget.post.userProfile.userNickname),
+        : StylingCard(
+            post: widget.post,
+            isLiked: false,
           );
   }
 }

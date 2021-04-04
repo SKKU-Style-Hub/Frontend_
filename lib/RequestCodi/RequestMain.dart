@@ -192,12 +192,16 @@ class _RequestMainState extends State<RequestMain> {
                     //보낸 요청 문구
                     Padding(
                       padding: EdgeInsets.only(bottom: 5),
-                      child: Text(
-                        explanation,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Noto Sans',
-                          fontSize: 15,
+                      child: Container(
+                        width: 260,
+                        child: Text(
+                          explanation,
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Noto Sans',
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),

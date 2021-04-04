@@ -3,8 +3,11 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:stylehub_flutter/Constants.dart';
 import 'package:stylehub_flutter/main.dart';
 import 'GeneratedComponents.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class UserPost extends StatefulWidget {
+  String sid;
   String userNickname;
   String userProfileImg;
   List<String> postImgList;
@@ -14,7 +17,8 @@ class UserPost extends StatefulWidget {
   bool isLiked;
   String myComment;
   UserPost(
-      {String userNickname,
+      {String sid,
+      String userNickname,
       String userProfileImg,
       List<String> postImgList,
       String postContent,
@@ -22,6 +26,7 @@ class UserPost extends StatefulWidget {
       String postTime,
       bool isLiked,
       String myComment}) {
+    this.sid = sid;
     this.userNickname = userNickname;
     this.userProfileImg = userProfileImg;
     this.postImgList = postImgList;
@@ -301,7 +306,7 @@ class _UserPostState extends State<UserPost> {
                                         style: TextStyle(
                                             fontSize: 16, color: Colors.blue),
                                       ),
-                                      onTap: () {
+                                      onTap: () async {
                                         if (writingComment != null) {
                                           setState(() {
                                             comments.add(Comments(
@@ -313,6 +318,25 @@ class _UserPostState extends State<UserPost> {
                                                 commentContent:
                                                     writingComment));
                                           });
+                                          String url =
+                                              "http://34.64.196.105:82/api/comment/create";
+                                          await http.post(url,
+                                              headers: {
+                                                'Content-type':
+                                                    'application/json',
+                                                'Accept': 'application/json',
+                                                'Charset': 'utf-8'
+                                              },
+                                              body: jsonEncode({
+                                                "feedId": widget.sid,
+                                                "userProfile": {
+                                                  "userNickname":
+                                                      StyleHub.myNickname,
+                                                  "profileImg":
+                                                      StyleHub.myProfileImg,
+                                                  "comment": writingComment
+                                                },
+                                              }));
                                           commentController.clear();
                                           FocusScope.of(context).unfocus();
                                         }
@@ -402,7 +426,7 @@ class _UserPostState extends State<UserPost> {
                   "게시",
                   style: TextStyle(fontSize: 16, color: Colors.blue),
                 ),
-                onTap: () {
+                onTap: () async {
                   if (writingComment != null) {
                     setState(() {
                       myComment = writingComment;
@@ -412,6 +436,21 @@ class _UserPostState extends State<UserPost> {
                               profileImage: StyleHub.myProfileImg),
                           commentContent: writingComment));
                     });
+                    String url = "http://34.64.196.105:82/api/comment/create";
+                    await http.post(url,
+                        headers: {
+                          'Content-type': 'application/json',
+                          'Accept': 'application/json',
+                          'Charset': 'utf-8'
+                        },
+                        body: jsonEncode({
+                          "feedId": widget.sid,
+                          "userProfile": {
+                            "userNickname": StyleHub.myNickname,
+                            "profileImg": StyleHub.myProfileImg,
+                            "comment": writingComment
+                          },
+                        }));
                     commentController.clear();
                     FocusScope.of(context).unfocus();
                     print(myComment);

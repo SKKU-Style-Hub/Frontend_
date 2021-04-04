@@ -56,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     String dir = (await getApplicationDocumentsDirectory()).path;
-    final file = File('${dir}/' + 'closet1_${closet_index}.png');
+    final file = File('${dir}/' + 'closet2_${closet_index}.png');
     file.writeAsBytesSync(response2.bodyBytes);
     List<int> imageBytes = file.readAsBytesSync();
     setState(() {
@@ -361,16 +361,16 @@ Card afterCard(String imgUrl) {
     child: Container(
       height: 235,
       child: Center(
-        child: CachedNetworkImage(
-          imageUrl: imgUrl,
-          placeholder: (context, url) => CircularProgressIndicator(),
-          errorWidget: (context, url, error) => Icon(Icons.error),
-        ),
-      ),
+          child: Image.network(
+        imgUrl,
+        height: 235,
+      )),
     ),
   );
 }
-// Image.network(
-// imgUrl,
-// height: 235,
-// )
+
+// CachedNetworkImage(
+// imageUrl: imgUrl,
+// placeholder: (context, url) => CircularProgressIndicator(),
+// errorWidget: (context, url, error) => Icon(Icons.error),
+// ),

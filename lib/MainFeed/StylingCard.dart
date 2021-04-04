@@ -258,8 +258,7 @@ class _StylingCardState extends State<StylingCard> {
                       //요청한 옷 사진
                       child: Image.network(post.content.stylingRequest
                           .requestClothings[0].clothingImage)),
-                  for (var i in [0, post.content.stylingResult.length - 1])
-                    EachCodi(post.content.stylingResult[i]),
+                  for (var i in post.content.stylingResult) EachCodi(i),
                   //goToCodiScreen(
                   //    requestClothingImg: tmpProposedCodi.requestClothingImg),
                 ],
@@ -273,11 +272,13 @@ class _StylingCardState extends State<StylingCard> {
               ),
             ),
           ),
-          SmoothPageIndicator(
-            controller: controller,
-            count: pageViewChildren.length,
-            effect: SlideEffect(dotHeight: 12, dotWidth: 12),
-          ),
+          pageViewChildren.length > 1
+              ? SmoothPageIndicator(
+                  controller: controller,
+                  count: pageViewChildren.length,
+                  effect: SlideEffect(dotHeight: 12, dotWidth: 12),
+                )
+              : Container(),
           Row(
             children: [
               GestureDetector(
@@ -468,6 +469,7 @@ class _StylingCardState extends State<StylingCard> {
             style: kHashtagTextStyle,
           ),
           Container(
+            //alignment: Alignment.centerLeft,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             child: Text(
               post.content.stylingRequest.requestContent,
@@ -516,6 +518,11 @@ class _StylingCardState extends State<StylingCard> {
   }
 
   Widget build(BuildContext context) {
+    print(widget.post.userProfile.profileImage);
+    if (widget.post.userProfile.profileImage == null) {
+      widget.post.userProfile.profileImage =
+          "https://user-images.githubusercontent.com/65387279/113335492-fc5c0f80-935f-11eb-8580-827b24162791.png";
+    }
     return StylingCardWidget(widget.post);
   }
 }

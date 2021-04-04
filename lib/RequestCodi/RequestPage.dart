@@ -678,8 +678,9 @@ class _RequestPageState extends State<RequestPage> {
                     }
                     chosenClothing = RequestClothings(
                         clothingId: widget.chosenClothing.id,
-                        userProfile:
-                            UserProfile(userNickname: StyleHub.myNickname),
+                        userProfile: UserProfile(
+                            userNickname: StyleHub.myNickname,
+                            profileImage: StyleHub.myProfileImg),
                         clothingImage: widget.chosenClothing.clothingImgUrl);
 
                     String url =

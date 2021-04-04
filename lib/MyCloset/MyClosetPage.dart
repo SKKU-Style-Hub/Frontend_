@@ -165,7 +165,7 @@ class _MyClosetPageState extends State<MyClosetPage> {
                               // height: containerHeight(
                               //     snapshot.data[index].category,
                               //     snapshot.data[index].length),
-                              width: 150,
+                              width: 130,
                               padding: EdgeInsets.only(top: 15),
                               margin: EdgeInsets.symmetric(horizontal: 10),
                               child: Image.file(
