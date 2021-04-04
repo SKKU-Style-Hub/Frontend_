@@ -67,4 +67,25 @@ class LinkClothingDatabase {
     final Database db = await database;
     db.delete('LinkTable');
   }
+
+  static Future<List<ProductClothing>> getLinkCloset() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final Future<Database> database = makeDatabase();
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('LinkTable');
+    return List.generate(maps.length, (i) {
+      return ProductClothing(
+          request_num: maps[i]['request_num'],
+          img_path: maps[i]['img_path'],
+          encoded_img: maps[i]['encoded_img'],
+          brand: maps[i]['brand'],
+          detail_url: maps[i]['detail_url'],
+          fashion_url: maps[i]['fashion_url'],
+          item_url: maps[i]['item_url'],
+          name: maps[i]['name'],
+          price: maps[i]['price'],
+          score: maps[i]['score'],
+          category: maps[i]['category']);
+    });
+  }
 }

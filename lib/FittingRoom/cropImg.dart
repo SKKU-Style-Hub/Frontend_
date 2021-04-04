@@ -155,14 +155,11 @@ class _MyAppState extends State<MyApp> {
       file: sample,
       area: area,
     );
-
-    final Directory temp = await getTemporaryDirectory();
-    print("----------temp----------");
-    print(temp.path);
+    
     final File imageFile = File(
         '/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg');
     await imageFile.create(recursive: true);
-
+    imageFile.writeAsString()
     sample.delete();
 
     _lastCropped?.delete();
