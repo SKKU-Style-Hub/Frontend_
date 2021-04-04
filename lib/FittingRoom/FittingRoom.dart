@@ -1506,7 +1506,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   @override
   Widget build(BuildContext context) {
-    getPosts();
     myClosetListTotal = [];
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);
