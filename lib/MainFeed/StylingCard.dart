@@ -8,9 +8,9 @@ import 'package:stylehub_flutter/Constants.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'package:stylehub_flutter/MainFeed/CodiFittingRoom.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
-import 'package:stylehub_flutter/data/ProposedCodi.dart';
-import 'RawData.dart';
 import 'GeneratedComponents.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 //여기 인자를 바꾸고 아래로 넘어가자
 class StylingCard extends StatefulWidget {
@@ -445,6 +445,25 @@ class _StylingCardState extends State<StylingCard> {
                                                 commentContent:
                                                     writingComment));
                                           });
+                                          String url =
+                                              "http://34.64.196.105:82/api/comment/create";
+                                          http.post(url,
+                                              headers: {
+                                                'Content-type':
+                                                    'application/json',
+                                                'Accept': 'application/json',
+                                                'Charset': 'utf-8'
+                                              },
+                                              body: jsonEncode({
+                                                "feedId": widget.post.feedId,
+                                                "userProfile": {
+                                                  "userNickname":
+                                                      StyleHub.myNickname,
+                                                  "profileImage":
+                                                      StyleHub.myProfileImg,
+                                                },
+                                                "comment": writingComment
+                                              }));
                                           commentController.clear();
                                           FocusScope.of(context).unfocus();
                                         }
