@@ -46,7 +46,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 113,
     "originalOffsetY": 30,
     "clothing": null, //MyClothing()이거나 ProductClothing()일 것
-    "isAI": 0,
+    "AI": 0,
   },
   //하의
   {
@@ -58,7 +58,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 113,
     "originalOffsetY": 155,
     "clothing": null,
-    "isAI": 0,
+    "AI": 0,
   },
   //원피스
   {
@@ -70,7 +70,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 113,
     "originalOffsetY": 30,
     "clothing": null,
-    "isAI": 0,
+    "AI": 0,
   },
   //아우터
   {
@@ -82,7 +82,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 30,
     "originalOffsetY": 0,
     "clothing": null,
-    "isAI": 0,
+    "AI": 0,
   },
   //신발
   {
@@ -94,7 +94,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 280,
     "originalOffsetY": 280,
     "clothing": null,
-    "isAI": 0,
+    "AI": 0,
   },
   //가방
   {
@@ -106,7 +106,7 @@ List<Map<String, dynamic>> selectedClothList = [
     "originalOffsetX": 280,
     "originalOffsetY": 150,
     "clothing": null,
-    "isAI": 0,
+    "AI": 0,
   },
 ];
 
@@ -1539,6 +1539,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   @override
   Widget build(BuildContext context) {
+    print(selectedClothList[1]["image"]);
+    print(selectedClothList[2]["image"]);
     myClosetListTotal = [];
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);
