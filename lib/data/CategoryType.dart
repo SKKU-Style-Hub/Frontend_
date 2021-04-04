@@ -81,3 +81,31 @@ int categoryToProductType(String category) {
   }
   return 0;
 }
+
+String typeToCategory(int i) {
+  //상의
+  if (i == 1) {
+    return "상의";
+  }
+  //하의
+  if (i == 2) {
+    return "하의";
+  }
+  //원피스
+  if (i == 3) {
+    return "원피스";
+  }
+  //아우터
+  if (i == 4) {
+    return "아우터";
+  }
+  //신발
+  if (i == 5) {
+    return "신발";
+  }
+  //가방
+  if (i == 6) {
+    return "가방";
+  }
+  return "상의";
+}

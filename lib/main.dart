@@ -62,6 +62,9 @@ class _StyleHubState extends State<StyleHub> {
           "assets/images/SPLASH_image.png",
           height: 500,
         ),
+        /*nextScreen: Navigation(
+          selectedPosition: 0,
+        ),*/
         nextScreen: isLoggedIn
             ? Navigation(
                 selectedPosition: 0,

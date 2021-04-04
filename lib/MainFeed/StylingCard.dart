@@ -155,6 +155,7 @@ class _StylingCardState extends State<StylingCard> {
                     image: requestClothingImg,
                     type: 1,
                   ),
+                  stylingRequest: widget.post.content.stylingRequest,
                 ),
               ));
         },
@@ -220,7 +221,6 @@ class _StylingCardState extends State<StylingCard> {
                       context,
                       MaterialPageRoute(
                         //피팅룸에 넘어갈 옷
-                        //여기 좀 더 수정 많이 해서 넘기자!!!!!
                         builder: (context) => CodiFittingRoom(
                           requestClothInfo: ClothInfo(
                             image: post.content.stylingRequest
@@ -350,8 +350,8 @@ class _StylingCardState extends State<StylingCard> {
                                           const EdgeInsets.only(bottom: 15),
                                       child: ListView.builder(
                                         shrinkWrap: true,
-                                        itemCount: comments != null
-                                            ? comments.length
+                                        itemCount: post.comments != null
+                                            ? post.comments.length
                                             : 0,
                                         itemBuilder:
                                             (BuildContext context, int index) {
@@ -366,8 +366,10 @@ class _StylingCardState extends State<StylingCard> {
                                                 CircleAvatar(
                                                   radius: 22,
                                                   backgroundImage: NetworkImage(
-                                                      comments[index]
-                                                          .userProfileImg),
+                                                      post
+                                                          .comments[index]
+                                                          .userProfile
+                                                          .profileImage),
                                                   backgroundColor:
                                                       Colors.transparent,
                                                 ),
@@ -379,7 +381,9 @@ class _StylingCardState extends State<StylingCard> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      comments[index]
+                                                      post
+                                                          .comments[index]
+                                                          .userProfile
                                                           .userNickname,
                                                       style: TextStyle(
                                                           fontWeight:
@@ -387,7 +391,7 @@ class _StylingCardState extends State<StylingCard> {
                                                           fontSize: 16),
                                                     ),
                                                     Text(
-                                                      comments[index]
+                                                      post.comments[index]
                                                           .commentContent,
                                                       style: TextStyle(
                                                           fontSize: 16),
@@ -439,12 +443,16 @@ class _StylingCardState extends State<StylingCard> {
                                       ),
                                       onTap: () {
                                         if (writingComment != null) {
+                                          //댓글 쓰기
                                           setState(() {
-                                            comments.add(Comment(
-                                                userNickname:
-                                                    StyleHub.myNickname,
-                                                userProfileImg:
-                                                    StyleHub.myProfileImg,
+                                            post.comments.add(Comments(
+                                                userProfile: UserProfile(
+                                                  profileImage:
+                                                      StyleHub.myProfileImg,
+                                                  userNickname:
+                                                      StyleHub.myNickname,
+                                                  gender: StyleHub.myGender,
+                                                ),
                                                 commentContent:
                                                     writingComment));
                                           });

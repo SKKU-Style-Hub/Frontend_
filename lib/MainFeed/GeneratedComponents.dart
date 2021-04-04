@@ -279,14 +279,24 @@ class Components {
   String color;
   double xcordinate;
   double ycordinate;
+  String clothingImage;
+  TagResult tagResult;
 
-  Components({this.brand, this.color, this.xcordinate, this.ycordinate});
+  Components(
+      {this.brand,
+      this.color,
+      this.xcordinate,
+      this.ycordinate,
+      this.clothingImage,
+      this.tagResult});
 
   Components.fromJson(Map<String, dynamic> json) {
     brand = json['brand'];
     color = json['color'];
     xcordinate = json['xcordinate'];
     ycordinate = json['ycordinate'];
+    clothingImage = json['clothingImage'];
+    tagResult = json['tagResult'];
   }
 
   Map<String, dynamic> toJson() {
@@ -295,6 +305,8 @@ class Components {
     data['color'] = this.color;
     data['xcordinate'] = this.xcordinate;
     data['ycordinate'] = this.ycordinate;
+    data['clothingImage'] = this.clothingImage;
+    data['tagResult'] = this.tagResult;
     return data;
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 File screenshotFile;
 String screenshotString;
@@ -154,6 +155,13 @@ class _MyAppState extends State<MyApp> {
       file: sample,
       area: area,
     );
+
+    final Directory temp = await getTemporaryDirectory();
+    print("----------temp----------");
+    print(temp.path);
+    final File imageFile = File(
+        '/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg');
+    await imageFile.create(recursive: true);
 
     sample.delete();
 

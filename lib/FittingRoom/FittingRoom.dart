@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
+import 'package:stylehub_flutter/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:drag_to_expand/drag_to_expand.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,6 +28,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:stylehub_flutter/data/CategoryType.dart';
+import 'package:stylehub_flutter/MainFeed/GeneratedComponents.dart';
 
 //화면에 선택된 옷과 위치
 ////모든 순서는 1:top, 2:bottom, 3: onepiece, 4:outer, 5:shoes, 6:bag
@@ -117,7 +119,6 @@ var codiKey;
 void _capture() async {
   var renderObject = codiKey.currentContext.findRenderObject();
   if (renderObject.debugNeedsPaint) {
-    print("Waiting for boundary to be painted.");
     await Future.delayed(const Duration(milliseconds: 20));
     return _capture();
   }
@@ -126,58 +127,8 @@ void _capture() async {
     ui.Image image = await boundary.toImage();
     //final directory = (await getApplicationDocumentsDirectory()).path;
     ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List pngBytes = byteData.buffer.asUint8List();
     final result =
         await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
-
-    //이미지: base64방식
-    var bs64 = base64Encode(pngBytes);
-    //각 옷의 위치
-    //상의 -> 하의 -> 원피스 -> 아우터 -> 신발 -> 가방
-    var componentsList = [];
-    for (int i = 1; i <= 6; i++) {
-      if (selectedClothList[i]["image"] != null) //이 때만 보내야함
-      {
-        double xPos =
-            selectedClothList[i]["offsetX"] + selectedClothList[i]["width"] / 2;
-        double yPos = selectedClothList[i]["offsetY"] +
-            selectedClothList[i]["height"] / 2;
-        int price = null;
-        String brandName = null, link = null;
-        if (selectedClothList[i]["clothing"] is ProductClothing) {
-          price = selectedClothList[i]["clothing"].price;
-          brandName = selectedClothList[i]["clothing"].brand;
-          link = selectedClothList[i]["clothing"].detail_url;
-        } else if (selectedClothList[i]["clothing"] is MyClothing) {
-          //price랑 link는 없음
-          brandName = selectedClothList[i]["clothing"].brandName;
-        }
-
-        componentsList.add({
-          "brand": brandName,
-          "xCoordinate": xPos,
-          "yCoordinate": yPos,
-        });
-      } //end of if
-    }
-    //요청 보내기
-    String url = "http://34.64.196.105:82/api/styling/response/create";
-    final response = http.post(url,
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          "stylingPostID": "60615bccb1cebe0012290fdf",
-          "components": componentsList,
-          "requestorProfile": {"userNickname": "requestor", "gender": "f"},
-          "stylistProfile": {"userNickname": "stylist", "gender": "f"}
-        }));
-    //print(response.body);
-    print("--------SEND-------");
-
-    ////////////////////////////////////
-    print(result);
     if (result["isSuccess"] == true)
       showToast("이미지가 갤러리에 저장되었습니다.");
     else
@@ -197,7 +148,7 @@ _requestPermission() async {
     Permission.storage,
   ].request();
 
-  final info1 = statuses[Permission.storage].toString();
+  final info = statuses[Permission.storage].toString();
 }
 
 void goToUrl(String url) async {
@@ -235,8 +186,6 @@ class _FittingRoomState extends State<FittingRoom> {
             children: [
               InkWell(
                 onTap: () {
-                  //actions
-                  //스크린샷 넣기
                   _capture();
                 },
                 child: Text("저장 ",
@@ -272,14 +221,17 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   //5: link옷장, 6: 검색옷장
   int codiMenuIndex = 0; //코디 요청 내에서의 메뉴index 0:AI 1:유저추천
   ProductClothing detailClothInfo; //내옷장 말고 코디상품일 때만 띄워야함
-  AllCodiClothing mulcodiCloset;
+  Content mulcodiCloset;
   List<dynamic> myClosetListTotal = [];
 
   void initState() {
     codiKey = new GlobalKey();
     _dragToExpandController = DragToExpandController();
     getCloset();
-    getProduct();
+    //getProduct();
+    //mulcodiCloset = tmpAllCodi;
+    codiRequestList = [];
+    getPosts();
     super.initState();
     _requestPermission();
   }
@@ -288,12 +240,30 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     _dragToExpandController.dispose();
   }
 
+  //코디요청서 가져오는 항목  (두번째 탭)
+  Future<List<Content>> getPosts() async {
+    String url = "http://34.64.196.105:82/api/post/styling/read/list/my";
+    var response = await http.post(url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          "userProfile": {"userNickname": StyleHub.myNickname},
+        }));
+    var results = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
+    print("-----response-------");
+    print(results.toString());
+    for (var result in results) {
+      Content tmp = Content.fromJson(result);
+      print(tmp);
+      codiRequestList.add(tmp);
+    }
+  }
+
   void getCloset() async {
     //rawdata
-    putRawData();
-    /*codiRequestList = [];
-    codiRequestList.add(tmpAllCodi);
-    mulcodiCloset = tmpAllCodi;*/
+    //putRawData();
     //localDB
     myClosetListTop = await MyClothingDatabase.getTop();
     myClosetListBottom = await MyClothingDatabase.getBottom();
@@ -308,7 +278,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     }
     myClosetListTop.insert(0, basictop);
     myClosetListBottom.insert(0, basicbottom);
-    //selected_shoes = mycloset_onepiece[0].clothingImgBase64;
   }
 
   Future<File> getImageFileFromAssets(String path) async {
@@ -322,14 +291,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   }
 
   void getProduct() async {
-    //나중에 코디넣을 때 다시 확인하자
     //product clothing배열
     tmpAllCodi.codiClothingListAI =
         await ProductClothingDatabase.getRecoResult(0);
     tmpAllCodi.codiClothingListAI = [codi2Top];
-    codiRequestList = [];
     codiRequestList.add(tmpAllCodi);
-    mulcodiCloset = tmpAllCodi;
+    //mulcodiCloset = tmpAllCodi;
   }
 
   String convert(String filePath) {
@@ -781,7 +748,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   //코디요청 관련 위젯들
   Widget codiWidget(
-      {CodiClothing codiClothing,
+      {StylingResult stylingResult,
       int allCodiIndex,
       int eachCodiIndex}) //몇번째 total코디 index인지
   {
@@ -792,12 +759,11 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           allCodiClosetIndex = allCodiIndex;
           codiClosetIndex = eachCodiIndex;
           //옷 바뀌게 하자
-          for (int i = 0; i < 7; i++) {
-            if (codiClothing.codiClothes[i] != null) {
-              selectedClothList[i]["image"] =
-                  codiClothing.codiClothes[i].encoded_img;
-              selectedClothList[i]["clothing"] = codiClothing.codiClothes[i];
-            }
+          for (int i = 0; i < stylingResult.components.length; i++) {
+            selectedClothList[i]["image"] =
+                stylingResult.components[i].clothingImage;
+            selectedClothList[i]["clothing"] =
+                stylingResult.components[i]; //component넣기
           }
         });
       },
@@ -817,15 +783,15 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: codiClothing.totalImg.contains('https')
-                    ? Image.network(codiClothing.totalImg,
+                child: stylingResult.stylingImage.contains('https')
+                    ? Image.network(stylingResult.stylingImage,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : codiClothing.totalImg.contains('.')
-                        ? Image.asset(codiClothing.totalImg,
+                    : stylingResult.stylingImage.contains('.')
+                        ? Image.asset(stylingResult.stylingImage,
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain)
-                        : Image.memory(base64Decode(codiClothing.totalImg),
+                        : Image.memory(base64Decode(stylingResult.stylingImage),
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain
                             //height: 100,
@@ -884,7 +850,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     );
   }
 
-  Widget mulCodiCloset({AllCodiClothing allCodiClothing, int allCodiIndex}) {
+  Widget mulCodiCloset({Content content, int allCodiIndex}) {
     if (contentType == 2) {
       return detailScreen();
     }
@@ -925,18 +891,26 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               ],
             ),
             //메뉴에 따른 옷 보이기
-            mulCodiContent(
-                allCodiClothing: allCodiClothing, allCodiIndex: allCodiIndex)
+            mulCodiContent(content: content, allCodiIndex: allCodiIndex)
             //myClosetContent(myClosetIndex: myClosetIndex),
           ],
         ));
   }
 
-  Widget mulCodiContent({AllCodiClothing allCodiClothing, int allCodiIndex}) {
+  dynamic getAIProduct(int index) async {
+    //특정옷에 대한 AI결과 가져오는
+    //product clothing배열
+    var list = await ProductClothingDatabase.getRecoResult(index);
+    return list;
+  }
+
+  Widget mulCodiContent({Content content, int allCodiIndex}) {
     if (contentType == 1) //삭제를 위한 움직임
     {
       return deleteScreen();
     }
+    var listAI =
+        getAIProduct(content.stylingRequest.requestClothings[0].clothingId);
     if (bottomSheetSize == 350) {
       return Container(
         color: Colors.transparent,
@@ -947,11 +921,10 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               ? List.generate(
                   //0이면 AI
                   //안의 요소들
-                  allCodiClothing.codiClothingListAI.length,
+                  listAI.length,
                   (idx) {
                     return AIcodiWidget(
-                        productClothing:
-                            allCodiClothing.codiClothingListAI[idx],
+                        productClothing: listAI[idx],
                         allCodiIndex: allCodiIndex,
                         eachCodiIndex: idx);
                   },
@@ -959,10 +932,10 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               : List.generate(
                   //1이면 유저추천
                   //안의 요소들
-                  allCodiClothing.codiClothingListUser.length,
+                  content.stylingResult.length,
                   (idx) {
                     return codiWidget(
-                        codiClothing: allCodiClothing.codiClothingListUser[idx],
+                        stylingResult: content.stylingResult[idx],
                         allCodiIndex: allCodiIndex,
                         eachCodiIndex: idx);
                   },
@@ -978,20 +951,19 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
           scrollDirection: Axis.horizontal,
           children: codiMenuIndex == 0
               ? List.generate(
-                  allCodiClothing.codiClothingListAI.length,
+                  listAI.length,
                   (idx) {
                     return AIcodiWidget(
-                        productClothing:
-                            allCodiClothing.codiClothingListAI[idx],
+                        productClothing: listAI[idx],
                         allCodiIndex: allCodiIndex,
                         eachCodiIndex: idx);
                   },
                 )
               : List.generate(
-                  allCodiClothing.codiClothingListUser.length,
+                  content.stylingResult.length,
                   (idx) {
                     return codiWidget(
-                        codiClothing: allCodiClothing.codiClothingListUser[idx],
+                        stylingResult: content.stylingResult[idx],
                         allCodiIndex: allCodiIndex,
                         eachCodiIndex: idx);
                   },
@@ -1002,7 +974,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
   }
 
   Widget allCodiWidget(
-      {AllCodiClothing allCodiClothing, int allCodiIndex}) //몇번째 total코디 index인지
+      {Content content, int allCodiIndex}) //몇번째 total코디 index인지
   {
     return InkWell(
       onTap: () {
@@ -1010,7 +982,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         setState(() {
           allCodiClosetIndex = allCodiIndex;
           contentType = 4;
-          mulcodiCloset = allCodiClothing;
+          mulcodiCloset = content;
         });
       },
       child: Container(
@@ -1028,15 +1000,23 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: allCodiClothing.codiImg.contains('https')
-                    ? Image.network(allCodiClothing.codiImg,
+                child: content.stylingRequest.requestClothings[0].clothingImage
+                        .contains('https')
+                    ? Image.network(
+                        content
+                            .stylingRequest.requestClothings[0].clothingImage,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : allCodiClothing.codiImg.contains('.')
-                        ? Image.asset(allCodiClothing.codiImg,
+                    : content.stylingRequest.requestClothings[0].clothingImage
+                            .contains('.')
+                        ? Image.asset(
+                            content.stylingRequest.requestClothings[0]
+                                .clothingImage,
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain)
-                        : Image.memory(base64Decode(allCodiClothing.codiImg),
+                        : Image.memory(
+                            base64Decode(content.stylingRequest
+                                .requestClothings[0].clothingImage),
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain
                             //height: 100,
@@ -1102,7 +1082,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             codiRequestList.length,
             (idx) {
               return allCodiWidget(
-                  allCodiClothing: codiRequestList[idx],
+                  //allCodiClothing: codiRequestList[idx],
                   allCodiIndex: idx.toInt());
             },
           ),
@@ -1119,7 +1099,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             codiRequestList.length,
             (idx) {
               return allCodiWidget(
-                  allCodiClothing: codiRequestList[idx], allCodiIndex: idx);
+                  //allCodiClothing: codiRequestList[idx],
+                  allCodiIndex: idx);
             },
           ),
         );
@@ -1143,8 +1124,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             codiRequestList.length,
             (idx) {
               return allCodiWidget(
-                  allCodiClothing: codiRequestList[idx],
-                  allCodiIndex: idx.toInt());
+                  content: codiRequestList[idx], allCodiIndex: idx);
             },
           ),
         ),
@@ -1160,7 +1140,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             codiRequestList.length,
             (idx) {
               return allCodiWidget(
-                  allCodiClothing: codiRequestList[idx], allCodiIndex: idx);
+                  content: codiRequestList[idx], allCodiIndex: idx);
             },
           ),
         );
@@ -1180,8 +1160,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             contentType != 4
                 ? codiClosetContent()
                 : mulCodiCloset(
-                    allCodiClothing: mulcodiCloset,
-                    allCodiIndex: allCodiClosetIndex),
+                    content: mulcodiCloset, allCodiIndex: allCodiClosetIndex),
           ],
         ));
   }
@@ -1510,6 +1489,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   @override
   Widget build(BuildContext context) {
+    getPosts();
     myClosetListTotal = [];
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);
