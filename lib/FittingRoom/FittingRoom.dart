@@ -697,6 +697,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
       onTap: () {
         //select표시
         setState(() {
+          print(productClothing.category);
           allCodiClosetIndex = allCodiIndex;
           codiClosetIndex = eachCodiIndex;
           //옷 바뀌게 하자
