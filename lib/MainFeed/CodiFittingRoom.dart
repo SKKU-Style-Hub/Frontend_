@@ -188,10 +188,10 @@ void _capture() async {
           }
         }));
 
-    if (result["isSuccess"] == true)
+    /*if (result["isSuccess"] == true)
       showToast("이미지가 갤러리에 저장되었습니다.");
     else
-      showToast("갤러리 저장에 실패했습니다.");
+      showToast("갤러리 저장에 실패했습니다.");*/
   } else {
     print("갤러리 저장에 실패했습니다.");
   }

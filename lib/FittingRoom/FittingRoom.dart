@@ -510,13 +510,8 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
       onTap: () {
         //클릭시에 위에 옷 바뀌도록
         setState(() {
-          if (myClothing.clothingImgBase64 != null) {
-            selectedClothList[categoryToType(myClothing.category)]["image"] =
-                myClothing.clothingImgBase64;
-          } else if (myClothing.clothingImgPath != null) {
-            selectedClothList[categoryToType(myClothing.category)]["image"] =
-                myClothing.clothingImgPath;
-          }
+          selectedClothList[categoryToType(myClothing.category)]["image"] =
+              myClothing.clothingImgPath;
           selectedClothList[categoryToType(myClothing.category)]["clothing"] =
               myClothing;
           if (categoryToType(myClothing.category) == 1 ||
@@ -553,12 +548,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: myClothing.clothingImgBase64.contains('https')
-                    ? Image.network(myClothing.clothingImgBase64,
+                child: myClothing.clothingImgPath.contains("https")
+                    ? Image.network(myClothing.clothingImgPath,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : myClothing.clothingImgBase64.contains('assets/')
-                        ? Image.asset(myClothing.clothingImgBase64,
+                    : myClothing.clothingImgPath.contains('assets/')
+                        ? Image.asset(myClothing.clothingImgPath,
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain)
                         : Image.file(File(myClothing.clothingImgPath),
