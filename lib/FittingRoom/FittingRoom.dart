@@ -30,6 +30,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:stylehub_flutter/data/CategoryType.dart';
 import 'package:stylehub_flutter/MainFeed/GeneratedComponents.dart';
+import 'dart:developer';
 
 //화면에 선택된 옷과 위치
 ////모든 순서는 1:top, 2:bottom, 3: onepiece, 4:outer, 5:shoes, 6:bag
@@ -248,19 +249,24 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   //코디요청서 가져오는 항목  (두번째 탭)
   Future<void> getPosts() async {
-    String url = "http://34.64.196.105:82/api/styling/request/list/my";
+    String url = "http://34.64.196.105:82/api/mainfeed/list/read/content";
     var response = await http.post(url,
         headers: {
           'Content-type': 'application/json',
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          "userProfile": {"userNickname": StyleHub.myNickname},
+          "userProfile": {"userNickname": "JJH_wisdom"},
+          "contentType": "styling"
         }));
     var results = jsonDecode(utf8.decode(response.bodyBytes)); //한국어 포함
+    log("=======result========");
+    log(results.toString());
+    log("========end==========");
     for (var result in results) {
-      Content tmp = Content.fromJson(result);
-      print(tmp);
+      //print(result.content);
+      Content tmp = Post.fromJson(result).content;
+      log(tmp.toString());
       codiRequestList.add(tmp);
     }
   }
@@ -901,12 +907,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         ));
   }
 
-  dynamic getAIProduct(int index) async {
+  dynamic listAI;
+
+  void getAIProduct(int index) async {
     //특정옷에 대한 AI결과 가져오는
     //product clothing배열
-    dynamic list = await ProductClothingDatabase.getRecoResult(index);
-    print(list);
-    return list;
+    listAI = await ProductClothingDatabase.getRecoResult(index);
   }
 
   Widget mulCodiContent({Content content, int allCodiIndex}) {
@@ -914,8 +920,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     {
       return deleteScreen();
     }
-    dynamic listAI =
-        getAIProduct(content.stylingRequest.requestClothings[0].clothingId);
+    getAIProduct(content.stylingRequest.requestClothings[0].clothingId);
+    //dynamic listAI = await getAIProduct(
+    //    content.stylingRequest.requestClothings[0].clothingId);
     print(listAI);
     if (bottomSheetSize == 350) {
       return Container(
@@ -1006,8 +1013,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: content.stylingRequest.requestClothings[0].clothingImage
-                        .contains('https')
+                child: content.stylingRequest.requestClothings != null &&
+                        content.stylingRequest.requestClothings[0]
+                                .clothingImage !=
+                            null &&
+                        content.stylingRequest.requestClothings[0].clothingImage
+                            .contains("https")
                     ? Image.network(
                         content
                             .stylingRequest.requestClothings[0].clothingImage,
@@ -1021,8 +1032,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain)
                         : Image.memory(
-                            base64Decode(content.stylingRequest
-                                .requestClothings[0].clothingImage),
+                            base64Decode(content.stylingRequest.requestClothings[0].clothingImage),
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain
                             //height: 100,
@@ -1496,6 +1506,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   @override
   Widget build(BuildContext context) {
+    getPosts();
     myClosetListTotal = [];
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);
@@ -1504,9 +1515,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     myClosetListTotal.add(myClosetListOuter);
     myClosetListTotal.add(myClosetListAcc);
     print("===============clothingId================");
-    for (int i = 0; i < codiRequestList.length; i++) {
+    print(codiRequestList.length);
+    /*for (int i = 0; i < codiRequestList.length; i++) {
       print(codiRequestList[i].stylingRequest.requestClothings[0].clothingId);
-    }
+      print(codiRequestList[i]);
+    }*/
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
