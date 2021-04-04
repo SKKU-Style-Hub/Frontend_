@@ -220,8 +220,12 @@ class CodiFittingRoom extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
   StylingRequest stylingRequest;
-  CodiFittingRoom({Key key, this.requestClothInfo, this.stylingRequest})
-      : super(key: key);
+  Post post;
+  CodiFittingRoom(
+      {Key key, this.requestClothInfo, this.stylingRequest, this.post})
+      : super(key: key) {
+    _stylingRequest = this.stylingRequest;
+  }
   @override
   _CodiFittingRoomState createState() => _CodiFittingRoomState();
 }
@@ -272,6 +276,7 @@ class _CodiFittingRoomState extends State<CodiFittingRoom> {
       body: CodiFittingRoomMain(
         requestClothInfo: widget.requestClothInfo,
         stylingRequest: widget.stylingRequest,
+        post: widget.post,
       ),
     );
   }
@@ -281,8 +286,12 @@ class CodiFittingRoomMain extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
   StylingRequest stylingRequest;
-  CodiFittingRoomMain({Key key, this.requestClothInfo, this.stylingRequest})
-      : super(key: key);
+  Post post;
+  CodiFittingRoomMain(
+      {Key key, this.requestClothInfo, this.stylingRequest, this.post})
+      : super(key: key) {
+    _stylingRequest = this.stylingRequest;
+  }
   @override
   _CodiFittingRoomMainState createState() => _CodiFittingRoomMainState();
 }
@@ -345,7 +354,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
       }
       MyClothing thisClothing = MyClothing(
         id: thisCloth["clothingId"],
-        clothingImgBase64: thisCloth["clothingImage"],
+        clothingImgPath: thisCloth["clothingImage"],
         brandName: thisCloth["tagResult"]["brandName"],
       );
       if (categoryToType(category) == 1) //상의
@@ -635,16 +644,15 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: myClothing.clothingImgBase64.contains("https")
-                    ? Image.network(myClothing.clothingImgBase64,
+                child: myClothing.clothingImgPath.contains("https")
+                    ? Image.network(myClothing.clothingImgPath,
                         width: bottomSheetSize == 200 ? 100 : 120,
                         fit: BoxFit.contain)
-                    : myClothing.clothingImgBase64.contains(".")
-                        ? Image.asset(myClothing.clothingImgBase64,
+                    : myClothing.clothingImgPath.contains(".")
+                        ? Image.asset(myClothing.clothingImgPath,
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain)
-                        : Image.memory(
-                            base64Decode(myClothing.clothingImgBase64),
+                        : Image.memory(base64Decode(myClothing.clothingImgPath),
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain
                             //height: 100,
@@ -931,6 +939,7 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
                 }
               },
               child: Draggable(
+                //이미지는 모두 clothingImgpath에 있는 것으로
                 child: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
                   child: selectedClothList[type]["image"].contains("https")
@@ -1215,7 +1224,8 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
                                   child: Container(
                                 width: 100,
                                 child: Text(
-                                  "요청정보입니다 예쁜 코디 부탁드립니다.",
+                                  widget.post.content.stylingRequest
+                                      .requestContent,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12.0,

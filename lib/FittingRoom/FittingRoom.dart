@@ -504,8 +504,13 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
       onTap: () {
         //클릭시에 위에 옷 바뀌도록
         setState(() {
-          selectedClothList[categoryToType(myClothing.category)]["image"] =
-              myClothing.clothingImgPath;
+          if (myClothing.clothingImgBase64 != null) {
+            selectedClothList[categoryToType(myClothing.category)]["image"] =
+                myClothing.clothingImgBase64;
+          } else if (myClothing.clothingImgPath != null) {
+            selectedClothList[categoryToType(myClothing.category)]["image"] =
+                myClothing.clothingImgPath;
+          }
           selectedClothList[categoryToType(myClothing.category)]["clothing"] =
               myClothing;
           if (categoryToType(myClothing.category) == 1 ||
@@ -897,10 +902,12 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         ));
   }
 
-  Future<List<ProductClothing>> getAIProduct(int index) async {
+  dynamic getAIProduct(int index) async {
     //특정옷에 대한 AI결과 가져오는
     //product clothing배열
-    return await ProductClothingDatabase.getRecoResult(index);
+    dynamic list = await ProductClothingDatabase.getRecoResult(index);
+    print(list);
+    return list;
   }
 
   Widget mulCodiContent({Content content, int allCodiIndex}) {
@@ -908,8 +915,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     {
       return deleteScreen();
     }
-    dynamic listAI =
+    List<ProductClothing> listAI =
         getAIProduct(content.stylingRequest.requestClothings[0].clothingId);
+    print(listAI);
     if (bottomSheetSize == 350) {
       return Container(
         color: Colors.transparent,
@@ -1486,7 +1494,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   @override
   Widget build(BuildContext context) {
-    getPosts();
     myClosetListTotal = [];
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);

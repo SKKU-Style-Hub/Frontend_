@@ -200,22 +200,25 @@ class _StylingCardState extends State<StylingCard> {
                       MaterialPageRoute(
                         //피팅룸에 넘어갈 옷
                         builder: (context) => CodiFittingRoom(
-                          requestClothInfo: ClothInfo(
-                            image: post.content.stylingRequest
-                                .requestClothings[0].clothingImage,
-                            type: categoryToType(post
-                                        .content
-                                        .stylingRequest
-                                        .requestClothings[0]
-                                        .tagResult
-                                        .category ==
-                                    null
-                                ? 1
-                                : post.content.stylingRequest
-                                    .requestClothings[0].tagResult.category),
-                          ),
-                          stylingRequest: post.content.stylingRequest,
-                        ),
+                            requestClothInfo: ClothInfo(
+                              image: post.content.stylingRequest
+                                  .requestClothings[0].clothingImage,
+                              type: categoryToType(post.content.stylingRequest
+                                              .requestClothings[0].tagResult ==
+                                          null ||
+                                      post
+                                              .content
+                                              .stylingRequest
+                                              .requestClothings[0]
+                                              .tagResult
+                                              .category ==
+                                          null
+                                  ? "상의"
+                                  : post.content.stylingRequest
+                                      .requestClothings[0].tagResult.category),
+                            ),
+                            stylingRequest: post.content.stylingRequest,
+                            post: post),
                       ));
                 },
                 child: Container(
