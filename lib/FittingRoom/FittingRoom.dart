@@ -1386,10 +1386,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                               : Image.memory(
                                   base64Decode(
                                       selectedClothList[type]["image"]),
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.contain,
-                                ),
+                                  width: selectedClothList[type]["width"]
+                                      .toDouble(),
+                                  fit: BoxFit.fitWidth),
                 ),
                 feedback: SizedBox(
                   width: selectedClothList[type]["width"].toDouble(),
@@ -1415,10 +1414,9 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
                               : Image.memory(
                                   base64Decode(
                                       selectedClothList[type]["image"]),
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.contain,
-                                ),
+                                  width: selectedClothList[type]["width"]
+                                      .toDouble(),
+                                  fit: BoxFit.fitWidth),
                 ),
                 childWhenDragging: Container(),
                 onDragEnd: (DraggableDetails details) {
@@ -1539,8 +1537,6 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   @override
   Widget build(BuildContext context) {
-    print(selectedClothList[1]["image"]);
-    print(selectedClothList[2]["image"]);
     myClosetListTotal = [];
     //myClosetListTotal는 index0부터 시작함을 까먹지 말기
     myClosetListTotal.add(myClosetListTop);
