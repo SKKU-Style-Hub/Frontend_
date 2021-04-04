@@ -271,10 +271,10 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     myClosetListOuter = await MyClothingDatabase.getOuter();
 
     if (myClosetListTop.isNotEmpty) {
-      selectedClothList[1]["image"] = myClosetListTop[0].clothingImgBase64;
+      selectedClothList[1]["image"] = myClosetListTop[0].clothingImgPath;
     }
     if (myClosetListBottom.isNotEmpty) {
-      selectedClothList[2]["image"] = myClosetListBottom[0].clothingImgBase64;
+      selectedClothList[2]["image"] = myClosetListBottom[0].clothingImgPath;
     }
     myClosetListTop.insert(0, basictop);
     myClosetListBottom.insert(0, basicbottom);
@@ -505,7 +505,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         //클릭시에 위에 옷 바뀌도록
         setState(() {
           selectedClothList[categoryToType(myClothing.category)]["image"] =
-              myClothing.clothingImgBase64;
+              myClothing.clothingImgPath;
           selectedClothList[categoryToType(myClothing.category)]["clothing"] =
               myClothing;
           if (categoryToType(myClothing.category) == 1 ||
@@ -530,7 +530,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         alignment: Alignment.center,
         margin: EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0, bottom: 5.0),
         height: 100,
-        decoration: myClothing.clothingImgBase64 ==
+        decoration: myClothing.clothingImgPath ==
                 selectedClothList[categoryToType(myClothing.category)]["image"]
             ? BoxDecoration(
                 color: Colors.transparent,
@@ -562,7 +562,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
               ),
             ),
             //선택된 옷일 때 here보이게끔
-            myClothing.clothingImgBase64 ==
+            myClothing.clothingImgPath ==
                     selectedClothList[categoryToType(myClothing.category)]
                         ["image"]
                 ? Center(
