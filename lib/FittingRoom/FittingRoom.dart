@@ -248,7 +248,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
 
   //코디요청서 가져오는 항목  (두번째 탭)
   Future<void> getPosts() async {
-    String url = "http://34.64.196.105:82/api/post/styling/read/list/my";
+    String url = "http://34.64.196.105:82/api/styling/request/list/my";
     var response = await http.post(url,
         headers: {
           'Content-type': 'application/json',
