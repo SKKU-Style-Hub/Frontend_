@@ -53,11 +53,10 @@ class _MainFeedState extends State<MainFeed> {
     //print(response.body);
     var results = jsonDecode(response.body);
     for (var result in results) {
-      print(result['content']['postImage']);
+      //print('feedId' + result['feedId'].toString());
       Post tmp = Post.fromJson(result);
-      print(tmp.contentType);
+      print("commentsLength " + tmp.comments.length.toString());
       posts.add(tmp);
-      print(posts.length);
     }
     return posts;
   }

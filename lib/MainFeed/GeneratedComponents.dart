@@ -93,7 +93,7 @@ class Comments {
     userProfile = json['userProfile'] != null
         ? new UserProfile.fromJson(json['userProfile'])
         : null;
-    commentContent = json['commentContent'];
+    commentContent = json['comment'];
   }
 
   Map<String, dynamic> toJson() {
@@ -101,7 +101,7 @@ class Comments {
     if (this.userProfile != null) {
       data['userProfile'] = this.userProfile.toJson();
     }
-    data['commentContent'] = this.commentContent;
+    data['comment'] = this.commentContent;
     return data;
   }
 }

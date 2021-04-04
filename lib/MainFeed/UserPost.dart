@@ -222,6 +222,15 @@ class _UserPostState extends State<UserPost> {
                                         itemCount: comments.length,
                                         itemBuilder:
                                             (BuildContext context, int index) {
+                                          if (comments[index]
+                                                  .userProfile
+                                                  .profileImage ==
+                                              null) {
+                                            comments[index]
+                                                    .userProfile
+                                                    .profileImage =
+                                                "https://user-images.githubusercontent.com/65387279/113335492-fc5c0f80-935f-11eb-8580-827b24162791.png";
+                                          }
                                           return comments[index]
                                                       .commentContent !=
                                                   null
@@ -339,10 +348,10 @@ class _UserPostState extends State<UserPost> {
                                                 "userProfile": {
                                                   "userNickname":
                                                       StyleHub.myNickname,
-                                                  "profileImg":
+                                                  "profileImage":
                                                       StyleHub.myProfileImg,
-                                                  "comment": writingComment
                                                 },
+                                                "comment": writingComment
                                               }));
                                           commentController.clear();
                                           FocusScope.of(context).unfocus();
@@ -444,6 +453,7 @@ class _UserPostState extends State<UserPost> {
                           commentContent: writingComment));
                     });
                     String url = "http://34.64.196.105:82/api/comment/create";
+                    print("widget.feedid" + widget.feedId.toString());
                     await http.post(url,
                         headers: {
                           'Content-type': 'application/json',
@@ -454,13 +464,12 @@ class _UserPostState extends State<UserPost> {
                           "feedId": widget.feedId,
                           "userProfile": {
                             "userNickname": StyleHub.myNickname,
-                            "profileImg": StyleHub.myProfileImg,
-                            "comment": writingComment
+                            "profileImage": StyleHub.myProfileImg,
                           },
+                          "comment": writingComment
                         }));
                     commentController.clear();
                     FocusScope.of(context).unfocus();
-                    print(myComment);
                   }
                 },
               )
