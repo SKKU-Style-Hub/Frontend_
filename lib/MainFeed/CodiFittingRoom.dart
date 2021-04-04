@@ -10,6 +10,7 @@ import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
+import 'package:stylehub_flutter/data/LinkClothingDatabase.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
 import 'package:stylehub_flutter/data/CodiClothing.dart';
 import 'package:stylehub_flutter/data/AllCodiClothing.dart';
@@ -112,6 +113,7 @@ List<MyClothing> myClosetListOuter = [];
 List<MyClothing> myClosetListAcc = [];
 
 List<dynamic> codiRequestList = []; //일단 보여줄 코디요청list만들어놓음
+List<dynamic> linkClosetList = []; //링크로 연결한 옷의 모임. productclothing가지고 있다.
 
 double swipeStartY;
 String swipeDirection;
@@ -216,6 +218,10 @@ void goToUrl(String url) async {
   }
 }
 
+void getLinkCloset() async {
+  linkClosetList = await LinkClothingDatabase.getLinkCloset();
+}
+
 class CodiFittingRoom extends StatefulWidget {
   //rawdata
   ClothInfo requestClothInfo;
@@ -315,8 +321,9 @@ class _CodiFittingRoomMainState extends State<CodiFittingRoomMain> {
   void initState() {
     codiKey = new GlobalKey();
     _dragToExpandController = DragToExpandController();
-    //getCloset();
+    getCloset();
     //getProduct();
+    getLinkCloset();
     super.initState();
     _requestPermission();
     if (widget.requestClothInfo != null &&

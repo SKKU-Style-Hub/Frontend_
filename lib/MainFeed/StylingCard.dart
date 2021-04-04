@@ -354,11 +354,16 @@ class _StylingCardState extends State<StylingCard> {
                                                 ),
                                                 CircleAvatar(
                                                   radius: 22,
-                                                  backgroundImage: NetworkImage(
-                                                      post
+                                                  backgroundImage: post
+                                                              .comments[index]
+                                                              .userProfile
+                                                              .profileImage !=
+                                                          null
+                                                      ? NetworkImage(post
                                                           .comments[index]
                                                           .userProfile
-                                                          .profileImage),
+                                                          .profileImage)
+                                                      : Container(),
                                                   backgroundColor:
                                                       Colors.transparent,
                                                 ),

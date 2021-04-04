@@ -218,13 +218,12 @@ void showLinkDialog(BuildContext context) {
                   var response = await Dio().post(
                       "http://34.64.196.105:82/api/back/removal/remove",
                       data: formData);
-                  print(response);
                   final int closet_index =
                       await LinkClothingDatabase.totalProductNum();
                   await LinkClothingDatabase.insertProduct(ProductClothing(
-                      request_num: closet_index + 1,
+                      request_num: closet_index,
                       img_path: response.data, //imagepath,
-                      encoded_img: null, //encodedimage,
+                      encoded_img: response.data, //encodedimage,
                       brand: null,
                       detail_url: linkurl,
                       fashion_url: null,
@@ -233,8 +232,8 @@ void showLinkDialog(BuildContext context) {
                       price: null,
                       score: null,
                       category: linktype));
-
                   showToast("성공적으로 가져왔습니다");
+                  await getLinkCloset();
                   Navigator.pop(context);
                 },
               ),

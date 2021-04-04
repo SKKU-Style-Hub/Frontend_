@@ -10,6 +10,7 @@ import 'package:stylehub_flutter/data/MyClothing.dart';
 import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
 import 'package:stylehub_flutter/data/ProductClothing.dart';
 import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
+import 'package:stylehub_flutter/data/LinkClothingDatabase.dart';
 import 'package:stylehub_flutter/components/ClothInfo.dart';
 import 'package:stylehub_flutter/data/CodiClothing.dart';
 import 'package:stylehub_flutter/data/AllCodiClothing.dart';
@@ -159,6 +160,10 @@ void goToUrl(String url) async {
   }
 }
 
+void getLinkCloset() async {
+  linkClosetList = await LinkClothingDatabase.getLinkCloset();
+}
+
 class FittingRoom extends StatefulWidget {
   FittingRoom({Key key}) : super(key: key);
   @override
@@ -232,6 +237,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     //mulcodiCloset = tmpAllCodi;
     codiRequestList = [];
     getPosts();
+    getLinkCloset();
     super.initState();
     _requestPermission();
   }
@@ -915,7 +921,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
     {
       return deleteScreen();
     }
-    List<ProductClothing> listAI =
+    dynamic listAI =
         getAIProduct(content.stylingRequest.requestClothings[0].clothingId);
     print(listAI);
     if (bottomSheetSize == 350) {
@@ -1182,7 +1188,7 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
         child: Column(
           children: [
             InkWell(
-              onTap: () {
+              onTap: () async {
                 showLinkDialog(context);
               },
               child: Icon(Icons.cloud_upload_rounded, size: 25),
@@ -1273,21 +1279,23 @@ class _FittingRoomMainState extends State<FittingRoomMain> {
             Center(
               child: SizedBox(
                 width: bottomSheetSize == 200 ? 100 : 120,
-                child: productClothing.encoded_img.contains('https')
-                    ? Image.network(productClothing.encoded_img,
-                        width: bottomSheetSize == 200 ? 100 : 120,
-                        fit: BoxFit.contain)
-                    : productClothing.encoded_img.contains('assets/')
-                        ? Image.asset(productClothing.encoded_img,
+                child: productClothing.encoded_img != null
+                    ? productClothing.encoded_img.contains("https")
+                        ? Image.network(productClothing.encoded_img,
                             width: bottomSheetSize == 200 ? 100 : 120,
                             fit: BoxFit.contain)
-                        : Image.memory(
-                            base64Decode(productClothing.encoded_img),
-                            width: bottomSheetSize == 200 ? 100 : 120,
-                            fit: BoxFit.contain
-                            //height: 100,
-                            //fit: BoxFit.scaleDown,
-                            ),
+                        : productClothing.encoded_img.contains("assets/")
+                            ? Image.asset(productClothing.encoded_img,
+                                width: bottomSheetSize == 200 ? 100 : 120,
+                                fit: BoxFit.contain)
+                            : Image.memory(
+                                base64Decode(productClothing.encoded_img),
+                                width: bottomSheetSize == 200 ? 100 : 120,
+                                fit: BoxFit.contain
+                                //height: 100,
+                                //fit: BoxFit.scaleDown,
+                                )
+                    : Container(),
               ),
             ),
             //선택된 옷일 때 here보이게끔
