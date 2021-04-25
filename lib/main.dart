@@ -62,14 +62,14 @@ class _StyleHubState extends State<StyleHub> {
           "assets/images/SPLASH_image.png",
           height: 500,
         ),
-        /*nextScreen: Navigation(
+        nextScreen: Navigation(
           selectedPosition: 0,
-        ),*/
-        nextScreen: isLoggedIn
+        ),
+        /*nextScreen: isLoggedIn
             ? Navigation(
                 selectedPosition: 0,
               )
-            : LoginScreen(),
+            : LoginScreen(),*/
         splashTransition: SplashTransition.fadeTransition,
         backgroundColor: Colors.black,
         pageTransitionType: PageTransitionType.scale,
