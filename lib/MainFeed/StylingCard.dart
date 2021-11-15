@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:stylehub_flutter/MainFeed/MainFeedComponents.dart';
+//import 'package:codime/MainFeed/MainFeedComponents.dart';
 import 'package:stylehub_flutter/data/CategoryType.dart';
 import 'package:stylehub_flutter/main.dart';
 import 'MainFeed.dart';

@@ -157,7 +157,7 @@ class _MyAppState extends State<MyApp> {
     );
 
     final File imageFile = File(
-        '/storage/emulated/0/Android/data/com.example.stylehub_flutter/files/Pictures/someImageFile.jpg');
+        '/storage/emulated/0/Android/data/com.skku.codime/files/Pictures/someImageFile.jpg');
     await imageFile.create(recursive: true);
     //imageFile.writeAsStringSync();
     sample.delete();
