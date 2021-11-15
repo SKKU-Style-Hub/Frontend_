@@ -1,12 +1,12 @@
-import 'package:stylehub_flutter/data/ProposedCodi.dart';
+import 'package:codime/data/ProposedCodi.dart';
 import 'MainFeed.dart';
 import 'CodiFittingRoom.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/components/ClothInfo.dart';
-import 'package:stylehub_flutter/data/AllCodiClothing.dart';
-import 'package:stylehub_flutter/data/MyClothing.dart';
-import 'package:stylehub_flutter/data/CodiClothing.dart';
-import 'package:stylehub_flutter/data/ProductClothing.dart';
+import 'package:codime/components/ClothInfo.dart';
+import 'package:codime/data/AllCodiClothing.dart';
+import 'package:codime/data/MyClothing.dart';
+import 'package:codime/data/CodiClothing.dart';
+import 'package:codime/data/ProductClothing.dart';
 
 //raw-data
 MyClothing basictop =

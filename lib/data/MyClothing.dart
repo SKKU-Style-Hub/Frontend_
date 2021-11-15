@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dataclass/dataclass.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:stylehub_flutter/MyCloset/TagResult/TagResult.dart';
+import 'package:codime/MyCloset/TagResult/TagResult.dart';
 
 @dataClass
 class MyClothing {

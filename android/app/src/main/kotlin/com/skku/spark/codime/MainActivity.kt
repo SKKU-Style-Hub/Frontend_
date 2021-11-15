@@ -1,4 +1,4 @@
-package com.example.stylehub_flutter
+package com.skku.spark.codime
 
 import io.flutter.embedding.android.FlutterActivity
 

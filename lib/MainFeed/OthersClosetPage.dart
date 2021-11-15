@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/Constants.dart';
-import 'package:stylehub_flutter/data/MyClothing.dart';
-import 'package:stylehub_flutter/data/MyClothingDatabase.dart';
+import 'package:codime/Constants.dart';
+import 'package:codime/data/MyClothing.dart';
+import 'package:codime/data/MyClothingDatabase.dart';
 import 'package:tabbar/tabbar.dart';
 
 class OthersClosetPage extends StatefulWidget {

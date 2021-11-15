@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:stylehub_flutter/MainFeed/GeneratedComponents.dart';
-import 'package:stylehub_flutter/data/MyClothing.dart';
-import 'package:stylehub_flutter/data/ProductClothing.dart';
-import 'package:stylehub_flutter/data/ProductClothingDatabase.dart';
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/MainFeed/GeneratedComponents.dart';
+import 'package:codime/data/MyClothing.dart';
+import 'package:codime/data/ProductClothing.dart';
+import 'package:codime/data/ProductClothingDatabase.dart';
+import 'package:codime/main.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import '../components/Colorbutton.dart';

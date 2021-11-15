@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/Constants.dart';
+import 'package:codime/Constants.dart';
 import '../FittingRoom/FittingRoom.dart';
 import 'RawData.dart';
 

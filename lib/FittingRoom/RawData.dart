@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/components/ClothInfo.dart';
-import 'package:stylehub_flutter/data/AllCodiClothing.dart';
-import 'package:stylehub_flutter/data/MyClothing.dart';
-import 'package:stylehub_flutter/data/CodiClothing.dart';
-import 'package:stylehub_flutter/data/ProductClothing.dart';
-import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
+import 'package:codime/components/ClothInfo.dart';
+import 'package:codime/data/AllCodiClothing.dart';
+import 'package:codime/data/MyClothing.dart';
+import 'package:codime/data/CodiClothing.dart';
+import 'package:codime/data/ProductClothing.dart';
+import 'package:codime/FittingRoom/FittingRoom.dart';
 
 MyClothing basictop =
     MyClothing(clothingImgPath: "assets/images/basictop.png", category: "탑");

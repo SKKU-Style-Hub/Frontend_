@@ -7,7 +7,7 @@ import 'package:gender_picker/source/gender_picker.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:number_selection/number_selection.dart';
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/main.dart';
 import 'Navigation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';

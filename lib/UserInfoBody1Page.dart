@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:weight_slider/weight_slider.dart';
-import 'package:stylehub_flutter/Constants.dart';
+import 'package:codime/Constants.dart';
 
 class UserInfoBody1Page extends StatefulWidget {
   @override

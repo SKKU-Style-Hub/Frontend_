@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 //import 'package:codime/MainFeed/MainFeedComponents.dart';
-import 'package:stylehub_flutter/data/CategoryType.dart';
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/data/CategoryType.dart';
+import 'package:codime/main.dart';
 import 'MainFeed.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:stylehub_flutter/Constants.dart';
+import 'package:codime/Constants.dart';
 import 'package:speech_bubble/speech_bubble.dart';
-import 'package:stylehub_flutter/MainFeed/CodiFittingRoom.dart';
-import 'package:stylehub_flutter/components/ClothInfo.dart';
+import 'package:codime/MainFeed/CodiFittingRoom.dart';
+import 'package:codime/components/ClothInfo.dart';
 import 'GeneratedComponents.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_navigationbar/flutter_snake_navigationbar.dart';
-import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
-import 'package:stylehub_flutter/MyCloset/MyRoom/Userfeedinput1.dart';
-import 'package:stylehub_flutter/SettingsScreen.dart';
+import 'package:codime/FittingRoom/FittingRoom.dart';
+import 'package:codime/MyCloset/MyRoom/Userfeedinput1.dart';
+import 'package:codime/SettingsScreen.dart';
 import 'MainFeed/MainFeed.dart';
 import 'MyCloset/MyClosetPage.dart';
-import 'package:stylehub_flutter/common/custom_icons_icons.dart';
+import 'package:codime/common/custom_icons_icons.dart';
 import 'RequestCodi/RequestMain.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kakao_flutter_sdk/all.dart';

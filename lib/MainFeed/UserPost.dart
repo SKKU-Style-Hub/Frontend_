@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:stylehub_flutter/Constants.dart';
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/Constants.dart';
+import 'package:codime/main.dart';
 import 'GeneratedComponents.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

@@ -5,14 +5,14 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_size_getter/file_input.dart';
-import 'package:stylehub_flutter/common/showToast.dart';
+import 'package:codime/common/showToast.dart';
 import 'cropImg.dart';
-import 'package:stylehub_flutter/data/ProductClothing.dart';
-import 'package:stylehub_flutter/data/LinkClothingDatabase.dart';
+import 'package:codime/data/ProductClothing.dart';
+import 'package:codime/data/LinkClothingDatabase.dart';
 import 'package:image/image.dart' as Img;
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 TextStyle labelTextStyle = TextStyle(

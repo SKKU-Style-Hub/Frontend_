@@ -1,11 +1,11 @@
 import 'dart:convert';
 import '../MainFeed/GeneratedComponents.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/Constants.dart';
+import 'package:codime/Constants.dart';
 import '../Navigation.dart';
 import 'RequestPage.dart';
 import 'package:http/http.dart' as http;
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class RequestMain extends StatefulWidget {

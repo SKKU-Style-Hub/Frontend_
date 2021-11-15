@@ -4,16 +4,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:stylehub_flutter/Constants.dart';
+import 'package:codime/Constants.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stylehub_flutter/data/MyClothing.dart';
+import 'package:codime/data/MyClothing.dart';
 import 'dart:io';
 import '../data/MyClothingDatabase.dart';
 import '../Navigation.dart';
 import 'package:image/image.dart' as Img;
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class RegisterPage extends StatefulWidget {

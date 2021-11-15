@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'FittingRoom.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:stylehub_flutter/common/showToast.dart';
+import 'package:codime/common/showToast.dart';
 import '../components/SmallStylebutton.dart';
 import '../components/SmallItembutton.dart';
 

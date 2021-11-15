@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/data/ProductClothing.dart';
+import 'package:codime/data/ProductClothing.dart';
 
 class ProductClothingDatabase {
   static int db_version = 1;

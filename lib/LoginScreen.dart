@@ -11,7 +11,7 @@ import 'package:bloc/bloc.dart';
 import 'package:gender_picker/source/enums.dart' as Gen;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:stylehub_flutter/main.dart';
+import 'package:codime/main.dart';
 import 'UserInfoScreen.dart';
 import 'Navigation.dart';
 

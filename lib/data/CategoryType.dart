@@ -1,6 +1,6 @@
 import 'package:dataclass/dataclass.dart';
 import 'package:flutter/material.dart';
-import 'package:stylehub_flutter/FittingRoom/FittingRoom.dart';
+import 'package:codime/FittingRoom/FittingRoom.dart';
 
 int categoryToType(String category) {
   //상의
